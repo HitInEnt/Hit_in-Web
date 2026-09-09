@@ -97,10 +97,10 @@ export const initialTimeSlots: TimeSlot[] = [
     title: '오전 CQB & 야외 정기전 (1부)',
     gameType: '주말 정기전',
     maxPlayers: 40,
-    currentPlayers: 38,
+    currentPlayers: 0,
     pricePerPerson: 35000,
-    status: 'in_progress',
-    notes: '초보자 동반 플레이어 12명 포함, 브리핑 09:40 시작'
+    status: 'open',
+    notes: '브리핑 09:40 시작'
   },
   {
     id: 'slt_02',
@@ -111,10 +111,10 @@ export const initialTimeSlots: TimeSlot[] = [
     title: '오후 스피드CQB + 시나리오전 (2부)',
     gameType: '밀심(Milsim) 특별전',
     maxPlayers: 50,
-    currentPlayers: 50,
+    currentPlayers: 0,
     pricePerPerson: 40000,
-    status: 'full',
-    notes: '무전기 채널 5번 통일, 연막탄 사용 가능 슬롯'
+    status: 'open',
+    notes: '무전기 채널 5번 통일, 연막탄 사용 가능'
   },
   {
     id: 'slt_03',
@@ -125,224 +125,18 @@ export const initialTimeSlots: TimeSlot[] = [
     title: '평일 퇴근길 나이트 트레이서전',
     gameType: '평일 야간전',
     maxPlayers: 30,
-    currentPlayers: 18,
+    currentPlayers: 0,
     pricePerPerson: 30000,
     status: 'open',
     notes: '트레이서 발광탄 장착 필수'
-  },
-  {
-    id: 'slt_04',
-    fieldId: 'fld_01',
-    date: '2026-09-10',
-    startTime: '10:00',
-    endTime: '14:00',
-    title: '팀 고스트 단독 대관 매치',
-    gameType: '팀 단독 대관',
-    maxPlayers: 30,
-    currentPlayers: 25,
-    pricePerPerson: 45000,
-    status: 'open',
-    notes: '외부 음식 반입 허용'
-  },
-  {
-    id: 'slt_05',
-    fieldId: 'fld_01',
-    date: '2026-09-10',
-    startTime: '15:00',
-    endTime: '19:00',
-    title: '에어소프트 초심자 입문 & 사격 레슨 매치',
-    gameType: '초보자 입문전',
-    maxPlayers: 30,
-    currentPlayers: 14,
-    pricePerPerson: 35000,
-    status: 'open',
-    notes: '전문 코치 2명 상주 및 장비 렌탈 50% 지원'
   }
 ];
 
-export const initialBookings: BookingItem[] = [
-  {
-    id: 'bk_001',
-    bookingNumber: 'HIT-260909-0812',
-    slotId: 'slt_01',
-    fieldId: 'fld_01',
-    date: '2026-09-09',
-    slotTitle: '오전 CQB & 야외 정기전 (1부)',
-    startTime: '10:00',
-    endTime: '13:00',
-    bookerUserId: 'u_101',
-    bookerName: '이진우',
-    bookerNickname: '고스트리퍼',
-    bookerPhone: '010-4492-1184',
-    playerCount: 4,
-    totalAmount: 140000,
-    paymentStatus: 'paid',
-    checkInStatus: 'checked_in',
-    checkInTime: '09:42',
-    playerMannerScore: 4.95,
-    playerReportCount: 0,
-    isFirstTimer: false,
-    rentalOrders: [
-      { productId: 'p_01', productName: 'VFC HK416A5 GBBR 렌탈 패키지', category: 'GBBR', quantity: 2, unitPrice: 25000 },
-      { productId: 'p_04', productName: '0.2g 프리미엄 바이오 비비탄 (4000발)', category: '소모품', quantity: 1, unitPrice: 15000 }
-    ],
-    createdAt: '2026-09-07 14:22'
-  },
-  {
-    id: 'bk_002',
-    bookingNumber: 'HIT-260909-0931',
-    slotId: 'slt_01',
-    fieldId: 'fld_01',
-    date: '2026-09-09',
-    slotTitle: '오전 CQB & 야외 정기전 (1부)',
-    startTime: '10:00',
-    endTime: '13:00',
-    bookerUserId: 'u_102',
-    bookerName: '강동원',
-    bookerNickname: '스나이퍼강',
-    bookerPhone: '010-8771-9921',
-    playerCount: 1,
-    totalAmount: 35000,
-    paymentStatus: 'paid',
-    checkInStatus: 'checked_in',
-    checkInTime: '09:50',
-    playerMannerScore: 4.88,
-    playerReportCount: 0,
-    isFirstTimer: false,
-    rentalOrders: [],
-    createdAt: '2026-09-08 19:10'
-  },
-  {
-    id: 'bk_003',
-    bookingNumber: 'HIT-260909-1002',
-    slotId: 'slt_01',
-    fieldId: 'fld_01',
-    date: '2026-09-09',
-    slotTitle: '오전 CQB & 야외 정기전 (1부)',
-    startTime: '10:00',
-    endTime: '13:00',
-    bookerUserId: 'u_103',
-    bookerName: '정우성',
-    bookerNickname: '블루베레',
-    bookerPhone: '010-9982-3341',
-    playerCount: 6,
-    totalAmount: 210000,
-    paymentStatus: 'paid',
-    checkInStatus: 'pending',
-    playerMannerScore: 4.72,
-    playerReportCount: 1,
-    isFirstTimer: false,
-    rentalOrders: [
-      { productId: 'p_02', productName: '도쿄마루이 M4A1 MWS GBB 풀세트', category: 'GBBR', quantity: 3, unitPrice: 30000 }
-    ],
-    createdAt: '2026-09-08 21:05'
-  },
-  {
-    id: 'bk_004',
-    bookingNumber: 'HIT-260909-1044',
-    slotId: 'slt_02',
-    fieldId: 'fld_01',
-    date: '2026-09-09',
-    slotTitle: '오후 스피드CQB + 시나리오전 (2부)',
-    startTime: '14:00',
-    endTime: '18:00',
-    bookerUserId: 'u_104',
-    bookerName: '한소희',
-    bookerNickname: '발키리Q',
-    bookerPhone: '010-2231-7789',
-    playerCount: 2,
-    totalAmount: 80000,
-    paymentStatus: 'paid',
-    checkInStatus: 'pending',
-    playerMannerScore: 5.0,
-    playerReportCount: 0,
-    isFirstTimer: true,
-    rentalOrders: [
-      { productId: 'p_03', productName: 'Dye i5 풀페이스 프로텍션 고글', category: '보호구', quantity: 2, unitPrice: 10000 }
-    ],
-    createdAt: '2026-09-09 08:30'
-  },
-  {
-    id: 'bk_005',
-    bookingNumber: 'HIT-260909-1120',
-    slotId: 'slt_02',
-    fieldId: 'fld_01',
-    date: '2026-09-09',
-    slotTitle: '오후 스피드CQB + 시나리오전 (2부)',
-    startTime: '14:00',
-    endTime: '18:00',
-    bookerUserId: 'u_105',
-    bookerName: '김태원',
-    bookerNickname: '폭풍노도',
-    bookerPhone: '010-5512-9901',
-    playerCount: 3,
-    totalAmount: 120000,
-    paymentStatus: 'paid',
-    checkInStatus: 'pending',
-    playerMannerScore: 3.82,
-    playerReportCount: 3,
-    isFirstTimer: false,
-    rentalOrders: [],
-    createdAt: '2026-09-09 09:12'
-  }
-];
+// 가상 고객 예약 리스트 삭제 완료 (실제 예약 데이터만 등록/조회)
+export const initialBookings: BookingItem[] = [];
 
-export const initialMannerProfiles: Record<string, PlayerMannerProfile> = {
-  'u_101': {
-    userId: 'u_101',
-    nickname: '고스트리퍼',
-    realName: '이진우',
-    phone: '010-4492-1184',
-    mannerScore: 4.95,
-    totalGames: 48,
-    warningCount: 0,
-    noShowCount: 0,
-    badges: ['🎖️ 매너 챌린저', '🛡️ 안전 최우수 플레이어', '🤝 초심자 도우미'],
-    recentTags: ['칼같은 히트콜', '친절한 룰 안내', '정확한 탄속 준수'],
-    isBlacklisted: false
-  },
-  'u_103': {
-    userId: 'u_103',
-    nickname: '블루베레',
-    realName: '정우성',
-    phone: '010-9982-3341',
-    mannerScore: 4.72,
-    totalGames: 26,
-    warningCount: 1,
-    noShowCount: 0,
-    badges: ['🎖️ 정기전 개근상'],
-    recentTags: ['에너지 넘침', '근거리 뱅룰 주의 요망'],
-    isBlacklisted: false,
-    notes: '2026-07 사거리 오판으로 경고 1회 있었으나 즉시 사과 완료'
-  },
-  'u_105': {
-    userId: 'u_105',
-    nickname: '폭풍노도',
-    realName: '김태원',
-    phone: '010-5512-9901',
-    mannerScore: 3.82,
-    totalGames: 12,
-    warningCount: 3,
-    noShowCount: 2,
-    badges: ['⚠️ 주의 요망 플레이어'],
-    recentTags: ['좀비 의심 신고 2건', '세이프티 존 탄창 탈착 지연'],
-    isBlacklisted: false,
-    notes: '체크인 시 탄속 및 안전 수칙 1:1 재확인 권장'
-  },
-  'u_104': {
-    userId: 'u_104',
-    nickname: '발키리Q',
-    realName: '한소희',
-    phone: '010-2231-7789',
-    mannerScore: 5.0,
-    totalGames: 1,
-    warningCount: 0,
-    noShowCount: 0,
-    badges: ['🌱 첫 게임 뉴비'],
-    recentTags: ['첫 방문', '교육 필요'],
-    isBlacklisted: false
-  }
-};
+// 가상 플레이어 매너 프로필 삭제 완료
+export const initialMannerProfiles: Record<string, PlayerMannerProfile> = {};
 
 export const initialRentalProducts: RentalProduct[] = [
   {
@@ -351,7 +145,7 @@ export const initialRentalProducts: RentalProduct[] = [
     name: 'VFC HK416A5 Gen3 GBBR 풀세트',
     category: 'gbbr',
     totalStock: 15,
-    rentedCount: 11,
+    rentedCount: 0,
     rentalPrice: 25000,
     status: 'available',
     imageUrl: 'https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=600&auto=format&fit=crop&q=80',
@@ -364,9 +158,9 @@ export const initialRentalProducts: RentalProduct[] = [
     name: '도쿄마루이 M4A1 MWS ZET System GBB',
     category: 'gbbr',
     totalStock: 10,
-    rentedCount: 10,
+    rentedCount: 0,
     rentalPrice: 30000,
-    status: 'rented_out',
+    status: 'available',
     imageUrl: 'https://images.unsplash.com/photo-1584281722572-881c3d18ba22?w=600&auto=format&fit=crop&q=80',
     spec: '최고의 작동성과 집탄성, 도트사이트 기본 세팅',
     targetFields: ['fld_01']
@@ -377,7 +171,7 @@ export const initialRentalProducts: RentalProduct[] = [
     name: 'Dye i5 써멀 렌즈 풀페이스 마스크',
     category: 'protection',
     totalStock: 30,
-    rentedCount: 18,
+    rentedCount: 0,
     rentalPrice: 10000,
     status: 'available',
     imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
@@ -390,198 +184,16 @@ export const initialRentalProducts: RentalProduct[] = [
     name: 'HIT-IN 0.2g 정밀 바이오 BB탄 (4000발)',
     category: 'ammo_gas',
     totalStock: 120,
-    rentedCount: 35,
+    rentedCount: 0,
     rentalPrice: 15000,
     status: 'available',
     imageUrl: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?w=600&auto=format&fit=crop&q=80',
     spec: '자연분해 친환경 PLA 재질, 5.95mm ± 0.01mm 정밀도',
     targetFields: ['fld_01', 'fld_02']
-  },
-  {
-    id: 'p_05',
-    shopId: 'shp_01',
-    name: 'Puff Dino 파워 그린가스 (1000ml)',
-    category: 'ammo_gas',
-    totalStock: 80,
-    rentedCount: 22,
-    rentalPrice: 12000,
-    status: 'available',
-    imageUrl: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=600&auto=format&fit=crop&q=80',
-    spec: '실리콘 오일 함유, 12kg 압력 표준 가스',
-    targetFields: ['fld_01']
-  },
-  {
-    id: 'p_06',
-    shopId: 'shp_01',
-    name: '아레스 아메바 M4 AEG 전자트리거 전동건',
-    category: 'aeg',
-    totalStock: 20,
-    rentedCount: 6,
-    rentalPrice: 20000,
-    status: 'available',
-    imageUrl: 'https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=600&auto=format&fit=crop&q=80',
-    spec: '11.1v 리포 배터리 + 스마트 충전기 대여 포함',
-    targetFields: ['fld_01']
   }
 ];
 
-export const initialSettlements: SettlementRecord[] = [
-  {
-    id: 'stl_260901',
-    partnerId: 'fld_01',
-    partnerName: '플래툰 아레나 경기 광주점',
-    partnerType: 'field',
-    period: '2026년 09월 1주차 (09.01~09.07)',
-    grossSales: 8420000,
-    platformFeeRate: 0.08,
-    platformFeeAmount: 673600,
-    netPayout: 7746400,
-    payoutStatus: 'scheduled',
-    payoutDate: '2026-09-12 (금)',
-    bookingCount: 142
-  },
-  {
-    id: 'stl_260804',
-    partnerId: 'fld_01',
-    partnerName: '플래툰 아레나 경기 광주점',
-    partnerType: 'field',
-    period: '2026년 08월 4주차 (08.24~08.31)',
-    grossSales: 11250000,
-    platformFeeRate: 0.08,
-    platformFeeAmount: 900000,
-    netPayout: 10350000,
-    payoutStatus: 'paid',
-    payoutDate: '2026-09-05 (지급완료)',
-    bookingCount: 188
-  },
-  {
-    id: 'stl_260803',
-    partnerId: 'fld_01',
-    partnerName: '플래툰 아레나 경기 광주점',
-    partnerType: 'field',
-    period: '2026년 08월 3주차 (08.17~08.23)',
-    grossSales: 9600000,
-    platformFeeRate: 0.08,
-    platformFeeAmount: 768000,
-    netPayout: 8832000,
-    payoutStatus: 'paid',
-    payoutDate: '2026-08-28 (지급완료)',
-    bookingCount: 160
-  },
-  {
-    id: 'stl_shp_260901',
-    partnerId: 'shp_01',
-    partnerName: '건스미스 서울본점',
-    partnerType: 'shop',
-    period: '2026년 09월 1주차 (09.01~09.07)',
-    grossSales: 3450000,
-    platformFeeRate: 0.05,
-    platformFeeAmount: 172500,
-    netPayout: 3277500,
-    payoutStatus: 'scheduled',
-    payoutDate: '2026-09-12 (금)',
-    bookingCount: 86
-  }
-];
+export const initialSettlements: SettlementRecord[] = [];
 
-export const initialClientPartners: ClientPartner[] = [
-  {
-    id: 'fld_01',
-    name: '플래툰 아레나 경기 광주점',
-    type: 'field',
-    representative: '김태식',
-    phone: '010-8921-4432',
-    email: 'field_manager@platoon.kr',
-    region: '경기 광주',
-    address: '경기도 광주시 오포읍 태재로 142',
-    status: 'active',
-    contractDate: '2025-11-15',
-    commissionRate: 0.08,
-    totalRevenue: 142000000,
-    monthlyRevenue: 38500000,
-    activeSlotsCount: 18,
-    rating: 4.9
-  },
-  {
-    id: 'fld_02',
-    name: '블랙옵스 CQB 김포점',
-    type: 'field',
-    representative: '정민호',
-    phone: '010-9871-2231',
-    email: 'blackops_gimpo@gmail.com',
-    region: '경기 김포',
-    address: '경기도 김포시 양촌읍 황금로 88-12',
-    status: 'active',
-    contractDate: '2026-01-20',
-    commissionRate: 0.08,
-    totalRevenue: 89000000,
-    monthlyRevenue: 24000000,
-    activeSlotsCount: 12,
-    rating: 4.7
-  },
-  {
-    id: 'fld_03',
-    name: '택티컬 베이스 용인 마운틴',
-    type: 'field',
-    representative: '유상철',
-    phone: '010-3341-9002',
-    email: 'tactical_yongin@naver.com',
-    region: '경기 용인',
-    address: '경기도 용인시 처인구 백암면 원설로 300',
-    status: 'pending_approval',
-    contractDate: '2026-09-02',
-    commissionRate: 0.08,
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    activeSlotsCount: 0,
-    rating: 0.0
-  },
-  {
-    id: 'shp_01',
-    name: '건스미스 서울본점',
-    type: 'shop',
-    representative: '박성호',
-    phone: '010-3329-8812',
-    email: 'contact@gunsmith.co.kr',
-    region: '서울 영등포',
-    address: '서울특별시 영등포구 경인로 775',
-    status: 'active',
-    contractDate: '2025-12-01',
-    commissionRate: 0.05,
-    totalRevenue: 64000000,
-    monthlyRevenue: 16500000,
-    rating: 4.95
-  },
-  {
-    id: 'shp_02',
-    name: '알파 택티컬 기어 & 아머리',
-    type: 'shop',
-    representative: '최성훈',
-    phone: '010-6671-8890',
-    email: 'alphatactical@daum.net',
-    region: '인천 부평',
-    address: '인천광역시 부평구 부평대로 24',
-    status: 'active',
-    contractDate: '2026-03-10',
-    commissionRate: 0.05,
-    totalRevenue: 42000000,
-    monthlyRevenue: 11200000,
-    rating: 4.8
-  },
-  {
-    id: 'shp_03',
-    name: '밀리터리 하이퍼샵 대전',
-    type: 'shop',
-    representative: '강대현',
-    phone: '010-7712-4456',
-    email: 'hypershop_dj@naver.com',
-    region: '대전 유성',
-    address: '대전광역시 유성구 대학로 99',
-    status: 'pending_approval',
-    contractDate: '2026-09-05',
-    commissionRate: 0.05,
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    rating: 0.0
-  }
-];
+// 가상 고객사(입점사) 리스트 삭제 완료 (실제 입점 파트너만 관리)
+export const initialClientPartners: ClientPartner[] = [];

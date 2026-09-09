@@ -11,8 +11,9 @@ import {
   Sparkles,
   Layers,
   ShoppingBag,
-  ExternalLink,
-  ChevronRight
+  LogOut,
+  LogIn,
+  UserCheck
 } from 'lucide-react';
 import { usePartner, NavTab } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
@@ -74,9 +75,14 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { role, user, activeTab, setActiveTab, setRole } = usePartner();
+  const { role, user, activeTab, setActiveTab, setRole, logout, showToast } = usePartner();
 
   const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.includes(role));
+
+  const handleLogout = () => {
+    logout();
+    showToast('안전하게 로그아웃되었습니다.', 'info');
+  };
 
   return (
     <aside style={{
@@ -267,37 +273,120 @@ export const Sidebar: React.FC = () => {
             </button>
           );
         })}
+
+        {/* Auth & Account Management Section in Sidebar */}
+        <div style={{
+          fontSize: '11px',
+          fontWeight: 600,
+          color: 'var(--dim)',
+          textTransform: 'uppercase',
+          padding: '16px 8px 4px',
+          letterSpacing: '0.05em',
+          borderTop: '1px solid var(--line)',
+          marginTop: '8px'
+        }}>
+          계정 및 인증 관리
+        </div>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '10px 12px',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid transparent',
+            background: 'transparent',
+            color: 'var(--danger)',
+            cursor: 'pointer',
+            textAlign: 'left',
+            transition: 'all 0.15s ease',
+            fontWeight: 600
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = 'rgba(255, 77, 79, 0.1)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255, 77, 79, 0.3)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+            (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <LogOut size={18} color="var(--danger)" />
+            <span style={{ fontSize: '13.5px' }}>로그아웃</span>
+          </div>
+          <span className="badge badge-outline" style={{ fontSize: '10px', color: 'var(--danger)', borderColor: 'rgba(255,77,79,0.3)' }}>
+            종료
+          </span>
+        </button>
       </nav>
 
-      {/* Partner Info Footer */}
+      {/* Partner Info & Logout Footer */}
       <div style={{
         padding: 'var(--space-md) var(--space-lg)',
         borderTop: '1px solid var(--line)',
         backgroundColor: 'var(--panel)',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px'
+        justifyContent: 'space-between',
+        gap: '8px'
       }}>
-        <img 
-          src={user.avatarUrl} 
-          alt={user.name} 
-          style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: 'var(--radius-pill)',
-            objectFit: 'cover',
-            border: '2px solid var(--line)'
-          }}
-        />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--txt)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {user.businessName}
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--mut)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--green)', display: 'inline-block' }} />
-            {user.name} ({role === 'hq_admin' ? '운영본부' : '정상영업'})
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+          <img 
+            src={user.avatarUrl} 
+            alt={user.name} 
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: 'var(--radius-pill)',
+              objectFit: 'cover',
+              border: '2px solid var(--line)',
+              flexShrink: 0
+            }}
+          />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--txt)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {user.businessName}
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--mut)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--green)', display: 'inline-block' }} />
+              {user.name}
+            </div>
           </div>
         </div>
+
+        <button
+          onClick={handleLogout}
+          title="로그아웃"
+          style={{
+            background: 'var(--card)',
+            border: '1px solid var(--line)',
+            color: 'var(--mut)',
+            cursor: 'pointer',
+            padding: '7px 10px',
+            borderRadius: 'var(--radius-md)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            transition: 'all 0.15s ease',
+            flexShrink: 0,
+            fontSize: '11px',
+            fontWeight: 600
+          }}
+          onMouseEnter={e => { 
+            (e.currentTarget as HTMLElement).style.color = 'var(--danger)'; 
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--danger)'; 
+          }}
+          onMouseLeave={e => { 
+            (e.currentTarget as HTMLElement).style.color = 'var(--mut)'; 
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)'; 
+          }}
+        >
+          <LogOut size={13} />
+          <span>로그아웃</span>
+        </button>
       </div>
     </aside>
   );

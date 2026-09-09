@@ -17,6 +17,14 @@ interface ToastNotification {
   message: string;
 }
 
+interface LoginPayload {
+  email: string;
+  role: PartnerRole;
+  businessName?: string;
+  name?: string;
+  partnerId?: string;
+}
+
 interface PartnerContextType {
   role: PartnerRole;
   user: PartnerUser;
@@ -24,6 +32,9 @@ interface PartnerContextType {
   activeTab: NavTab;
   refreshKey: number;
   toasts: ToastNotification[];
+  isAuthenticated: boolean;
+  login: (payload: LoginPayload) => void;
+  logout: () => void;
   setRole: (role: PartnerRole) => void;
   toggleTheme: () => void;
   setActiveTab: (tab: NavTab) => void;
@@ -35,6 +46,10 @@ interface PartnerContextType {
 const PartnerContext = createContext<PartnerContextType | null>(null);
 
 export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('hitin_partner_auth') !== 'false';
+  });
+
   const [role, setRoleState] = useState<PartnerRole>(() => {
     return (localStorage.getItem('hitin_partner_role') as PartnerRole) || 'field_owner';
   });
@@ -59,12 +74,50 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [role]);
 
   const user = useMemo(() => {
-    return initialPartnerUsers.find(u => u.role === role) || initialPartnerUsers[0];
-  }, [role]);
+    const defaultUser = initialPartnerUsers.find(u => u.role === role) || initialPartnerUsers[0];
+    const storedUser = localStorage.getItem('hitin_custom_user');
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed.role === role) return parsed;
+      } catch {}
+    }
+    return defaultUser;
+  }, [role, refreshKey]);
+
+  const login = useCallback((payload: LoginPayload) => {
+    setIsAuthenticated(true);
+    setRoleState(payload.role);
+    localStorage.setItem('hitin_partner_auth', 'true');
+    localStorage.setItem('hitin_partner_role', payload.role);
+
+    if (payload.businessName) {
+      const customUser: PartnerUser = {
+        id: `usr_${payload.role}_${Date.now()}`,
+        name: payload.name || '파트너 대표',
+        email: payload.email,
+        role: payload.role,
+        businessName: payload.businessName,
+        businessNumber: '124-86-90123',
+        phone: '010-8921-4432',
+        partnerId: payload.partnerId || 'fld_01',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+      };
+      localStorage.setItem('hitin_custom_user', JSON.stringify(customUser));
+    }
+
+    setActiveTabState('dashboard');
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
+  const logout = useCallback(() => {
+    setIsAuthenticated(false);
+    localStorage.setItem('hitin_partner_auth', 'false');
+    localStorage.removeItem('hitin_custom_user');
+  }, []);
 
   const setRole = useCallback((newRole: PartnerRole) => {
     setRoleState(newRole);
-    // Reset to dashboard when switching roles
     setActiveTabState('dashboard');
   }, []);
 
@@ -102,6 +155,9 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         activeTab,
         refreshKey,
         toasts,
+        isAuthenticated,
+        login,
+        logout,
         setRole,
         toggleTheme,
         setActiveTab,

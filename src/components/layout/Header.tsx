@@ -6,7 +6,8 @@ import {
   PlusCircle, 
   RotateCcw,
   Activity,
-  CheckCircle2
+  CheckCircle2,
+  LogOut
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerService } from '../../services/partnerService';
@@ -22,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddSlot,
   onOpenAddProduct 
 }) => {
-  const { role, user, theme, activeTab, toggleTheme, setActiveTab, showToast, triggerRefresh } = usePartner();
+  const { role, user, theme, activeTab, toggleTheme, setActiveTab, showToast, triggerRefresh, logout } = usePartner();
   const [timeStr, setTimeStr] = useState<string>('');
   const [isApiOnline, setIsApiOnline] = useState<boolean>(true);
 
@@ -239,7 +240,19 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <RotateCcw size={15} />
         </button>
+
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          title="로그아웃"
+          className="btn btn-secondary btn-sm"
+          style={{ gap: '6px', fontSize: '12px' }}
+        >
+          <LogOut size={14} />
+          로그아웃
+        </button>
       </div>
     </header>
   );
 };
+

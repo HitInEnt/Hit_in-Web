@@ -13,6 +13,9 @@ import { ShopInventoryView } from './features/shop/ShopInventoryView';
 import { SettlementView } from './features/settlement/SettlementView';
 import { HqClientsView } from './features/hq/HqClientsView';
 
+// Auth
+import { LoginView } from './features/auth/LoginView';
+
 // Modals
 import { QuickCheckInModal } from './components/common/QuickCheckInModal';
 import { CreateSlotModal } from './components/common/CreateSlotModal';
@@ -23,7 +26,7 @@ import { TimeSlot } from './types';
 import { PartnerService } from './services/partnerService';
 
 const PartnerAppInner: React.FC = () => {
-  const { activeTab, role, user, refreshKey } = usePartner();
+  const { activeTab, role, user, refreshKey, isAuthenticated } = usePartner();
 
   // Modal States
   const [isQuickCheckInOpen, setIsQuickCheckInOpen] = useState(false);
@@ -91,6 +94,15 @@ const PartnerAppInner: React.FC = () => {
         );
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <LoginView />
+        <ToastContainer />
+      </>
+    );
+  }
 
   return (
     <div className="app-layout">

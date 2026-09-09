@@ -25,13 +25,13 @@ const API_BASE_URL =
   'http://49.247.131.154/api/v1';
 
 const STORAGE_KEYS = {
-  SLOTS: 'hitin_partner_slots_v1',
-  BOOKINGS: 'hitin_partner_bookings_v1',
-  PROFILES: 'hitin_partner_profiles_v1',
-  PRODUCTS: 'hitin_partner_products_v1',
-  SETTLEMENTS: 'hitin_partner_settlements_v1',
-  CLIENTS: 'hitin_partner_clients_v1',
-  FIELDS: 'hitin_partner_fields_v1'
+  SLOTS: 'hitin_partner_slots_v2',
+  BOOKINGS: 'hitin_partner_bookings_v2',
+  PROFILES: 'hitin_partner_profiles_v2',
+  PRODUCTS: 'hitin_partner_products_v2',
+  SETTLEMENTS: 'hitin_partner_settlements_v2',
+  CLIENTS: 'hitin_partner_clients_v2',
+  FIELDS: 'hitin_partner_fields_v2'
 };
 
 function getStorage<T>(key: string, fallback: T): T {
