@@ -31,11 +31,17 @@ const PartnerAppInner: React.FC = () => {
   // Modal States
   const [isQuickCheckInOpen, setIsQuickCheckInOpen] = useState(false);
   const [isAddSlotOpen, setIsAddSlotOpen] = useState(false);
+  const [slotModalDate, setSlotModalDate] = useState<string | undefined>(undefined);
   const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [inspectedUserId, setInspectedUserId] = useState<string | null>(null);
 
   const [bookingSlotsForModal, setBookingSlotsForModal] = useState<TimeSlot[]>([]);
+
+  const handleOpenAddSlot = (date?: string) => {
+    setSlotModalDate(date);
+    setIsAddSlotOpen(true);
+  };
 
   const handleOpenManualBooking = (slots: TimeSlot[]) => {
     setBookingSlotsForModal(slots);
@@ -52,7 +58,7 @@ const PartnerAppInner: React.FC = () => {
         return (
           <DashboardView
             onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
-            onOpenAddSlot={() => setIsAddSlotOpen(true)}
+            onOpenAddSlot={() => handleOpenAddSlot()}
             onOpenAddProduct={() => setIsAddProductOpen(true)}
             onInspectPlayer={handleInspectPlayer}
           />
@@ -60,7 +66,7 @@ const PartnerAppInner: React.FC = () => {
       case 'bookings':
         return (
           <BookingsView
-            onOpenAddSlot={() => setIsAddSlotOpen(true)}
+            onOpenAddSlot={handleOpenAddSlot}
             onOpenManualBooking={handleOpenManualBooking}
             onInspectPlayer={handleInspectPlayer}
           />
@@ -87,7 +93,7 @@ const PartnerAppInner: React.FC = () => {
         return (
           <DashboardView
             onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
-            onOpenAddSlot={() => setIsAddSlotOpen(true)}
+            onOpenAddSlot={() => handleOpenAddSlot()}
             onOpenAddProduct={() => setIsAddProductOpen(true)}
             onInspectPlayer={handleInspectPlayer}
           />
@@ -114,7 +120,7 @@ const PartnerAppInner: React.FC = () => {
         {/* Header */}
         <Header
           onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
-          onOpenAddSlot={() => setIsAddSlotOpen(true)}
+          onOpenAddSlot={() => handleOpenAddSlot()}
           onOpenAddProduct={() => setIsAddProductOpen(true)}
         />
 
@@ -134,7 +140,11 @@ const PartnerAppInner: React.FC = () => {
 
       <CreateSlotModal
         isOpen={isAddSlotOpen}
-        onClose={() => setIsAddSlotOpen(false)}
+        onClose={() => {
+          setIsAddSlotOpen(false);
+          setSlotModalDate(undefined);
+        }}
+        initialDate={slotModalDate}
       />
 
       <ManualBookingModal

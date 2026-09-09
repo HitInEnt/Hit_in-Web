@@ -7,6 +7,7 @@ import { GameType } from '../../types';
 interface CreateSlotModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialDate?: string;
 }
 
 const GAME_TYPES: GameType[] = [
@@ -18,10 +19,10 @@ const GAME_TYPES: GameType[] = [
   '팀 단독 대관'
 ];
 
-export const CreateSlotModal: React.FC<CreateSlotModalProps> = ({ isOpen, onClose }) => {
+export const CreateSlotModal: React.FC<CreateSlotModalProps> = ({ isOpen, onClose, initialDate }) => {
   const { user, showToast, triggerRefresh } = usePartner();
 
-  const [date, setDate] = useState('2026-09-10');
+  const [date, setDate] = useState(initialDate || '2026-09-09');
   const [startTime, setStartTime] = useState('14:00');
   const [endTime, setEndTime] = useState('18:00');
   const [title, setTitle] = useState('');
@@ -29,6 +30,12 @@ export const CreateSlotModal: React.FC<CreateSlotModalProps> = ({ isOpen, onClos
   const [maxPlayers, setMaxPlayers] = useState(40);
   const [pricePerPerson, setPricePerPerson] = useState(35000);
   const [notes, setNotes] = useState('');
+
+  React.useEffect(() => {
+    if (initialDate) {
+      setDate(initialDate);
+    }
+  }, [initialDate, isOpen]);
 
   if (!isOpen) return null;
 
