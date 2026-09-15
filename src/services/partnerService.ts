@@ -323,6 +323,46 @@ export class PartnerService {
     return getStorage<ClientPartner[]>(STORAGE_KEYS.CLIENTS, initialClientPartners);
   }
 
+  static addClient(client: Omit<ClientPartner, 'id' | 'contractDate' | 'totalRevenue' | 'monthlyRevenue' | 'rating'>): ClientPartner {
+    const clients = this.getClients();
+    const prefix = client.type === 'field' ? 'fld' : client.type === 'shop' ? 'shp' : 'hq';
+    const created: ClientPartner = {
+      ...client,
+      id: `${prefix}_${Date.now().toString().slice(-4)}`,
+      contractDate: new Date().toISOString().slice(0, 10),
+      totalRevenue: 0,
+      monthlyRevenue: 0,
+      rating: 5.0
+    };
+    const updated = [created, ...clients];
+    setStorage(STORAGE_KEYS.CLIENTS, updated);
+
+    fetch(`${API_BASE_URL}/clients`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(created)
+    }).catch(err => console.warn('[API] Sync add client error:', err));
+
+    return created;
+  }
+
+  static updateClient(id: string, updates: Partial<ClientPartner>): ClientPartner | null {
+    const clients = this.getClients();
+    const idx = clients.findIndex(c => c.id === id);
+    if (idx === -1) return null;
+    clients[idx] = { ...clients[idx], ...updates };
+    setStorage(STORAGE_KEYS.CLIENTS, clients);
+
+    // Sync to API
+    fetch(`${API_BASE_URL}/clients/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    }).catch(err => console.warn('[API] Sync update client error:', err));
+
+    return clients[idx];
+  }
+
   static updateClientStatus(id: string, status: ClientPartner['status'], commissionRate?: number): ClientPartner | null {
     const clients = this.getClients();
     const idx = clients.findIndex(c => c.id === id);
@@ -341,6 +381,58 @@ export class PartnerService {
     }).catch(err => console.warn('[API] Sync client status error:', err));
 
     return clients[idx];
+  }
+
+  static deleteClient(id: string): boolean {
+    const clients = this.getClients();
+    const filtered = clients.filter(c => c.id !== id);
+    if (filtered.length === clients.length) return false;
+    setStorage(STORAGE_KEYS.CLIENTS, filtered);
+
+    fetch(`${API_BASE_URL}/clients/${id}`, {
+      method: 'DELETE'
+    }).catch(err => console.warn('[API] Sync delete client error:', err));
+
+    return true;
+  }
+
+  static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string }): void {
+    if (user.role === 'hq_admin') return; // Do not register HQ admin as merchant client
+    const clients = this.getClients();
+    const type = user.role === 'field_owner' ? 'field' : 'shop';
+    const partnerId = user.partnerId || user.id;
+
+    const existingIdx = clients.findIndex(c => c.id === partnerId || c.email === user.email);
+    if (existingIdx !== -1) {
+      clients[existingIdx] = {
+        ...clients[existingIdx],
+        name: user.businessName || clients[existingIdx].name,
+        representative: user.name || clients[existingIdx].representative,
+        phone: user.phone || clients[existingIdx].phone,
+        email: user.email || clients[existingIdx].email,
+        businessNumber: user.businessNumber || clients[existingIdx].businessNumber
+      };
+      setStorage(STORAGE_KEYS.CLIENTS, clients);
+    } else {
+      const newClient: ClientPartner = {
+        id: partnerId,
+        name: user.businessName || `${user.name} 파트너`,
+        type,
+        representative: user.name,
+        phone: user.phone || '',
+        email: user.email,
+        businessNumber: user.businessNumber || '',
+        region: '경기/수도권',
+        address: '',
+        status: 'active',
+        contractDate: new Date().toISOString().slice(0, 10),
+        commissionRate: 0.08,
+        totalRevenue: 0,
+        monthlyRevenue: 0,
+        rating: 5.0
+      };
+      setStorage(STORAGE_KEYS.CLIENTS, [newClient, ...clients]);
+    }
   }
 
   // --- Field Info ---

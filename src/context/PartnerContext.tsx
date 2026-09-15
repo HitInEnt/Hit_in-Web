@@ -173,6 +173,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     localStorage.setItem('hitin_custom_user', JSON.stringify(customUser));
     setUser(customUser);
+    PartnerService.syncUserToClient(customUser);
 
     setActiveTabState('dashboard');
     setRefreshKey(prev => prev + 1);
@@ -196,6 +197,8 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (updated.businessName && nextUser.partnerId) {
         PartnerService.updateField(nextUser.partnerId, { name: updated.businessName });
       }
+
+      PartnerService.syncUserToClient(nextUser);
 
       return nextUser;
     });

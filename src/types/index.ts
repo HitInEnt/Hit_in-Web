@@ -187,20 +187,22 @@ export type ClientStatus = 'active' | 'pending_approval' | 'suspended';
 
 export interface ClientPartner {
   id: string;
-  name: string;
-  type: 'field' | 'shop';
-  representative: string;
-  phone: string;
-  email: string;
-  region: string;
-  address: string;
-  status: ClientStatus;
-  contractDate: string;
-  commissionRate: number; // e.g. 0.08
+  name: string; // 상호명
+  type: 'field' | 'shop' | 'hq'; // 가입분야
+  representative: string; // 대표자 성명
+  phone: string; // 대표 연락처
+  email: string; // 로그인 이메일
+  businessNumber?: string; // 사업자등록번호
+  region: string; // 지역
+  address?: string; // 상세 주소
+  status: ClientStatus; // 가맹 상태
+  contractDate: string; // 계약일/등록일
+  commissionRate: number; // 수수료율 (e.g. 0.08)
   totalRevenue: number;
   monthlyRevenue: number;
   activeSlotsCount?: number;
   rating: number;
+  notes?: string; // 본사 관리 메모
 }
 
 
