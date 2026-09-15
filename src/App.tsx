@@ -24,11 +24,12 @@ import { CreateSlotModal } from './components/common/CreateSlotModal';
 import { ManualBookingModal } from './components/common/ManualBookingModal';
 import { CreateProductModal } from './components/common/CreateProductModal';
 import { PlayerMannerModal } from './components/common/PlayerMannerModal';
+import { ProfileEditModal } from './components/common/ProfileEditModal';
 import { TimeSlot } from './types';
 import { PartnerService } from './services/partnerService';
 
 const PartnerAppInner: React.FC = () => {
-  const { activeTab, role, user, refreshKey, isAuthenticated } = usePartner();
+  const { activeTab, role, user, refreshKey, isAuthenticated, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
 
   // Modal States
   const [isQuickCheckInOpen, setIsQuickCheckInOpen] = useState(false);
@@ -168,6 +169,11 @@ const PartnerAppInner: React.FC = () => {
       <PlayerMannerModal
         userId={inspectedUserId}
         onClose={() => setInspectedUserId(null)}
+      />
+
+      <ProfileEditModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
       />
     </div>
   );

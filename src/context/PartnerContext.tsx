@@ -42,6 +42,8 @@ interface PartnerContextType {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
   toggleMobileMenu: () => void;
+  isProfileModalOpen: boolean;
+  setIsProfileModalOpen: (open: boolean) => void;
   login: (payload: LoginPayload) => void;
   updateProfile: (updated: Partial<PartnerUser>) => void;
   logout: () => void;
@@ -55,28 +57,38 @@ interface PartnerContextType {
 
 const PartnerContext = createContext<PartnerContextType | null>(null);
 
-const getUserForRole = (r: PartnerRole): PartnerUser => {
+const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => {
   const defaultUser = initialPartnerUsers.find(u => u.role === r) || initialPartnerUsers[0];
-  const roleSpecific = localStorage.getItem(`hitin_custom_user_${r}`);
-  if (roleSpecific) {
-    try {
-      const parsed = JSON.parse(roleSpecific);
-      if (parsed.avatarUrl && parsed.avatarUrl.includes('images.unsplash.com/photo-')) {
-        parsed.avatarUrl = defaultUser.avatarUrl;
-      }
-      return parsed;
-    } catch {}
+
+  // 1. Check if email-specific saved profile exists
+  if (specificEmail) {
+    const emailStored = localStorage.getItem(`hitin_custom_user_email_${specificEmail}`);
+    if (emailStored) {
+      try {
+        const parsed = JSON.parse(emailStored);
+        if (parsed.role === r) return parsed;
+      } catch {}
+    }
   }
+
+  // 2. Check general active custom user
   const generalStored = localStorage.getItem('hitin_custom_user');
   if (generalStored) {
     try {
       const parsed = JSON.parse(generalStored);
-      if (parsed.avatarUrl && parsed.avatarUrl.includes('images.unsplash.com/photo-')) {
-        parsed.avatarUrl = defaultUser.avatarUrl;
-      }
       if (parsed.role === r) return parsed;
     } catch {}
   }
+
+  // 3. Check role-specific custom user
+  const roleSpecific = localStorage.getItem(`hitin_custom_user_${r}`);
+  if (roleSpecific) {
+    try {
+      const parsed = JSON.parse(roleSpecific);
+      return parsed;
+    } catch {}
+  }
+
   return defaultUser;
 };
 
@@ -99,6 +111,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(prev => !prev);
@@ -126,20 +139,38 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('hitin_partner_auth', 'true');
     localStorage.setItem('hitin_partner_role', payload.role);
 
+    // 1. Look up any previously edited profile for this email or role
+    let existingProfile: PartnerUser | null = null;
+    if (payload.email) {
+      const byEmail = localStorage.getItem(`hitin_custom_user_email_${payload.email}`);
+      if (byEmail) {
+        try { existingProfile = JSON.parse(byEmail); } catch {}
+      }
+    }
+    if (!existingProfile) {
+      const byRole = localStorage.getItem(`hitin_custom_user_${payload.role}`);
+      if (byRole) {
+        try { existingProfile = JSON.parse(byRole); } catch {}
+      }
+    }
+
     const defaultForRole = initialPartnerUsers.find(u => u.role === payload.role) || initialPartnerUsers[0];
     const customUser: PartnerUser = {
-      id: `usr_${payload.role}_${Date.now()}`,
-      name: payload.name || defaultForRole.name,
-      email: payload.email,
+      id: existingProfile?.id || `usr_${payload.role}_${Date.now()}`,
+      name: existingProfile?.name || payload.name || defaultForRole.name,
+      email: payload.email || existingProfile?.email || defaultForRole.email,
       role: payload.role,
-      businessName: payload.businessName || defaultForRole.businessName,
-      businessNumber: '124-86-90123',
-      phone: '010-8921-4432',
-      partnerId: payload.partnerId || defaultForRole.partnerId,
-      avatarUrl: payload.avatarUrl || defaultForRole.avatarUrl
+      businessName: existingProfile?.businessName || payload.businessName || defaultForRole.businessName,
+      businessNumber: existingProfile?.businessNumber || defaultForRole.businessNumber || '124-86-90123',
+      phone: existingProfile?.phone || defaultForRole.phone || '010-8921-4432',
+      partnerId: existingProfile?.partnerId || payload.partnerId || defaultForRole.partnerId,
+      avatarUrl: existingProfile?.avatarUrl || payload.avatarUrl || defaultForRole.avatarUrl
     };
 
     localStorage.setItem(`hitin_custom_user_${payload.role}`, JSON.stringify(customUser));
+    if (customUser.email) {
+      localStorage.setItem(`hitin_custom_user_email_${customUser.email}`, JSON.stringify(customUser));
+    }
     localStorage.setItem('hitin_custom_user', JSON.stringify(customUser));
     setUser(customUser);
 
@@ -153,7 +184,12 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...prev,
         ...updated
       };
+      // Persist across all relevant keys so edits remain permanent
       localStorage.setItem(`hitin_custom_user_${nextUser.role}`, JSON.stringify(nextUser));
+      if (nextUser.email) {
+        localStorage.setItem(`hitin_custom_user_email_${nextUser.email}`, JSON.stringify(nextUser));
+      }
+      localStorage.setItem(`hitin_custom_user_id_${nextUser.id}`, JSON.stringify(nextUser));
       localStorage.setItem('hitin_custom_user', JSON.stringify(nextUser));
 
       // Update field info if business name changed
@@ -170,7 +206,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const logout = useCallback(() => {
     setIsAuthenticated(false);
     localStorage.setItem('hitin_partner_auth', 'false');
-    localStorage.removeItem('hitin_custom_user');
+    // Keep custom profile data intact in hitin_custom_user_* so user edits are preserved!
   }, []);
 
   const setRole = useCallback((newRole: PartnerRole) => {
@@ -180,7 +216,6 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setActiveTabState('dashboard');
     setRefreshKey(prev => prev + 1);
   }, []);
-
 
   const toggleTheme = useCallback(() => {
     setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -216,6 +251,8 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isMobileMenuOpen,
         setIsMobileMenuOpen,
         toggleMobileMenu,
+        isProfileModalOpen,
+        setIsProfileModalOpen,
         login,
         updateProfile,
         logout,

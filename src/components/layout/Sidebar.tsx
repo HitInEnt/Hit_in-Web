@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 import { usePartner, NavTab } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
-import { ProfileEditModal } from '../common/ProfileEditModal';
 
 interface NavItem {
   id: NavTab;
@@ -87,8 +86,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { role, user, activeTab, setActiveTab, setRole, logout, showToast, isMobileMenuOpen, setIsMobileMenuOpen } = usePartner();
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const { role, user, activeTab, setActiveTab, setRole, logout, showToast, isMobileMenuOpen, setIsMobileMenuOpen, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
 
   const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.includes(role));
 
@@ -481,12 +479,6 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
       </aside>
-
-      {/* Profile Edit Modal */}
-      <ProfileEditModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-      />
     </>
   );
 };
