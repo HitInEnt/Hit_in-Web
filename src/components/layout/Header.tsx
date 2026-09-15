@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Sun, 
   Moon, 
-  QrCode, 
-  PlusCircle, 
   RotateCcw,
   Activity,
   CheckCircle2,
@@ -65,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'bookings':
         return { title: '타임슬롯 & 예약 관리', desc: '게임 슬롯 오픈/마감, 예약자 명단 및 승인 관리' };
       case 'checkin':
-        return { title: '현장 체크인 데스크', desc: '현장 도착 플레이어 QR/번호 조회 및 실시간 매너 점수 검증' };
+        return { title: '실시간 현장입장 관리', desc: '사용자 QR 등록 시 실시간 자동 카운팅 및 게이트 입장 현황' };
       case 'shop_inventory':
         return { title: '건샵 렌탈 장비 & 재고 관리', desc: '필드 연계 렌탈 총기, 보호구 및 비비탄/가스 소모품 수량' };
       case 'field_manage':
@@ -167,38 +165,6 @@ export const Header: React.FC<HeaderProps> = ({
         }}>
           <span className="mono-font">{timeStr}</span>
         </div>
-
-        {/* Quick Action Button per Role */}
-        {role === 'field_owner' && (
-          <button 
-            className="btn btn-lime btn-sm"
-            onClick={onOpenQuickCheckIn || (() => setActiveTab('checkin'))}
-          >
-            <QrCode size={15} />
-            현장 QR 체크인
-          </button>
-        )}
-
-        {role === 'field_owner' && onOpenAddSlot && (
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={onOpenAddSlot}
-          >
-            <PlusCircle size={15} />
-            슬롯 오픈
-          </button>
-        )}
-
-        {role === 'shop_owner' && onOpenAddProduct && (
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={onOpenAddProduct}
-          >
-            <PlusCircle size={15} />
-            상품 등록
-          </button>
-        )}
-
         {/* Theme Switcher */}
         <button
           onClick={toggleTheme}

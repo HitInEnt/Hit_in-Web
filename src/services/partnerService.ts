@@ -6,7 +6,10 @@ import {
   SettlementRecord, 
   ClientPartner, 
   FieldInfo,
-  CheckInStatus
+  CheckInStatus,
+  UserPointTransaction,
+  UserPointSummary,
+  PointReason
 } from '../types';
 import { 
   initialTimeSlots, 
@@ -15,14 +18,16 @@ import {
   initialRentalProducts, 
   initialSettlements, 
   initialClientPartners,
-  initialFields 
+  initialFields,
+  initialPointTransactions,
+  initialUserPointSummaries
 } from '../mock/mockData';
 
 const API_BASE_URL = 
+  import.meta.env.VITE_API_URL || 
   import.meta.env.VITE_API_BASE_URL || 
   import.meta.env.NEXT_PUBLIC_API_URL || 
-  import.meta.env.VITE_API_URL || 
-  'http://49.247.131.154/api/v1';
+  'https://api.hitin.kr/api/v1';
 
 const STORAGE_KEYS = {
   SLOTS: 'hitin_partner_slots_v2',
@@ -31,8 +36,11 @@ const STORAGE_KEYS = {
   PRODUCTS: 'hitin_partner_products_v2',
   SETTLEMENTS: 'hitin_partner_settlements_v2',
   CLIENTS: 'hitin_partner_clients_v2',
-  FIELDS: 'hitin_partner_fields_v2'
+  FIELDS: 'hitin_partner_fields_v2',
+  USER_POINTS: 'hitin_user_points_v1',
+  POINT_TRANSACTIONS: 'hitin_point_transactions_v1'
 };
+
 
 function getStorage<T>(key: string, fallback: T): T {
   try {
@@ -170,6 +178,21 @@ export class PartnerService {
       checkInTime: status === 'checked_in' ? timeStr : undefined
     };
     setStorage(STORAGE_KEYS.BOOKINGS, bookings);
+
+    // If checked-in, automatically award daily QR check-in points (+1,000 P with 1-per-day enforcement)
+    if (status === 'checked_in') {
+      const b = bookings[idx];
+      this.recordQrCheckInPoints(
+        b.bookerUserId,
+        b.bookerName,
+        b.bookerNickname,
+        b.bookerPhone,
+        b.fieldId,
+        '필드 경기장',
+        'field',
+        b.slotTitle
+      );
+    }
 
     // Sync to API in background
     fetch(`${API_BASE_URL}/bookings/${bookingId}/checkin`, {
@@ -342,6 +365,203 @@ export class PartnerService {
     return fields[idx];
   }
 
+  // --- User & Point Management ---
+  static getUserPointSummaries(): UserPointSummary[] {
+    return getStorage<UserPointSummary[]>(STORAGE_KEYS.USER_POINTS, initialUserPointSummaries);
+  }
+
+  static getUserPointTransactions(partnerId?: string): UserPointTransaction[] {
+    const txs = getStorage<UserPointTransaction[]>(STORAGE_KEYS.POINT_TRANSACTIONS, initialPointTransactions);
+    if (!partnerId) return txs;
+    return txs.filter(t => t.partnerId === partnerId);
+  }
+
+  static recordQrCheckInPoints(
+    userId: string,
+    userName: string,
+    userNickname: string,
+    userPhone: string,
+    partnerId: string,
+    partnerName: string,
+    partnerType: 'field' | 'shop',
+    slotTitle?: string
+  ): { success: boolean; pointsAwarded: number; message: string; transaction?: UserPointTransaction } {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const allTxs = this.getUserPointTransactions();
+
+    // 1일 1회 체크인 포인트 적립 여부 검증
+    const alreadyEarnedToday = allTxs.some(
+      t => t.userId === userId && t.reason === 'qr_checkin' && t.createdAt.startsWith(todayStr)
+    );
+
+    if (alreadyEarnedToday) {
+      return {
+        success: false,
+        pointsAwarded: 0,
+        message: '오늘 이미 1회 QR 체크인 포인트(+1,000 P)를 적립받은 사용자입니다.'
+      };
+    }
+
+    const pointsToAward = 1000;
+    const newTx: UserPointTransaction = {
+      id: `tx_pt_${Date.now()}`,
+      userId,
+      userName,
+      userNickname,
+      userPhone,
+      type: 'earn',
+      amount: pointsToAward,
+      reason: 'qr_checkin',
+      description: `${partnerName} 현장 QR 체크인 완료 (1일 1회)`,
+      partnerId,
+      partnerName,
+      partnerType,
+      checkInDate: nowStr,
+      targetSlotTitle: slotTitle,
+      createdAt: nowStr
+    };
+
+    // Save transaction
+    const updatedTxs = [newTx, ...allTxs];
+    setStorage(STORAGE_KEYS.POINT_TRANSACTIONS, updatedTxs);
+
+    // Update User Point Summary
+    const summaries = this.getUserPointSummaries();
+    const sIdx = summaries.findIndex(s => s.userId === userId);
+    if (sIdx !== -1) {
+      summaries[sIdx] = {
+        ...summaries[sIdx],
+        totalPoints: summaries[sIdx].totalPoints + pointsToAward,
+        qrCheckInCount: summaries[sIdx].qrCheckInCount + 1,
+        lastQrCheckInDate: nowStr,
+        todayQrCheckedIn: true,
+        recentTransactions: [newTx, ...summaries[sIdx].recentTransactions.slice(0, 5)]
+      };
+    } else {
+      summaries.unshift({
+        userId,
+        userName,
+        userNickname,
+        phone: userPhone,
+        avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=TeddyCommander&backgroundColor=ffdfbf',
+        totalPoints: pointsToAward,
+        qrCheckInCount: 1,
+        lastQrCheckInDate: nowStr,
+        todayQrCheckedIn: true,
+        reviewsWrittenCount: 0,
+        mannerScore: 5.0,
+        recentTransactions: [newTx]
+      });
+    }
+    setStorage(STORAGE_KEYS.USER_POINTS, summaries);
+
+    return {
+      success: true,
+      pointsAwarded: pointsToAward,
+      message: `QR 체크인 성공! ${userName}님에게 1,000 P가 적립되었습니다.`,
+      transaction: newTx
+    };
+  }
+
+  static recordReviewRatingPoints(
+    userId: string,
+    rating: number,
+    comment: string,
+    partnerId: string,
+    partnerName: string,
+    slotTitle?: string
+  ): { success: boolean; pointsAwarded: number; message: string; transaction: UserPointTransaction } {
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const allTxs = this.getUserPointTransactions();
+    const summaries = this.getUserPointSummaries();
+    const userSummary = summaries.find(s => s.userId === userId) || initialUserPointSummaries[0];
+
+    const pointsToAward = 500;
+    const newTx: UserPointTransaction = {
+      id: `tx_pt_${Date.now()}`,
+      userId: userSummary.userId,
+      userName: userSummary.userName,
+      userNickname: userSummary.userNickname,
+      userPhone: userSummary.phone,
+      type: 'earn',
+      amount: pointsToAward,
+      reason: 'review_rating',
+      description: '게임 후기 및 플레이어 상호 매너 평가 작성 완료',
+      partnerId,
+      partnerName,
+      partnerType: 'field',
+      reviewRating: rating,
+      reviewComment: comment,
+      targetSlotTitle: slotTitle,
+      createdAt: nowStr
+    };
+
+    setStorage(STORAGE_KEYS.POINT_TRANSACTIONS, [newTx, ...allTxs]);
+
+    // Update Summary
+    const sIdx = summaries.findIndex(s => s.userId === userId);
+    if (sIdx !== -1) {
+      summaries[sIdx] = {
+        ...summaries[sIdx],
+        totalPoints: summaries[sIdx].totalPoints + pointsToAward,
+        reviewsWrittenCount: summaries[sIdx].reviewsWrittenCount + 1,
+        recentTransactions: [newTx, ...summaries[sIdx].recentTransactions.slice(0, 5)]
+      };
+      setStorage(STORAGE_KEYS.USER_POINTS, summaries);
+    }
+
+    return {
+      success: true,
+      pointsAwarded: pointsToAward,
+      message: `게임 후기 및 매너 평점 적립 완료 (+${pointsToAward} P)`,
+      transaction: newTx
+    };
+  }
+
+  static grantManualPoints(
+    userId: string,
+    amount: number,
+    reasonText: string,
+    partnerId: string,
+    partnerName: string
+  ): UserPointTransaction {
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const allTxs = this.getUserPointTransactions();
+    const summaries = this.getUserPointSummaries();
+    const userSummary = summaries.find(s => s.userId === userId) || initialUserPointSummaries[0];
+
+    const newTx: UserPointTransaction = {
+      id: `tx_pt_${Date.now()}`,
+      userId: userSummary.userId,
+      userName: userSummary.userName,
+      userNickname: userSummary.userNickname,
+      userPhone: userSummary.phone,
+      type: amount >= 0 ? 'earn' : 'use',
+      amount,
+      reason: 'manual_adjust',
+      description: reasonText || '관리자 수동 포인트 지급/조정',
+      partnerId,
+      partnerName,
+      partnerType: 'field',
+      createdAt: nowStr
+    };
+
+    setStorage(STORAGE_KEYS.POINT_TRANSACTIONS, [newTx, ...allTxs]);
+
+    const sIdx = summaries.findIndex(s => s.userId === userId);
+    if (sIdx !== -1) {
+      summaries[sIdx] = {
+        ...summaries[sIdx],
+        totalPoints: Math.max(0, summaries[sIdx].totalPoints + amount),
+        recentTransactions: [newTx, ...summaries[sIdx].recentTransactions.slice(0, 5)]
+      };
+      setStorage(STORAGE_KEYS.USER_POINTS, summaries);
+    }
+
+    return newTx;
+  }
+
   // Reset to initial mock
   static resetAllData(): void {
     localStorage.removeItem(STORAGE_KEYS.SLOTS);
@@ -351,8 +571,11 @@ export class PartnerService {
     localStorage.removeItem(STORAGE_KEYS.SETTLEMENTS);
     localStorage.removeItem(STORAGE_KEYS.CLIENTS);
     localStorage.removeItem(STORAGE_KEYS.FIELDS);
+    localStorage.removeItem(STORAGE_KEYS.USER_POINTS);
+    localStorage.removeItem(STORAGE_KEYS.POINT_TRANSACTIONS);
 
     // Also tell backend to reset
     fetch(`${API_BASE_URL}/system/reset`, { method: 'POST' }).catch(() => {});
   }
 }
+

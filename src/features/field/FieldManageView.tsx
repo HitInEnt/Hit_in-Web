@@ -17,7 +17,7 @@ import { PartnerService } from '../../services/partnerService';
 import { FieldInfo } from '../../types';
 
 export const FieldManageView: React.FC = () => {
-  const { user, showToast, triggerRefresh } = usePartner();
+  const { user, showToast, triggerRefresh, refreshKey } = usePartner();
 
   const [field, setField] = useState<FieldInfo | null>(null);
   const [name, setName] = useState('');
@@ -47,7 +47,8 @@ export const FieldManageView: React.FC = () => {
       setAmenities(f.amenities || []);
       setCoverImage(f.coverImage);
     }
-  }, [user.partnerId]);
+  }, [user.partnerId, user.businessName, refreshKey]);
+
 
   if (!field) return null;
 

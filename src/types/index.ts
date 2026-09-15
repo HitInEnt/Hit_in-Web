@@ -139,6 +139,50 @@ export interface SettlementRecord {
   taxInvoiceUrl?: string;
 }
 
+export type PointReason = 
+  | 'qr_checkin' 
+  | 'review_rating' 
+  | 'manner_reward' 
+  | 'event_bonus' 
+  | 'manual_adjust';
+
+export interface UserPointTransaction {
+  id: string;
+  userId: string;
+  userName: string;
+  userNickname: string;
+  userPhone: string;
+  avatarUrl?: string;
+  type: 'earn' | 'use';
+  amount: number; // e.g. +1000, +500
+  reason: PointReason;
+  description: string;
+  partnerId: string;
+  partnerName: string;
+  partnerType: 'field' | 'shop';
+  createdAt: string; // YYYY-MM-DD HH:mm
+  // Additional metadata
+  checkInDate?: string;
+  reviewRating?: number; // 1 ~ 5
+  reviewComment?: string;
+  targetSlotTitle?: string;
+}
+
+export interface UserPointSummary {
+  userId: string;
+  userName: string;
+  userNickname: string;
+  phone: string;
+  avatarUrl: string;
+  totalPoints: number;
+  qrCheckInCount: number;
+  lastQrCheckInDate?: string;
+  todayQrCheckedIn: boolean;
+  reviewsWrittenCount: number;
+  mannerScore: number;
+  recentTransactions: UserPointTransaction[];
+}
+
 export type ClientStatus = 'active' | 'pending_approval' | 'suspended';
 
 export interface ClientPartner {
@@ -158,3 +202,6 @@ export interface ClientPartner {
   activeSlotsCount?: number;
   rating: number;
 }
+
+
+

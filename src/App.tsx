@@ -12,6 +12,7 @@ import { FieldManageView } from './features/field/FieldManageView';
 import { ShopInventoryView } from './features/shop/ShopInventoryView';
 import { SettlementView } from './features/settlement/SettlementView';
 import { HqClientsView } from './features/hq/HqClientsView';
+import { UserPointsView } from './features/points/UserPointsView';
 
 // Auth
 import { LoginView } from './features/auth/LoginView';
@@ -77,6 +78,8 @@ const PartnerAppInner: React.FC = () => {
             onInspectPlayer={handleInspectPlayer}
           />
         );
+      case 'user_points':
+        return <UserPointsView />;
       case 'field_manage':
         return <FieldManageView />;
       case 'shop_inventory':

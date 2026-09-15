@@ -11,7 +11,8 @@ import {
   ArrowUpRight, 
   AlertTriangle,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Coins
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -110,35 +111,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </p>
         </div>
 
-        {/* Quick Action Group */}
-        <div style={{ display: 'flex', gap: '10px', zIndex: 1 }}>
-          {role === 'field_owner' && (
-            <>
-              <button className="btn btn-lime" onClick={onOpenQuickCheckIn}>
-                <QrCode size={16} />
-                고속 QR 체크인
-              </button>
-              <button className="btn btn-primary" onClick={onOpenAddSlot}>
-                <PlusCircle size={16} />
-                타임슬롯 오픈
-              </button>
-            </>
-          )}
-
-          {role === 'shop_owner' && (
-            <button className="btn btn-primary" onClick={onOpenAddProduct}>
-              <PlusCircle size={16} />
-              신규 렌탈 장비 등록
+        {/* Quick Action Group (HQ Admin Only) */}
+        {role === 'hq_admin' && (
+          <div style={{ display: 'flex', gap: '10px', zIndex: 1, flexWrap: 'wrap' }}>
+            <button className="btn btn-secondary" onClick={() => setActiveTab('user_points')}>
+              <Coins size={16} />
+              전체 포인트 현황
             </button>
-          )}
-
-          {role === 'hq_admin' && (
             <button className="btn btn-lime" onClick={() => setActiveTab('hq_clients')}>
               <Sparkles size={16} />
               입점 심사 대기 ({clients.filter(c => c.status === 'pending_approval').length}건)
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 4 Core Stat Cards */}
