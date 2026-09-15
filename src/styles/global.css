@@ -58,6 +58,44 @@ html, body, #root {
   height: 100vh;
   background-color: var(--bg);
   overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar-container {
+  width: 260px;
+  height: 100vh;
+  background-color: var(--bar);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 20;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+.mobile-sidebar-close-btn {
+  display: none;
+}
+
+.mobile-hamburger-btn {
+  display: none;
+}
+
+.app-header {
+  height: 72px;
+  background-color: var(--bar);
+  border-bottom: 1px solid var(--line);
+  padding: 0 var(--space-xxl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
 .main-content {
@@ -77,6 +115,12 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: var(--space-xxl);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
 }
 
 /* Tactical UI Cards & Panels */
@@ -378,4 +422,263 @@ html, body, #root {
 
 .pulse-active {
   animation: pulseGlow 2s infinite;
+}
+
+/* ===================================================
+   Responsive Utility Classes & Mobile Breakpoints
+   =================================================== */
+.grid-responsive-2col {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 20px;
+}
+
+.grid-responsive-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.grid-responsive-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.flex-responsive-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Tablet & Smaller Screens (<= 1024px) */
+@media (max-width: 1024px) {
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .sidebar-container.open {
+    transform: translateX(0);
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(14, 20, 25, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--card2);
+    border: 1px solid var(--line);
+    color: var(--txt);
+    cursor: pointer;
+  }
+
+  .mobile-hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--card2);
+    border: 1px solid var(--line);
+    color: var(--txt);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .app-header {
+    padding: 0 var(--space-lg);
+  }
+
+  .page-scrollable {
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+  }
+
+  .grid-responsive-2col {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Mobile Screens (<= 768px) */
+@media (max-width: 768px) {
+  .app-header {
+    height: 60px;
+    padding: 0 12px;
+  }
+
+  .header-subtitle {
+    display: none;
+  }
+
+  .main-content {
+    padding-bottom: 60px;
+  }
+
+  .page-scrollable {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .card-panel {
+    padding: 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .flex-responsive-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .grid-responsive-form {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .modal-content {
+    width: 95vw;
+    max-height: 90vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  .modal-body {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  /* Mobile Bottom Navigation Bar */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 60px;
+    background: var(--bar);
+    border-top: 1px solid var(--line);
+    align-items: center;
+    justify-content: space-around;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: var(--mut);
+    cursor: pointer;
+    padding: 6px 0;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--acc);
+  }
+
+  .mobile-nav-icon-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -10px;
+    background: var(--acc);
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: var(--radius-pill);
+    line-height: 1;
+  }
+
+  .mobile-nav-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1;
+  }
+}
+
+/* Small Smartphone Viewports (<= 480px) */
+@media (max-width: 480px) {
+  .header-live-clock {
+    display: none !important;
+  }
+
+  .header-reset-btn {
+    display: none !important;
+  }
+
+  .header-logout-text {
+    display: none !important;
+  }
+
+  .header-status-text {
+    display: none !important;
+  }
+
+  .grid-responsive-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
 }

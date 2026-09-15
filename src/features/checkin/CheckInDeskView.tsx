@@ -250,12 +250,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
       </div>
 
       {/* 4 Real-time Live Admission Metric Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '16px',
-        marginBottom: '20px'
-      }}>
+      <div className="grid-responsive-cards" style={{ marginBottom: '20px' }}>
         {/* Card 1: Live Checked In Count */}
         <div className="card" style={{ padding: '18px', border: '1px solid rgba(34, 197, 94, 0.4)', background: 'rgba(34, 197, 94, 0.05)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
@@ -475,7 +470,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
       </div>
 
       {/* Main 2-Column Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: '20px' }}>
+      <div className="grid-responsive-2col">
         {/* Left Column: Real-time Attendee Queue & Checked In List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Section 1: Pending Check-in Section */}

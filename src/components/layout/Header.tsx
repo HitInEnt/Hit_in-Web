@@ -5,7 +5,8 @@ import {
   RotateCcw,
   Activity,
   CheckCircle2,
-  LogOut
+  LogOut,
+  Menu
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerService } from '../../services/partnerService';
@@ -21,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddSlot,
   onOpenAddProduct 
 }) => {
-  const { role, user, theme, activeTab, toggleTheme, setActiveTab, showToast, triggerRefresh, logout } = usePartner();
+  const { role, user, theme, activeTab, toggleTheme, setActiveTab, showToast, triggerRefresh, logout, toggleMobileMenu } = usePartner();
   const [timeStr, setTimeStr] = useState<string>('');
   const [isApiOnline, setIsApiOnline] = useState<boolean>(true);
 
@@ -64,6 +65,8 @@ export const Header: React.FC<HeaderProps> = ({
         return { title: '타임슬롯 & 예약 관리', desc: '게임 슬롯 오픈/마감, 예약자 명단 및 승인 관리' };
       case 'checkin':
         return { title: '실시간 현장입장 관리', desc: '사용자 QR 등록 시 실시간 자동 카운팅 및 게이트 입장 현황' };
+      case 'user_points':
+        return { title: '사용자 & 포인트 관리', desc: '고객 QR 체크인 +1,000P 및 후기/매너 포인트 내역' };
       case 'shop_inventory':
         return { title: '건샵 렌탈 장비 & 재고 관리', desc: '필드 연계 렌탈 총기, 보호구 및 비비탄/가스 소모품 수량' };
       case 'field_manage':
@@ -88,52 +91,52 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header style={{
-      height: '72px',
-      backgroundColor: 'var(--bar)',
-      borderBottom: '1px solid var(--line)',
-      padding: '0 var(--space-xxl)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      flexShrink: 0,
-      zIndex: 10
-    }}>
-      {/* Title & Description */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <h1 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--txt)', letterSpacing: '-0.02em' }}>
-            {title}
-          </h1>
-          {role === 'field_owner' && (
-            <span className="badge badge-outline" style={{ fontSize: '11px' }}>
-              🏟️ 필드 관리
-            </span>
-          )}
-          {role === 'shop_owner' && (
-            <span className="badge badge-outline" style={{ fontSize: '11px' }}>
-              🔫 건샵 관리
-            </span>
-          )}
-          {role === 'hq_admin' && (
-            <span className="badge badge-lime" style={{ fontSize: '11px' }}>
-              👑 HQ 슈퍼관리자
-            </span>
-          )}
-        </div>
-        <div style={{ fontSize: '12px', color: 'var(--mut)', marginTop: '2px' }}>
-          {desc}
+    <header className="app-header">
+      {/* Left: Mobile Hamburger & Title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button
+          onClick={toggleMobileMenu}
+          className="mobile-hamburger-btn"
+          aria-label="사이드바 열기"
+        >
+          <Menu size={22} />
+        </button>
+
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--txt)', letterSpacing: '-0.02em', margin: 0 }}>
+              {title}
+            </h1>
+            {role === 'field_owner' && (
+              <span className="badge badge-outline" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                🏟️ 필드
+              </span>
+            )}
+            {role === 'shop_owner' && (
+              <span className="badge badge-outline" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                🔫 건샵
+              </span>
+            )}
+            {role === 'hq_admin' && (
+              <span className="badge badge-lime" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                👑 HQ
+              </span>
+            )}
+          </div>
+          <div className="header-subtitle" style={{ fontSize: '11px', color: 'var(--mut)', marginTop: '2px' }}>
+            {desc}
+          </div>
         </div>
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="header-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {/* Backend Server Status Badge */}
-        <div style={{
+        <div className="header-status-badge" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          padding: '4px 10px',
+          padding: '4px 8px',
           borderRadius: 'var(--radius-pill)',
           background: isApiOnline ? 'rgba(47, 203, 126, 0.12)' : 'rgba(255, 197, 61, 0.12)',
           border: `1px solid ${isApiOnline ? 'rgba(47, 203, 126, 0.3)' : 'rgba(255, 197, 61, 0.3)'}`,
@@ -147,24 +150,25 @@ export const Header: React.FC<HeaderProps> = ({
             borderRadius: '50%',
             backgroundColor: isApiOnline ? 'var(--green)' : 'var(--warn)'
           }} className={isApiOnline ? 'pulse-active' : ''} />
-          {isApiOnline ? 'API 서버 연결됨 (Port 8000)' : '오프라인 캐시 모드'}
+          <span className="header-status-text">{isApiOnline ? 'API 연결됨' : '오프라인'}</span>
         </div>
 
-        {/* Live Clock */}
-        <div style={{
+        {/* Live Clock (Hidden on very small mobile) */}
+        <div className="header-live-clock" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          padding: '6px 12px',
+          padding: '5px 10px',
           borderRadius: 'var(--radius-md)',
           background: 'var(--card2)',
           border: '1px solid var(--line)',
-          fontSize: '12px',
+          fontSize: '11px',
           fontWeight: 600,
           color: 'var(--txt)'
         }}>
           <span className="mono-font">{timeStr}</span>
         </div>
+
         {/* Theme Switcher */}
         <button
           onClick={toggleTheme}
@@ -180,7 +184,8 @@ export const Header: React.FC<HeaderProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            transition: 'all 0.15s ease'
+            transition: 'all 0.15s ease',
+            flexShrink: 0
           }}
         >
           {theme === 'dark' ? <Sun size={17} color="var(--warn)" /> : <Moon size={17} color="var(--acc)" />}
@@ -190,6 +195,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={handleResetData}
           title="데이터 초기화"
+          className="header-reset-btn"
           style={{
             width: '36px',
             height: '36px',
@@ -201,7 +207,8 @@ export const Header: React.FC<HeaderProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            transition: 'all 0.15s ease'
+            transition: 'all 0.15s ease',
+            flexShrink: 0
           }}
         >
           <RotateCcw size={15} />
@@ -211,11 +218,11 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={logout}
           title="로그아웃"
-          className="btn btn-secondary btn-sm"
-          style={{ gap: '6px', fontSize: '12px' }}
+          className="btn btn-secondary btn-sm header-logout-btn"
+          style={{ gap: '6px', fontSize: '12px', flexShrink: 0 }}
         >
           <LogOut size={14} />
-          로그아웃
+          <span className="header-logout-text">로그아웃</span>
         </button>
       </div>
     </header>

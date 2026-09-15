@@ -415,17 +415,17 @@ export const LoginView: React.FC = () => {
       }} />
 
       {/* Login Card */}
-      <div style={{
-        width: '100%',
+      <div className="card-panel" style={{
+        width: '92%',
         maxWidth: '460px',
         background: 'var(--card)',
         border: '1px solid var(--line)',
         borderRadius: 'var(--radius-xl)',
         boxShadow: 'var(--shadow-lg)',
-        padding: '32px 28px',
+        padding: '28px 22px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
+        gap: '18px',
         zIndex: 10,
         animation: 'fadeIn 0.25s ease-out'
       }}>

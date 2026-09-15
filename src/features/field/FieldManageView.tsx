@@ -118,7 +118,7 @@ export const FieldManageView: React.FC = () => {
         </div>
 
         {/* 2 Column Layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
+        <div className="grid-responsive-2col">
           {/* Left Column: Basic Info & Safety Regulations */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="card-panel">
@@ -149,7 +149,7 @@ export const FieldManageView: React.FC = () => {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="grid-responsive-form">
                   <div className="form-group">
                     <label className="form-label">대표 전화번호</label>
                     <input

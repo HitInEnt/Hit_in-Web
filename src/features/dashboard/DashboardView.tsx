@@ -84,14 +84,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="page-scrollable">
       {/* Top Banner / Greeting */}
-      <div style={{
+      <div className="flex-responsive-banner" style={{
         background: 'linear-gradient(135deg, var(--hero-bg) 0%, var(--card) 100%)',
         border: '1px solid var(--line)',
         borderRadius: 'var(--radius-xl)',
         padding: 'var(--space-xl)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -127,7 +124,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* 4 Core Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+      <div className="grid-responsive-cards">
         {/* Card 1: Today Players / Bookings */}
         <div className="card-panel card-panel-accent">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -206,7 +203,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Middle Section: Live Slots & Charts Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '20px' }}>
+      <div className="grid-responsive-2col">
         {/* Left: Hourly Traffic & Slot Occupancy Chart */}
         <div className="card-panel" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

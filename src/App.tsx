@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PartnerProvider, usePartner } from './context/PartnerContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
+import { MobileNav } from './components/layout/MobileNav';
 import { ToastContainer } from './components/layout/ToastContainer';
 
 // Feature Views
@@ -130,6 +131,9 @@ const PartnerAppInner: React.FC = () => {
         {/* Dynamic Page Content */}
         {renderActiveView()}
       </main>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileNav />
 
       {/* Global Toast Container */}
       <ToastContainer />

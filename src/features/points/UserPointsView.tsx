@@ -410,12 +410,7 @@ export const UserPointsView: React.FC = () => {
       </div>
 
       {/* 4 Metric Summary Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '16px',
-        marginBottom: '24px'
-      }}>
+      <div className="grid-responsive-cards" style={{ marginBottom: '24px' }}>
         {/* Card 1: Today Points */}
         <div className="card" style={{ padding: '18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>

@@ -39,6 +39,9 @@ interface PartnerContextType {
   refreshKey: number;
   toasts: ToastNotification[];
   isAuthenticated: boolean;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
+  toggleMobileMenu: () => void;
   login: (payload: LoginPayload) => void;
   updateProfile: (updated: Partial<PartnerUser>) => void;
   logout: () => void;
@@ -95,6 +98,16 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [activeTab, setActiveTabState] = useState<NavTab>('dashboard');
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+  }, []);
+
+  const setActiveTab = useCallback((tab: NavTab) => {
+    setActiveTabState(tab);
+    setIsMobileMenuOpen(false); // Auto close mobile drawer on selection
+  }, []);
 
   // Apply data-theme to HTML tag
   useEffect(() => {
@@ -173,10 +186,6 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
   }, []);
 
-  const setActiveTab = useCallback((tab: NavTab) => {
-    setActiveTabState(tab);
-  }, []);
-
   const triggerRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
   }, []);
@@ -204,6 +213,9 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         refreshKey,
         toasts,
         isAuthenticated,
+        isMobileMenuOpen,
+        setIsMobileMenuOpen,
+        toggleMobileMenu,
         login,
         updateProfile,
         logout,

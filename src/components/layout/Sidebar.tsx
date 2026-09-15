@@ -16,7 +16,8 @@ import {
   UserCheck,
   UserCog,
   Edit3,
-  Coins
+  Coins,
+  X
 } from 'lucide-react';
 import { usePartner, NavTab } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
@@ -86,7 +87,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { role, user, activeTab, setActiveTab, setRole, logout, showToast } = usePartner();
+  const { role, user, activeTab, setActiveTab, setRole, logout, showToast, isMobileMenuOpen, setIsMobileMenuOpen } = usePartner();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.includes(role));
@@ -98,49 +99,61 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      <aside style={{
-        width: '260px',
-        height: '100vh',
-        backgroundColor: 'var(--bar)',
-        borderRight: '1px solid var(--line)',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-        zIndex: 20
-      }}>
+      {/* Mobile Drawer Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="sidebar-backdrop open" 
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside className={`sidebar-container ${isMobileMenuOpen ? 'open' : ''}`}>
         {/* Brand Header */}
         <div style={{
           padding: 'var(--space-xl) var(--space-lg)',
           borderBottom: '1px solid var(--line)',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'space-between',
           gap: '12px'
         }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--acc) 0%, var(--accd) 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 10px rgba(255, 90, 31, 0.4)'
-          }}>
-            <Sparkles size={20} color="#ffffff" />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className="tactical-font" style={{ fontSize: '18px', color: 'var(--txt)', letterSpacing: '0.08em' }}>
-                HIT IN
-              </span>
-              <span className="badge badge-lime" style={{ fontSize: '10px', padding: '2px 6px' }}>
-                PARTNER B2B
-              </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, var(--acc) 0%, var(--accd) 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 10px rgba(255, 90, 31, 0.4)'
+            }}>
+              <Sparkles size={20} color="#ffffff" />
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--mut)', marginTop: '2px' }}>
-              에어소프트 고객사 관리 포털
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="tactical-font" style={{ fontSize: '18px', color: 'var(--txt)', letterSpacing: '0.08em' }}>
+                  HIT IN
+                </span>
+                <span className="badge badge-lime" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                  PARTNER B2B
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: 'var(--mut)', marginTop: '2px' }}>
+                에어소프트 고객사 관리 포털
+              </div>
             </div>
           </div>
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="mobile-sidebar-close-btn"
+            aria-label="메뉴 닫기"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Role Switcher */}
