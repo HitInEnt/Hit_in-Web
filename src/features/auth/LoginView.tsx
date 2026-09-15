@@ -288,7 +288,7 @@ export const LoginView: React.FC = () => {
                 console.warn('[Google OAuth] Token response error:', tokenResponse);
                 if (tokenResponse.error === 'origin_mismatch' || tokenResponse.error_subtype === 'origin_mismatch') {
                   setIsGoogleGuideOpen(true);
-                  showToast('Google 콘솔에 승인된 JavaScript 원본(http://localhost:5173) 등록이 필요합니다.', 'warning');
+                  showToast(`Google 콘솔에 승인된 JavaScript 원본(${window.location.origin}) 등록이 필요합니다.`, 'warning');
                 } else {
                   showToast(`Google 인증 오류: ${tokenResponse.error}`, 'error');
                 }
@@ -1650,9 +1650,33 @@ export const LoginView: React.FC = () => {
             </div>
 
             <div style={{ fontSize: '13px', lineHeight: '1.6', color: 'var(--txt)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ padding: '12px 14px', backgroundColor: 'rgba(234, 67, 53, 0.12)', border: '1px solid rgba(234, 67, 53, 0.3)', borderRadius: '8px' }}>
-                🚨 <strong>400 오류 (origin_mismatch) 발생 원인:</strong><br />
-                Google 보안 정책상 <strong>[Google Cloud Console]</strong>의 OAuth 2.0 클라이언트 ID에 현재 접속 주소(예: <code>http://localhost:5173</code>)가 <strong>[승인된 JavaScript 원본]</strong>에 등록되어 있지 않아 로그인이 차단되었습니다.
+              <div style={{ padding: '14px 16px', backgroundColor: 'rgba(234, 67, 53, 0.12)', border: '1px solid rgba(234, 67, 53, 0.35)', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '16px' }}>🚨</span>
+                  <strong style={{ color: '#EA4335', fontSize: '14px' }}>400 오류: origin_mismatch 발생</strong>
+                </div>
+                <div style={{ fontSize: '12.5px', color: 'var(--txt)', marginBottom: '8px' }}>
+                  Google 보안 정책상 <strong>[Google Cloud Console]</strong>의 OAuth 2.0 클라이언트 ID에 <strong>현재 접속 주소</strong>가 [승인된 JavaScript 원본]에 등록되어 있지 않아 로그인이 차단되었습니다.
+                </div>
+                <div style={{ padding: '8px 12px', background: 'var(--card)', borderRadius: '6px', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: 'var(--dim)', display: 'block' }}>현재 브라우저 접속 원본 (차단된 origin):</span>
+                    <strong style={{ fontFamily: 'monospace', color: '#EA4335', fontSize: '13px' }}>
+                      {typeof window !== 'undefined' ? window.location.origin : 'https://partner.hitin.kr'}
+                    </strong>
+                  </div>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    style={{ padding: '5px 12px', fontSize: '12px', fontWeight: 700 }}
+                    onClick={() => {
+                      const originToCopy = typeof window !== 'undefined' ? window.location.origin : 'https://partner.hitin.kr';
+                      navigator.clipboard.writeText(originToCopy);
+                      showToast(`현재 접속 주소(${originToCopy})가 클립보드에 복사되었습니다!`, 'success');
+                    }}
+                  >
+                    현재 주소 복사
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -1674,37 +1698,50 @@ export const LoginView: React.FC = () => {
               </div>
 
               <div>
-                <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>2단계. [승인된 JavaScript 원본]에 아래 주소 추가 등록</strong>
+                <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>2단계. [승인된 JavaScript 원본]에 아래 4개 주소 추가 등록</strong>
                 <p style={{ margin: '4px 0 6px 0', color: 'var(--mut)' }}>
-                  <strong>+ URI 추가</strong>를 눌러 로컬 개발 및 운영 주소를 각각 추가해주세요:
+                  <strong>+ URI 추가</strong>를 눌러 운영 및 로컬 개발 주소를 모두 등록해주세요:
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {[
-                    { label: '로컬 Vite 개발 서버 (필수)', url: 'http://localhost:5173' },
+                    { label: 'HIT IN 운영 웹 (실제 운영)', url: 'https://partner.hitin.kr' },
+                    { label: '로컬 Vite 개발 서버 (로컬 개발)', url: 'http://localhost:5173' },
                     { label: '로컬 루프백 IP (권장)', url: 'http://127.0.0.1:5173' },
-                    { label: 'HIT IN 운영 웹 도메인', url: 'https://partner.hitin.kr' },
                     { label: '보조 로컬 포트', url: 'http://localhost:3000' }
-                  ].map((item, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11.5px', color: 'var(--dim)', minWidth: '135px' }}>• {item.label}:</span>
-                      <code style={{ padding: '5px 10px', background: 'var(--card2)', borderRadius: '6px', border: '1px solid var(--line)', flex: 1, fontFamily: 'monospace', fontSize: '12px' }}>
-                        {item.url}
-                      </code>
-                      <button 
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '4px 10px', fontSize: '11.5px' }}
-                        onClick={() => {
-                          navigator.clipboard.writeText(item.url);
-                          showToast(`${item.url} 복사되었습니다.`, 'info');
-                        }}
-                      >
-                        복사
-                      </button>
-                    </div>
-                  ))}
+                  ].map((item, idx) => {
+                    const isCurrent = typeof window !== 'undefined' && window.location.origin === item.url;
+                    return (
+                      <div key={idx} style={{ 
+                        display: 'flex', 
+                        gap: '8px', 
+                        alignItems: 'center',
+                        padding: isCurrent ? '4px 8px' : '0',
+                        borderRadius: '6px',
+                        background: isCurrent ? 'rgba(255, 90, 31, 0.08)' : 'transparent',
+                        border: isCurrent ? '1px solid rgba(255, 90, 31, 0.25)' : 'none'
+                      }}>
+                        <span style={{ fontSize: '11.5px', color: isCurrent ? 'var(--acc)' : 'var(--dim)', minWidth: '150px', fontWeight: isCurrent ? 700 : 400 }}>
+                          • {item.label} {isCurrent && '(현재)'}:
+                        </span>
+                        <code style={{ padding: '5px 10px', background: 'var(--card2)', borderRadius: '6px', border: '1px solid var(--line)', flex: 1, fontFamily: 'monospace', fontSize: '12px' }}>
+                          {item.url}
+                        </code>
+                        <button 
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '4px 10px', fontSize: '11.5px' }}
+                          onClick={() => {
+                            navigator.clipboard.writeText(item.url);
+                            showToast(`${item.url} 복사되었습니다.`, 'info');
+                          }}
+                        >
+                          복사
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--dim)', padding: '6px 10px', background: 'var(--panel)', borderRadius: '6px' }}>
-                  ⚠️ <strong>주의:</strong> 주소 끝에 슬래시(<code>/</code>)나 경로(<code>/login</code>)를 넣지 마세요. (예: <code>http://localhost:5173/</code> ❌ ➔ <code>http://localhost:5173</code> ⭕)
+                  ⚠️ <strong>주의:</strong> 주소 끝에 슬래시(<code>/</code>)나 경로(<code>/login</code>)를 넣지 마세요. (예: <code>https://partner.hitin.kr/</code> ❌ ➔ <code>https://partner.hitin.kr</code> ⭕)
                 </div>
               </div>
 
