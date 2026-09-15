@@ -127,6 +127,7 @@ export const LoginView: React.FC = () => {
   const [isGoogleGuideOpen, setIsGoogleGuideOpen] = useState<boolean>(false);
   const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('jes0508@gmail.com');
   const [googleDirectName, setGoogleDirectName] = useState<string>('');
+  const [showDirectSignupForm, setShowDirectSignupForm] = useState<boolean>(false);
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '133024291217-qgs5fg81kcmjen39mubh376kotlopfuc.apps.googleusercontent.com';
 
@@ -550,81 +551,55 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div style={{
-      width: '100vw',
-      minHeight: '100vh',
-      backgroundColor: 'var(--bg)',
-      color: 'var(--txt)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflowY: 'auto',
-      padding: '24px 16px'
-    }}>
+    <div className="auth-wrapper">
       {/* Background Gradients */}
       <div style={{
         position: 'fixed',
         top: '-20%',
         right: '-10%',
-        width: '600px',
-        height: '600px',
+        width: '500px',
+        height: '500px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255, 90, 31, 0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(255, 90, 31, 0.1) 0%, transparent 70%)',
         pointerEvents: 'none'
       }} />
       <div style={{
         position: 'fixed',
         bottom: '-20%',
         left: '-10%',
-        width: '500px',
-        height: '500px',
+        width: '450px',
+        height: '450px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(199, 249, 78, 0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(199, 249, 78, 0.06) 0%, transparent 70%)',
         pointerEvents: 'none'
       }} />
 
       {/* Main Container Card */}
-      <div className="card-panel" style={{
-        width: '100%',
-        maxWidth: authMode === 'signup' ? '540px' : '460px',
-        background: 'var(--card)',
-        border: '1px solid var(--line)',
-        borderRadius: 'var(--radius-xl)',
-        boxShadow: 'var(--shadow-lg)',
-        padding: authMode === 'signup' ? '28px 24px' : '28px 22px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        zIndex: 10,
-        margin: 'auto 0',
-        animation: 'fadeIn 0.25s ease-out',
-        transition: 'max-width 0.25s ease'
-      }}>
+      <div className={`auth-card ${authMode === 'signup' ? 'auth-card-signup' : 'auth-card-login'}`}>
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
           <div style={{
-            width: '46px',
-            height: '46px',
-            borderRadius: 'var(--radius-lg)',
+            width: '36px',
+            height: '36px',
+            borderRadius: 'var(--radius-md)',
             background: 'linear-gradient(135deg, var(--acc) 0%, var(--accd) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 16px rgba(255, 90, 31, 0.35)',
-            marginBottom: '10px'
+            boxShadow: '0 3px 12px rgba(255, 90, 31, 0.35)',
+            marginBottom: '3px'
           }}>
-            <Sparkles size={24} color="#ffffff" />
+            <Sparkles size={18} color="#ffffff" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="tactical-font" style={{ fontSize: '24px', letterSpacing: '0.08em', color: 'var(--txt)' }}>
+            <span className="tactical-font" style={{ fontSize: '22px', letterSpacing: '0.08em', color: 'var(--txt)' }}>
               HIT IN
             </span>
-            <span className="badge badge-lime" style={{ fontSize: '11px', fontWeight: 800 }}>
+            <span className="badge badge-lime" style={{ fontSize: '10px', fontWeight: 800, padding: '2px 7px' }}>
               PARTNER B2B
             </span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--mut)', marginTop: '4px' }}>
+          <p style={{ fontSize: '11.5px', color: 'var(--mut)', margin: 0 }}>
             {authMode === 'signup' 
               ? '에어소프트 경기장 & 건샵 신규 제휴 파트너 가입' 
               : '에어소프트 경기장 & 건샵 파트너사 전용 관리자 포털'}
@@ -636,7 +611,7 @@ export const LoginView: React.FC = () => {
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           background: 'var(--panel)',
-          padding: '4px',
+          padding: '3px',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--line)'
         }}>
@@ -644,8 +619,8 @@ export const LoginView: React.FC = () => {
             type="button"
             onClick={() => setAuthMode('login')}
             style={{
-              padding: '9px 8px',
-              fontSize: '13px',
+              padding: '7px 8px',
+              fontSize: '12px',
               fontWeight: 700,
               borderRadius: 'var(--radius-sm)',
               border: 'none',
@@ -660,15 +635,15 @@ export const LoginView: React.FC = () => {
               boxShadow: authMode === 'login' ? 'var(--shadow-sm)' : 'none'
             }}
           >
-            <LogIn size={15} color={authMode === 'login' ? 'var(--acc)' : 'currentColor'} />
+            <LogIn size={13} color={authMode === 'login' ? 'var(--acc)' : 'currentColor'} />
             파트너 로그인
           </button>
           <button
             type="button"
             onClick={() => setAuthMode('signup')}
             style={{
-              padding: '9px 8px',
-              fontSize: '13px',
+              padding: '7px 8px',
+              fontSize: '12px',
               fontWeight: 700,
               borderRadius: 'var(--radius-sm)',
               border: 'none',
@@ -683,7 +658,7 @@ export const LoginView: React.FC = () => {
               boxShadow: authMode === 'signup' ? '0 2px 8px rgba(255, 90, 31, 0.3)' : 'none'
             }}
           >
-            <UserPlus size={15} />
+            <UserPlus size={13} />
             신규 파트너 회원가입
           </button>
         </div>
@@ -692,37 +667,33 @@ export const LoginView: React.FC = () => {
             AUTH MODE: SIGN-UP (회원가입 모드)
            ════════════════════════════════════════════════════════════ */}
         {authMode === 'signup' ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
             
-            {/* 1. 가입분야 선택 메뉴 (필드사장 / 건샵사장 / 본사 - 복수 선택 가능) */}
+            {/* 1. 가입분야 선택 메뉴 (3-Column Grid) */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '11.5px' }}>
                     🎯 파트너 가입 분야 선택 <span style={{ color: 'var(--acc)' }}>*</span>
                   </label>
                   <span style={{
-                    fontSize: '10.5px',
+                    fontSize: '9px',
                     fontWeight: 700,
-                    padding: '2px 7px',
+                    padding: '1px 5px',
                     borderRadius: 'var(--radius-pill)',
                     background: 'rgba(255, 90, 31, 0.15)',
-                    color: 'var(--acc)',
-                    border: '1px solid rgba(255, 90, 31, 0.3)'
+                    color: 'var(--acc)'
                   }}>
                     복수 선택 가능
                   </span>
                 </div>
-                <span style={{ fontSize: '11.5px', color: 'var(--mut)', fontWeight: 600 }}>
-                  {signupRoles.length}개 분야 선택됨
+                <span style={{ fontSize: '10.5px', color: 'var(--mut)', fontWeight: 600 }}>
+                  {signupRoles.length}개 선택됨
                 </span>
               </div>
-              <p style={{ fontSize: '11.5px', color: 'var(--mut)', margin: '0 0 10px 0', lineHeight: 1.4 }}>
-                ※ 경기장과 건샵을 동시 운영하시는 경우 둘 다 체크하여 하나의 계정으로 타임슬롯 및 재고를 통합 관리하세요.
-              </p>
 
-              {/* 3 Categories Multi-Select Cards */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* 3-Column Compact Multi-Select Cards */}
+              <div className="role-grid-3col">
                 {PARTNER_CATEGORIES.map(cat => {
                   const isSelected = signupRoles.includes(cat.role);
                   const IconComp = cat.icon;
@@ -731,85 +702,63 @@ export const LoginView: React.FC = () => {
                       key={cat.role}
                       onClick={() => handleToggleSignupRole(cat.role)}
                       style={{
-                        padding: '12px 14px',
+                        padding: '9px 6px',
                         borderRadius: 'var(--radius-md)',
                         background: isSelected ? 'var(--card2)' : 'var(--panel)',
                         border: isSelected 
                           ? `2px solid ${cat.badgeColor}` 
                           : '1px solid var(--line)',
-                        boxShadow: isSelected ? `0 0 14px ${cat.badgeColor}30` : 'none',
+                        boxShadow: isSelected ? `0 0 10px ${cat.badgeColor}25` : 'none',
                         cursor: 'pointer',
-                        transition: 'all 0.18s ease',
+                        transition: 'all 0.15s ease',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '12px',
-                        userSelect: 'none'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: 'var(--radius-md)',
-                          background: isSelected ? cat.badgeBg : 'var(--card)',
-                          border: `1px solid ${isSelected ? cat.badgeColor : 'var(--line)'}`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0
-                        }}>
-                          <IconComp size={18} color={isSelected ? cat.badgeColor : 'var(--mut)'} />
-                        </div>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontWeight: 800, fontSize: '14px', color: isSelected ? 'var(--txt)' : 'var(--mut)' }}>
-                              {cat.title}
-                            </span>
-                            <span style={{
-                              fontSize: '10px',
-                              fontWeight: 700,
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              background: cat.badgeBg,
-                              color: cat.badgeColor
-                            }}>
-                              {cat.badge}
-                            </span>
-                            {isSelected && (
-                              <span style={{
-                                fontSize: '9.5px',
-                                fontWeight: 700,
-                                padding: '1px 5px',
-                                borderRadius: '3px',
-                                background: 'rgba(34, 197, 94, 0.15)',
-                                color: '#22c55e',
-                                border: '1px solid rgba(34, 197, 94, 0.3)'
-                              }}>
-                                ✓ 선택됨
-                              </span>
-                            )}
-                          </div>
-                          <p style={{ fontSize: '11.5px', color: isSelected ? 'var(--txt)' : 'var(--dim)', margin: '2px 0 0 0' }}>
-                            {cat.subTitle} · {cat.desc}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Tactical Checkbox Indicator */}
-                      <div style={{
-                        width: '22px',
-                        height: '22px',
-                        borderRadius: '6px',
-                        border: isSelected ? `2px solid ${cat.badgeColor}` : '2px solid var(--dim)',
-                        background: isSelected ? cat.badgeColor : 'transparent',
-                        display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0,
-                        transition: 'all 0.15s ease'
+                        textAlign: 'center',
+                        gap: '4px',
+                        userSelect: 'none',
+                        position: 'relative'
+                      }}
+                    >
+                      {/* Check indicator badge top right */}
+                      {isSelected && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '3px',
+                          right: '3px',
+                          width: '15px',
+                          height: '15px',
+                          borderRadius: '50%',
+                          background: cat.badgeColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Check size={9} color="#ffffff" strokeWidth={3} />
+                        </div>
+                      )}
+
+                      <div style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: 'var(--radius-sm)',
+                        background: isSelected ? cat.badgeBg : 'var(--card)',
+                        border: `1px solid ${isSelected ? cat.badgeColor : 'var(--line)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}>
-                        {isSelected && <Check size={14} color="#ffffff" strokeWidth={3} />}
+                        <IconComp size={15} color={isSelected ? cat.badgeColor : 'var(--mut)'} />
+                      </div>
+
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '11.5px', color: isSelected ? 'var(--txt)' : 'var(--mut)', lineHeight: 1.2 }}>
+                          {cat.title}
+                        </div>
+                        <div style={{ fontSize: '9px', color: isSelected ? cat.badgeColor : 'var(--dim)', marginTop: '2px', fontWeight: 600 }}>
+                          {cat.role === 'field_owner' ? '경기장 예약' : cat.role === 'shop_owner' ? '용품/재고' : '본사 CRM'}
+                        </div>
                       </div>
                     </div>
                   );
@@ -817,70 +766,42 @@ export const LoginView: React.FC = () => {
               </div>
             </div>
 
-            {/* Selected Categories Feature Hints */}
+            {/* Selected Categories Compact Hint */}
             <div style={{
-              padding: '12px 14px',
+              padding: '6px 10px',
               borderRadius: 'var(--radius-md)',
               background: 'var(--panel)',
               border: '1px solid var(--line)',
-              fontSize: '12px',
+              fontSize: '11px',
               display: 'flex',
-              flexDirection: 'column',
-              gap: '8px'
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '6px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--acc)', fontWeight: 700 }}>
-                  <CheckCircle2 size={14} />
-                  <span>선택한 {signupRoles.length}개 가입분야 통합 지원 기능</span>
-                </div>
-                <span style={{ fontSize: '11px', color: 'var(--mut)' }}>
-                  {getSelectedRolesShortLabel(signupRoles)}
-                </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--acc)', fontWeight: 700 }}>
+                <CheckCircle2 size={12} />
+                <span>선택된 권한:</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '2px' }}>
-                {signupRoles.map(roleKey => {
-                  const catConfig = PARTNER_CATEGORIES.find(c => c.role === roleKey);
-                  if (!catConfig) return null;
-                  return (
-                    <div key={roleKey} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: catConfig.badgeColor }}>
-                        • {catConfig.title} ({catConfig.subTitle})
-                      </span>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {catConfig.features.map((feat, idx) => (
-                          <span key={idx} style={{
-                            fontSize: '11px',
-                            padding: '2px 8px',
-                            borderRadius: 'var(--radius-pill)',
-                            background: 'var(--card)',
-                            border: '1px solid var(--line)',
-                            color: 'var(--txt)'
-                          }}>
-                            ✓ {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <span style={{ fontSize: '10.5px', color: 'var(--txt)', fontWeight: 600 }}>
+                {getSelectedRolesShortLabel(signupRoles)}
+              </span>
             </div>
 
-            {/* ── Social Quick Sign-Up ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {/* ── 1-Click Social Sign-Up (Kakao + Google) ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <button
                 type="button"
                 onClick={() => handleSocialLogin('kakao')}
                 disabled={socialLoading !== null}
                 style={{
                   width: '100%',
-                  height: '44px',
+                  height: '40px',
                   backgroundColor: '#FEE500',
                   color: '#191919',
                   border: 'none',
                   borderRadius: 'var(--radius-md)',
                   fontWeight: 700,
-                  fontSize: '13.5px',
+                  fontSize: '12.5px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -891,12 +812,12 @@ export const LoginView: React.FC = () => {
               >
                 {socialLoading === 'kakao' ? (
                   <>
-                    <Loader2 size={16} className="spin" />
+                    <Loader2 size={15} className="spin" />
                     <span>카카오 가입 처리 중...</span>
                   </>
                 ) : (
                   <>
-                    <KakaoIcon size={18} />
+                    <KakaoIcon size={16} />
                     <span>[{getSelectedRolesShortLabel(signupRoles)}] 카카오 1초 간편가입</span>
                   </>
                 )}
@@ -908,13 +829,13 @@ export const LoginView: React.FC = () => {
                 disabled={socialLoading !== null}
                 style={{
                   width: '100%',
-                  height: '42px',
+                  height: '38px',
                   backgroundColor: 'var(--panel)',
                   color: 'var(--txt)',
                   border: '1px solid var(--line)',
                   borderRadius: 'var(--radius-md)',
                   fontWeight: 600,
-                  fontSize: '13px',
+                  fontSize: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -925,18 +846,18 @@ export const LoginView: React.FC = () => {
               >
                 {socialLoading === 'google' ? (
                   <>
-                    <Loader2 size={16} className="spin" />
+                    <Loader2 size={15} className="spin" />
                     <span>Google 가입 처리 중...</span>
                   </>
                 ) : (
                   <>
-                    <GoogleIcon size={17} />
+                    <GoogleIcon size={15} />
                     <span>[{getSelectedRolesShortLabel(signupRoles)}] Google 간편 가입</span>
                   </>
                 )}
               </button>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '2px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setIsGoogleGuideOpen(true)}
@@ -944,7 +865,7 @@ export const LoginView: React.FC = () => {
                     background: 'none',
                     border: 'none',
                     color: '#EA4335',
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     textDecoration: 'underline',
                     cursor: 'pointer',
                     fontWeight: 600
@@ -959,7 +880,7 @@ export const LoginView: React.FC = () => {
                     background: 'none',
                     border: 'none',
                     color: 'var(--mut)',
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     textDecoration: 'underline',
                     cursor: 'pointer'
                   }}
@@ -969,192 +890,204 @@ export const LoginView: React.FC = () => {
               </div>
             </div>
 
-            {/* Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-              <span style={{ fontSize: '11.5px', color: 'var(--dim)', fontWeight: 500 }}>또는 직접 정보 입력</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+            {/* Direct Sign-Up Accordion / Toggle Button */}
+            <div style={{ marginTop: '2px' }}>
+              <button
+                type="button"
+                onClick={() => setShowDirectSignupForm(!showDirectSignupForm)}
+                style={{
+                  width: '100%',
+                  padding: '7px 10px',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'var(--panel)',
+                  border: '1px dashed var(--line)',
+                  color: 'var(--mut)',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>✍️ 또는 이메일 정보 직접 입력 가입</span>
+                <span style={{ fontSize: '10px' }}>{showDirectSignupForm ? '▲ 접기' : '▼ 펼치기'}</span>
+              </button>
             </div>
 
-            {/* Direct Sign-Up Form */}
-            <form onSubmit={handleSignUpSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Row 1: 대표자명 & 상호명 */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {/* Collapsible Direct Sign-Up Form */}
+            {showDirectSignupForm && (
+              <form onSubmit={handleSignUpSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '9px', animation: 'fadeIn 0.2s ease-out' }}>
+                {/* Row 1: 대표자명 & 상호명 */}
+                <div className="form-grid-2col">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>대표자(담당자)명 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <User size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                        placeholder="예: 홍길동 대표"
+                        value={signupName}
+                        onChange={e => setSignupName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>사업장 상호명 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <Building2 size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                        placeholder="예: HIT IN 파트너"
+                        value={signupBusinessName}
+                        onChange={e => setSignupBusinessName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 2: 사업자등록번호 & 대표 연락처 */}
+                <div className="form-grid-2col">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>사업자등록번호</label>
+                    <div style={{ position: 'relative' }}>
+                      <FileText size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                        placeholder="123-45-67890"
+                        value={signupBusinessNumber}
+                        onChange={e => setSignupBusinessNumber(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>대표 연락처 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <Smartphone size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="tel"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                        placeholder="010-0000-0000"
+                        value={signupPhone}
+                        onChange={e => setSignupPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 3: 로그인 이메일 (아이디) */}
                 <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>대표자(담당자)명 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                  <label className="form-label" style={{ fontSize: '11px' }}>로그인 이메일 (아이디) <span style={{ color: 'var(--acc)' }}>*</span></label>
                   <div style={{ position: 'relative' }}>
-                    <User size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <Mail size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                     <input
-                      type="text"
+                      type="email"
                       className="form-input"
-                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder="예: 홍길동 대표"
-                      value={signupName}
-                      onChange={e => setSignupName(e.target.value)}
+                      style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                      placeholder="partner@arena.kr"
+                      value={signupEmail}
+                      onChange={e => setSignupEmail(e.target.value)}
                       required
                     />
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>사업장 상호명 <span style={{ color: 'var(--acc)' }}>*</span></label>
-                  <div style={{ position: 'relative' }}>
-                    <Building2 size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="text"
-                      className="form-input"
-                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder={
-                        signupRoles.includes('field_owner') && signupRoles.includes('shop_owner')
-                          ? '예: 플래툰 아레나 & 택티컬 건샵 경기본점'
-                          : signupRoles.includes('field_owner')
-                          ? '예: 플래툰 아레나 경기점'
-                          : signupRoles.includes('shop_owner')
-                          ? '예: 택티컬 건스미스 본점'
-                          : 'HIT IN 본사'
-                      }
-                      value={signupBusinessName}
-                      onChange={e => setSignupBusinessName(e.target.value)}
-                      required
-                    />
+                {/* Row 4: 비밀번호 & 비밀번호 확인 */}
+                <div className="form-grid-2col">
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>비밀번호 (6자 이상) <span style={{ color: 'var(--acc)' }}>*</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <Lock size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="password"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '28px', fontSize: '11.5px' }}
+                        placeholder="비밀번호 입력"
+                        value={signupPassword}
+                        onChange={e => setSignupPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '11px' }}>
+                      비밀번호 확인 <span style={{ color: 'var(--acc)' }}>*</span>
+                      {signupPasswordConfirm && (
+                        <span style={{ 
+                          marginLeft: '4px', 
+                          fontSize: '10px', 
+                          color: signupPassword === signupPasswordConfirm ? 'var(--lime-chip)' : 'var(--danger)' 
+                        }}>
+                          {signupPassword === signupPasswordConfirm ? '✓' : '✕'}
+                        </span>
+                      )}
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Lock size={13} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="password"
+                        className="form-input"
+                        style={{ 
+                          width: '100%', 
+                          paddingLeft: '28px', 
+                          fontSize: '11.5px',
+                          borderColor: signupPasswordConfirm && signupPassword !== signupPasswordConfirm ? 'var(--danger)' : undefined
+                        }}
+                        placeholder="비밀번호 재입력"
+                        value={signupPasswordConfirm}
+                        onChange={e => setSignupPasswordConfirm(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Row 2: 사업자등록번호 & 대표 연락처 */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>사업자등록번호</label>
-                  <div style={{ position: 'relative' }}>
-                    <FileText size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="text"
-                      className="form-input"
-                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder="123-45-67890"
-                      value={signupBusinessNumber}
-                      onChange={e => setSignupBusinessNumber(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>대표 연락처 (휴대폰) <span style={{ color: 'var(--acc)' }}>*</span></label>
-                  <div style={{ position: 'relative' }}>
-                    <Smartphone size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="tel"
-                      className="form-input"
-                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder="010-0000-0000"
-                      value={signupPhone}
-                      onChange={e => setSignupPhone(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 3: 로그인 이메일 (아이디) */}
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '12px' }}>로그인 이메일 (아이디) <span style={{ color: 'var(--acc)' }}>*</span></label>
-                <div style={{ position: 'relative' }}>
-                  <Mail size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                {/* Terms Checkbox */}
+                <label style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '6px', 
+                  fontSize: '11px', 
+                  color: 'var(--txt)', 
+                  cursor: 'pointer'
+                }}>
                   <input
-                    type="email"
-                    className="form-input"
-                    style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                    placeholder="partner@arena.kr"
-                    value={signupEmail}
-                    onChange={e => setSignupEmail(e.target.value)}
-                    required
+                    type="checkbox"
+                    checked={agreeTerms}
+                    onChange={e => setAgreeTerms(e.target.checked)}
+                    style={{ accentColor: 'var(--acc)', width: '13px', height: '13px', cursor: 'pointer' }}
                   />
-                </div>
-              </div>
+                  <span>서비스 이용약관 및 개인정보 처리방침에 동의합니다.</span>
+                </label>
 
-              {/* Row 4: 비밀번호 & 비밀번호 확인 */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>비밀번호 (6자 이상) <span style={{ color: 'var(--acc)' }}>*</span></label>
-                  <div style={{ position: 'relative' }}>
-                    <Lock size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="password"
-                      className="form-input"
-                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder="비밀번호 입력"
-                      value={signupPassword}
-                      onChange={e => setSignupPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>
-                    비밀번호 확인 <span style={{ color: 'var(--acc)' }}>*</span>
-                    {signupPasswordConfirm && (
-                      <span style={{ 
-                        marginLeft: '6px', 
-                        fontSize: '11px', 
-                        color: signupPassword === signupPasswordConfirm ? 'var(--lime-chip)' : 'var(--danger)' 
-                      }}>
-                        {signupPassword === signupPasswordConfirm ? '✓ 일치' : '✕ 불일치'}
-                      </span>
-                    )}
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <Lock size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="password"
-                      className="form-input"
-                      style={{ 
-                        width: '100%', 
-                        paddingLeft: '32px', 
-                        fontSize: '13px',
-                        borderColor: signupPasswordConfirm && signupPassword !== signupPasswordConfirm ? 'var(--danger)' : undefined
-                      }}
-                      placeholder="비밀번호 재입력"
-                      value={signupPasswordConfirm}
-                      onChange={e => setSignupPasswordConfirm(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Terms Checkbox */}
-              <label style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px', 
-                fontSize: '12px', 
-                color: 'var(--txt)', 
-                cursor: 'pointer',
-                marginTop: '4px'
-              }}>
-                <input
-                  type="checkbox"
-                  checked={agreeTerms}
-                  onChange={e => setAgreeTerms(e.target.checked)}
-                  style={{ accentColor: 'var(--acc)', width: '15px', height: '15px', cursor: 'pointer' }}
-                />
-                <span>HIT IN 파트너 서비스 이용약관 및 개인정보 처리방침에 동의합니다.</span>
-              </label>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%', marginTop: '6px', fontWeight: 800 }}
-              >
-                <span>✨ [{activeCategoryConfig.title}] 파트너 가입 완료</span>
-                <ArrowRight size={16} />
-              </button>
-            </form>
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
+                  style={{ width: '100%', marginTop: '3px', fontWeight: 800, padding: '9px' }}
+                >
+                  <span>✨ [{getSelectedRolesShortLabel(signupRoles)}] 가입 완료</span>
+                  <ArrowRight size={14} />
+                </button>
+              </form>
+            )}
 
             {/* Switch to Login Link */}
-            <div style={{ textAlign: 'center', fontSize: '12.5px', color: 'var(--mut)' }}>
+            <div style={{ textAlign: 'center', fontSize: '11.5px', color: 'var(--mut)' }}>
               이미 HIT IN 파트너 계정이 있으신가요?{' '}
               <button
                 type="button"
@@ -1168,7 +1101,7 @@ export const LoginView: React.FC = () => {
                   textDecoration: 'underline'
                 }}
               >
-                기존 계정으로 로그인하기
+                로그인하기
               </button>
             </div>
           </div>
@@ -1176,123 +1109,114 @@ export const LoginView: React.FC = () => {
           /* ════════════════════════════════════════════════════════════
               AUTH MODE: LOGIN (로그인 모드)
              ════════════════════════════════════════════════════════════ */
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
             
-            {/* Quick Demo Role Switcher */}
+            {/* Quick Demo Role Switcher (3-Column Grid) */}
             <div>
-              <label className="form-label" style={{ marginBottom: '6px', display: 'block', fontSize: '12px' }}>
+              <label className="form-label" style={{ marginBottom: '5px', display: 'block', fontSize: '11.5px' }}>
                 체험 및 빠른 로그인 권한 선택
               </label>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '6px',
-                background: 'var(--panel)',
-                padding: '4px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--line)'
-              }}>
+              <div className="role-grid-3col">
                 <button
                   type="button"
                   onClick={() => handleRoleChange('field_owner')}
                   style={{
-                    padding: '8px 4px',
-                    fontSize: '12px',
+                    padding: '7px 4px',
+                    fontSize: '11.5px',
                     fontWeight: 700,
                     borderRadius: 'var(--radius-sm)',
-                    border: 'none',
+                    border: selectedRole === 'field_owner' ? '1px solid var(--acc)' : '1px solid var(--line)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedRole === 'field_owner' ? 'var(--acc)' : 'transparent',
+                    background: selectedRole === 'field_owner' ? 'var(--acc)' : 'var(--panel)',
                     color: selectedRole === 'field_owner' ? '#fff' : 'var(--mut)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '4px'
+                    gap: '3px'
                   }}
                 >
-                  <Layers size={15} />
+                  <Layers size={14} />
                   필드 사장님
                 </button>
                 <button
                   type="button"
                   onClick={() => handleRoleChange('shop_owner')}
                   style={{
-                    padding: '8px 4px',
-                    fontSize: '12px',
+                    padding: '7px 4px',
+                    fontSize: '11.5px',
                     fontWeight: 700,
                     borderRadius: 'var(--radius-sm)',
-                    border: 'none',
+                    border: selectedRole === 'shop_owner' ? '1px solid #38bdf8' : '1px solid var(--line)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedRole === 'shop_owner' ? 'var(--acc)' : 'transparent',
-                    color: selectedRole === 'shop_owner' ? '#fff' : 'var(--mut)',
+                    background: selectedRole === 'shop_owner' ? '#38bdf8' : 'var(--panel)',
+                    color: selectedRole === 'shop_owner' ? '#000' : 'var(--mut)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '4px'
+                    gap: '3px'
                   }}
                 >
-                  <ShoppingBag size={15} />
+                  <ShoppingBag size={14} />
                   건샵 사장님
                 </button>
                 <button
                   type="button"
                   onClick={() => handleRoleChange('hq_admin')}
                   style={{
-                    padding: '8px 4px',
-                    fontSize: '12px',
+                    padding: '7px 4px',
+                    fontSize: '11.5px',
                     fontWeight: 700,
                     borderRadius: 'var(--radius-sm)',
-                    border: 'none',
+                    border: selectedRole === 'hq_admin' ? '1px solid var(--lime-chip)' : '1px solid var(--line)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    background: selectedRole === 'hq_admin' ? 'var(--lime-chip)' : 'transparent',
+                    background: selectedRole === 'hq_admin' ? 'var(--lime-chip)' : 'var(--panel)',
                     color: selectedRole === 'hq_admin' ? 'var(--ink-fixed)' : 'var(--mut)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '4px'
+                    gap: '3px'
                   }}
                 >
-                  <ShieldCheck size={15} />
+                  <ShieldCheck size={14} />
                   본사 CRM
                 </button>
               </div>
             </div>
 
-            {/* Social Logins */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {/* 1-Click Social Logins */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <button
                 type="button"
                 onClick={() => handleSocialLogin('kakao')}
                 disabled={socialLoading !== null}
                 style={{
                   width: '100%',
-                  height: '44px',
+                  height: '40px',
                   backgroundColor: '#FEE500',
                   color: '#191919',
                   border: 'none',
                   borderRadius: 'var(--radius-md)',
                   fontWeight: 700,
-                  fontSize: '13.5px',
+                  fontSize: '12.5px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '10px',
+                  gap: '8px',
                   cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.15s ease',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {socialLoading === 'kakao' ? (
                   <>
-                    <Loader2 size={18} className="spin" />
+                    <Loader2 size={15} className="spin" />
                     <span>카카오 로그인 중...</span>
                   </>
                 ) : (
                   <>
-                    <KakaoIcon size={19} />
+                    <KakaoIcon size={16} />
                     <span>카카오톡으로 1초 시작하기</span>
                   </>
                 )}
@@ -1304,35 +1228,35 @@ export const LoginView: React.FC = () => {
                 disabled={socialLoading !== null}
                 style={{
                   width: '100%',
-                  height: '42px',
+                  height: '38px',
                   backgroundColor: 'var(--panel)',
                   color: 'var(--txt)',
                   border: '1px solid var(--line)',
                   borderRadius: 'var(--radius-md)',
                   fontWeight: 600,
-                  fontSize: '13px',
+                  fontSize: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '10px',
+                  gap: '8px',
                   cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
                   transition: 'all 0.15s ease'
                 }}
               >
                 {socialLoading === 'google' ? (
                   <>
-                    <Loader2 size={18} className="spin" />
+                    <Loader2 size={15} className="spin" />
                     <span>Google 인증 진행 중...</span>
                   </>
                 ) : (
                   <>
-                    <GoogleIcon size={18} />
+                    <GoogleIcon size={16} />
                     <span>Google 계정으로 계속하기</span>
                   </>
                 )}
               </button>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '2px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setIsGoogleGuideOpen(true)}
@@ -1340,7 +1264,7 @@ export const LoginView: React.FC = () => {
                     background: 'none',
                     border: 'none',
                     color: '#EA4335',
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     textDecoration: 'underline',
                     cursor: 'pointer',
                     fontWeight: 600
@@ -1355,7 +1279,7 @@ export const LoginView: React.FC = () => {
                     background: 'none',
                     border: 'none',
                     color: 'var(--mut)',
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     textDecoration: 'underline',
                     cursor: 'pointer'
                   }}
@@ -1366,122 +1290,64 @@ export const LoginView: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-              <span style={{ fontSize: '11.5px', color: 'var(--dim)', fontWeight: 500 }}>또는</span>
+              <span style={{ fontSize: '11px', color: 'var(--dim)', fontWeight: 500 }}>또는 이메일 로그인</span>
               <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-            </div>
-
-            {/* Login Method Tabs */}
-            <div style={{ display: 'flex', borderBottom: '1px solid var(--line)' }}>
-              <button
-                type="button"
-                onClick={() => setLoginMethod('email')}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: loginMethod === 'email' ? '2px solid var(--acc)' : '2px solid transparent',
-                  color: loginMethod === 'email' ? 'var(--acc)' : 'var(--mut)',
-                  cursor: 'pointer'
-                }}
-              >
-                이메일 / 아이디
-              </button>
-              <button
-                type="button"
-                onClick={() => setLoginMethod('pass')}
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: loginMethod === 'pass' ? '2px solid var(--acc)' : '2px solid transparent',
-                  color: loginMethod === 'pass' ? 'var(--acc)' : 'var(--mut)',
-                  cursor: 'pointer'
-                }}
-              >
-                PASS 본인인증
-              </button>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {loginMethod === 'email' ? (
-                <>
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '12px' }}>파트너 로그인 이메일</label>
-                    <div style={{ position: 'relative' }}>
-                      <Mail size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                      <input
-                        type="email"
-                        className="form-input"
-                        style={{ width: '100%', paddingLeft: '38px' }}
-                        placeholder="partner@arena.kr"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '12px' }}>비밀번호</label>
-                    <div style={{ position: 'relative' }}>
-                      <Lock size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                      <input
-                        type="password"
-                        className="form-input"
-                        style={{ width: '100%', paddingLeft: '38px' }}
-                        placeholder="비밀번호 입력"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="form-group">
-                  <label className="form-label" style={{ fontSize: '12px' }}>대표자 휴대폰 번호</label>
-                  <div style={{ position: 'relative' }}>
-                    <Smartphone size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="tel"
-                      className="form-input"
-                      style={{ width: '100%', paddingLeft: '38px' }}
-                      value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                      placeholder="010-0000-0000"
-                      required
-                    />
-                  </div>
+            <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
+              <div className="form-group">
+                <label className="form-label" style={{ fontSize: '11px' }}>파트너 로그인 이메일</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={14} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="email"
+                    className="form-input"
+                    style={{ width: '100%', paddingLeft: '30px', fontSize: '11.5px' }}
+                    placeholder="partner@arena.kr"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
-              )}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontSize: '11px' }}>비밀번호</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={14} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="password"
+                    className="form-input"
+                    style={{ width: '100%', paddingLeft: '30px', fontSize: '11.5px' }}
+                    placeholder="비밀번호 입력"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
 
               <button
                 type="submit"
                 className="btn btn-primary btn-lg"
-                style={{ width: '100%', marginTop: '4px', fontWeight: 700 }}
+                style={{ width: '100%', marginTop: '2px', fontWeight: 700, padding: '9px' }}
               >
                 <span>{selectedRole === 'hq_admin' ? '본사 CRM 로그인' : '파트너 포털 로그인'}</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={14} />
               </button>
             </form>
 
             {/* Link to Sign-up */}
             <div style={{
-              padding: '12px',
+              padding: '8px 10px',
               borderRadius: 'var(--radius-md)',
               background: 'var(--panel)',
               border: '1px solid var(--line)',
               textAlign: 'center',
-              fontSize: '12.5px'
+              fontSize: '11.5px'
             }}>
               <span style={{ color: 'var(--mut)' }}>아직 HIT IN 제휴 파트너가 아니신가요? </span>
               <button
@@ -1505,10 +1371,10 @@ export const LoginView: React.FC = () => {
         {/* Footer info */}
         <div style={{
           textAlign: 'center',
-          fontSize: '12px',
+          fontSize: '11px',
           color: 'var(--mut)',
           borderTop: '1px solid var(--line)',
-          paddingTop: '12px',
+          paddingTop: '8px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
@@ -1520,12 +1386,12 @@ export const LoginView: React.FC = () => {
               background: 'transparent',
               border: 'none',
               color: 'var(--acc)',
-              fontSize: '11.5px',
+              fontSize: '10.5px',
               cursor: 'pointer',
               fontWeight: 600
             }}
           >
-            {theme === 'dark' ? '☀️ 라이트 모드' : '🌙 다크 모드'}
+            {theme === 'dark' ? '☀️ 라이트' : '🌙 다크'}
           </button>
         </div>
       </div>
