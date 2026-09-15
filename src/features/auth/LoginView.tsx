@@ -277,15 +277,15 @@ export const LoginView: React.FC = () => {
     const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
     const meta = getRoleMetadata(effectiveRole);
 
-    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const activeGoogleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '133024291217-qgs5fg81kcmjen39mubh376kotlopfuc.apps.googleusercontent.com';
     const kakaoJsKey = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY || import.meta.env.NEXT_PUBLIC_KAKAO_JS_KEY || '14a3863dc2024f7f36c6d9a01082bdda';
 
     // ── 1. Google OAuth 2.0 ──
-    if (provider === 'google' && googleClientId) {
+    if (provider === 'google' && activeGoogleClientId) {
       if (window.google?.accounts?.oauth2) {
         try {
           const client = window.google.accounts.oauth2.initTokenClient({
-            client_id: googleClientId,
+            client_id: activeGoogleClientId,
             scope: 'email profile openid',
             callback: async (tokenResponse: any) => {
               if (tokenResponse.error) {
