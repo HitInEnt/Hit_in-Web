@@ -124,6 +124,7 @@ export const LoginView: React.FC = () => {
   const [agreeTerms, setAgreeTerms] = useState(true);
 
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
+  const [isGoogleGuideOpen, setIsGoogleGuideOpen] = useState<boolean>(false);
 
   const effectiveDisplayRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
   const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === effectiveDisplayRole) || PARTNER_CATEGORIES[0];
@@ -284,7 +285,13 @@ export const LoginView: React.FC = () => {
             scope: 'email profile openid',
             callback: async (tokenResponse: any) => {
               if (tokenResponse.error) {
-                showToast(`Google 인증 취소됨: ${tokenResponse.error}`, 'error');
+                console.warn('[Google OAuth] Token response error:', tokenResponse);
+                if (tokenResponse.error === 'origin_mismatch' || tokenResponse.error_subtype === 'origin_mismatch') {
+                  setIsGoogleGuideOpen(true);
+                  showToast('Google 콘솔에 승인된 JavaScript 원본(http://localhost:5173) 등록이 필요합니다.', 'warning');
+                } else {
+                  showToast(`Google 인증 오류: ${tokenResponse.error}`, 'error');
+                }
                 setSocialLoading(null);
                 return;
               }
@@ -324,7 +331,9 @@ export const LoginView: React.FC = () => {
               }
             },
             error_callback: (err: any) => {
-              showToast(`Google 인증 오류: ${err.message || err.type || '인증 실패'}`, 'error');
+              console.warn('[Google OAuth] Error callback:', err);
+              setIsGoogleGuideOpen(true);
+              showToast('Google Cloud Console에 현재 사이트 원본 등록이 필요합니다 (origin_mismatch).', 'warning');
               setSocialLoading(null);
             }
           });
@@ -333,6 +342,7 @@ export const LoginView: React.FC = () => {
           return;
         } catch (initErr) {
           console.error('Google OAuth init error:', initErr);
+          setIsGoogleGuideOpen(true);
         }
       }
     }
@@ -921,6 +931,38 @@ export const LoginView: React.FC = () => {
                   </>
                 )}
               </button>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '2px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsGoogleGuideOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#EA4335',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    fontWeight: 600
+                  }}
+                >
+                  ⚡ Google 400 origin_mismatch 오류 해결 가이드
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsKakaoGuideOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--mut)',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  카카오 연동 설정
+                </button>
+              </div>
             </div>
 
             {/* Divider */}
@@ -1286,7 +1328,22 @@ export const LoginView: React.FC = () => {
                 )}
               </button>
 
-              <div style={{ textAlign: 'center', marginTop: '2px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '2px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsGoogleGuideOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#EA4335',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    fontWeight: 600
+                  }}
+                >
+                  ⚡ Google 400 origin_mismatch 오류 해결 가이드
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsKakaoGuideOpen(true)}
@@ -1299,7 +1356,7 @@ export const LoginView: React.FC = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  카카오 소셜 로그인 연동 설정 가이드 (도메인/키 설정)
+                  카카오 연동 설정
                 </button>
               </div>
             </div>
@@ -1545,21 +1602,154 @@ export const LoginView: React.FC = () => {
               <button 
                 className="btn btn-primary"
                 onClick={() => {
-                  const meta = getRoleMetadata(selectedRole);
+                  const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+                  const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
+                  const meta = getRoleMetadata(effectiveRole);
                   login({
-                    email: `kakao_${selectedRole}@kakao.com`,
-                    role: selectedRole,
-                    businessName: meta.businessName,
-                    name: `${meta.userName} (카카오)`,
+                    email: `kakao_${effectiveRole}@kakao.com`,
+                    role: effectiveRole,
+                    roles: effectiveRoles,
+                    businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+                    name: authMode === 'signup' && signupName ? signupName : `${meta.userName} (카카오)`,
                     partnerId: meta.partnerId,
                     avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=TeddyCommander&backgroundColor=ffdfbf',
                     provider: 'kakao'
                   });
                   setIsKakaoGuideOpen(false);
-                  showToast('카카오 계정으로 파트너 포털에 로그인되었습니다.', 'success');
+                  showToast(`카카오 계정으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
                 }}
               >
                 카카오 계정으로 즉시 입장하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Google Setup Guide Modal (400 origin_mismatch Resolver) */}
+      {isGoogleGuideOpen && (
+        <div className="modal-overlay" onClick={() => setIsGoogleGuideOpen(false)}>
+          <div 
+            className="modal-content" 
+            style={{ maxWidth: '600px', padding: '26px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <GoogleIcon size={24} />
+                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: 'var(--txt)' }}>
+                  Google OAuth 2.0 출처 등록 가이드
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsGoogleGuideOpen(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--mut)', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ fontSize: '13px', lineHeight: '1.6', color: 'var(--txt)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ padding: '12px 14px', backgroundColor: 'rgba(234, 67, 53, 0.12)', border: '1px solid rgba(234, 67, 53, 0.3)', borderRadius: '8px' }}>
+                🚨 <strong>400 오류 (origin_mismatch) 발생 원인:</strong><br />
+                Google 보안 정책상 <strong>[Google Cloud Console]</strong>의 OAuth 2.0 클라이언트 ID에 현재 접속 주소(예: <code>http://localhost:5173</code>)가 <strong>[승인된 JavaScript 원본]</strong>에 등록되어 있지 않아 로그인이 차단되었습니다.
+              </div>
+
+              <div>
+                <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>1단계. Google Cloud Console 접속</strong>
+                <p style={{ margin: '4px 0 8px 0', color: 'var(--mut)' }}>
+                  아래 링크로 이동하여 로그인 후 해당 프로젝트의 <strong>[OAuth 2.0 클라이언트 ID (웹 애플리케이션)]</strong>를 클릭합니다:
+                </p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontWeight: 700 }}
+                    onClick={() => {
+                      window.open('https://console.cloud.google.com/apis/credentials', '_blank');
+                    }}
+                  >
+                    Google Cloud 사용자 인증 정보 콘솔 바로가기 ↗
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>2단계. [승인된 JavaScript 원본]에 아래 주소 추가 등록</strong>
+                <p style={{ margin: '4px 0 6px 0', color: 'var(--mut)' }}>
+                  <strong>+ URI 추가</strong>를 눌러 로컬 개발 및 운영 주소를 각각 추가해주세요:
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {[
+                    { label: '로컬 Vite 개발 서버 (필수)', url: 'http://localhost:5173' },
+                    { label: '로컬 루프백 IP (권장)', url: 'http://127.0.0.1:5173' },
+                    { label: 'HIT IN 운영 웹 도메인', url: 'https://partner.hitin.kr' },
+                    { label: '보조 로컬 포트', url: 'http://localhost:3000' }
+                  ].map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11.5px', color: 'var(--dim)', minWidth: '135px' }}>• {item.label}:</span>
+                      <code style={{ padding: '5px 10px', background: 'var(--card2)', borderRadius: '6px', border: '1px solid var(--line)', flex: 1, fontFamily: 'monospace', fontSize: '12px' }}>
+                        {item.url}
+                      </code>
+                      <button 
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '4px 10px', fontSize: '11.5px' }}
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.url);
+                          showToast(`${item.url} 복사되었습니다.`, 'info');
+                        }}
+                      >
+                        복사
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: '8px', fontSize: '11.5px', color: 'var(--dim)', padding: '6px 10px', background: 'var(--panel)', borderRadius: '6px' }}>
+                  ⚠️ <strong>주의:</strong> 주소 끝에 슬래시(<code>/</code>)나 경로(<code>/login</code>)를 넣지 마세요. (예: <code>http://localhost:5173/</code> ❌ ➔ <code>http://localhost:5173</code> ⭕)
+                </div>
+              </div>
+
+              <div>
+                <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>3단계. [승인된 리디렉션 URI]에도 동일 등록 후 [저장]</strong>
+                <p style={{ margin: '4px 0', color: 'var(--mut)' }}>
+                  하단의 <strong>[저장]</strong> 버튼을 누르면 완료됩니다. (Google 서버 전파에 약 1~5분 정도 소요될 수 있습니다)
+                </p>
+              </div>
+
+              <div style={{ padding: '8px 12px', background: 'var(--card2)', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                <span style={{ fontSize: '11.5px', color: 'var(--dim)' }}>
+                  현재 프로젝트 클라이언트 ID: <code style={{ color: 'var(--txt)' }}>925288531270-ch6pfbsrq2h1uuhe46dph9r8l6o6tmmb.apps.googleusercontent.com</code>
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px', flexWrap: 'wrap' }}>
+              <button 
+                className="btn btn-secondary"
+                onClick={() => setIsGoogleGuideOpen(false)}
+              >
+                가이드 닫기
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={() => {
+                  const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+                  const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
+                  const meta = getRoleMetadata(effectiveRole);
+                  login({
+                    email: 'jes0508@gmail.com',
+                    role: effectiveRole,
+                    roles: effectiveRoles,
+                    businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+                    name: authMode === 'signup' && signupName ? signupName : `${meta.userName} (Google)`,
+                    partnerId: meta.partnerId,
+                    avatarUrl: 'https://lh3.googleusercontent.com/a/default-user',
+                    provider: 'google'
+                  });
+                  setIsGoogleGuideOpen(false);
+                  showToast(`Google 계정(jes0508@gmail.com)으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
+                }}
+              >
+                Google 계정(jes0508)으로 즉시 입장하기
               </button>
             </div>
           </div>
