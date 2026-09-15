@@ -128,6 +128,8 @@ export const LoginView: React.FC = () => {
   const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('jes0508@gmail.com');
   const [googleDirectName, setGoogleDirectName] = useState<string>('');
 
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '133024291217-qgs5fg81kcmjen39mubh376kotlopfuc.apps.googleusercontent.com';
+
   const effectiveDisplayRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
   const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === effectiveDisplayRole) || PARTNER_CATEGORIES[0];
 
@@ -1760,7 +1762,7 @@ export const LoginView: React.FC = () => {
                   📌 콘솔 등록 후에도 계속 400 에러가 발생할 때 점검 5가지:
                 </strong>
                 <div style={{ fontSize: '11.5px', color: 'var(--mut)', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <span>1. <strong>클라이언트 ID 일치:</strong> 콘솔의 클라이언트 ID가 <code style={{ color: 'var(--acc)' }}>925288531270-...</code>와 같은 프로젝트인지 확인</span>
+                  <span>1. <strong>클라이언트 ID 일치:</strong> 콘솔의 클라이언트 ID가 <code style={{ color: 'var(--acc)' }}>133024291217-...</code>와 같은 프로젝트인지 확인</span>
                   <span>2. <strong>입력 위치:</strong> 리디렉션 URI가 아닌 <strong>[승인된 JavaScript 원본]</strong>에 등록했는지 확인</span>
                   <span>3. <strong>슬래시 제거:</strong> 끝에 <code style={{ color: '#EA4335' }}>/</code>가 붙어있으면 차단됩니다 (<code style={{ color: 'var(--lime-chip)' }}>https://partner.hitin.kr</code> ⭕)</span>
                   <span>4. <strong>저장 버튼:</strong> 화면 맨 아래 파란색 <strong>[저장]</strong> 버튼을 반드시 눌렀는지 확인</span>
@@ -1839,7 +1841,7 @@ export const LoginView: React.FC = () => {
 
               <div style={{ padding: '8px 12px', background: 'var(--card2)', borderRadius: '8px', border: '1px solid var(--line)' }}>
                 <span style={{ fontSize: '11.5px', color: 'var(--dim)' }}>
-                  현재 프로젝트 클라이언트 ID: <code style={{ color: 'var(--txt)' }}>925288531270-ch6pfbsrq2h1uuhe46dph9r8l6o6tmmb.apps.googleusercontent.com</code>
+                  현재 프로젝트 클라이언트 ID: <code style={{ color: 'var(--txt)' }}>{googleClientId || '133024291217-qgs5fg81kcmjen39mubh376kotlopfuc.apps.googleusercontent.com'}</code>
                 </span>
               </div>
             </div>
