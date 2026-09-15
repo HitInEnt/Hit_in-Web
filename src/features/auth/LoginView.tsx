@@ -63,9 +63,9 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     subTitle: '경기장 & 아레나 운영',
     desc: '타임슬롯 게임 예약, 실시간 QR 체크인 및 관제',
     icon: Layers,
-    defaultBiz: '플래툰 아레나 경기점',
-    defaultName: '김태식 대표',
-    defaultEmail: 'field_manager@platoon.kr',
+    defaultBiz: 'HIT IN 파트너 아레나',
+    defaultName: '필드 대표자',
+    defaultEmail: 'field@partner.hitin.kr',
     features: ['타임슬롯/정기전 등록', '실시간 QR 체크인', '현장 결제 & 대관 관리']
   },
   {
@@ -77,9 +77,9 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     subTitle: '밀리터리 용품 & 건샵 / 렌탈',
     desc: '에어소프트 용품/장비 재고 관리, 렌탈 장비 현황',
     icon: ShoppingBag,
-    defaultBiz: '건스미스 서울본점',
-    defaultName: '박성호 실장',
-    defaultEmail: 'contact@gunsmith.co.kr',
+    defaultBiz: 'HIT IN 제휴 건샵',
+    defaultName: '건샵 대표자',
+    defaultEmail: 'shop@partner.hitin.kr',
     features: ['용품/장비 재고 관리', '렌탈 패키지 현황', '정비/튜닝 의뢰 접수']
   },
   {
@@ -92,7 +92,7 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     desc: '전국 가맹사 심사 승인, 매출 정산 및 플랫폼 관제',
     icon: ShieldCheck,
     defaultBiz: 'HIT IN 본사 운영센터',
-    defaultName: '최민준 총괄팀장',
+    defaultName: '본사 총괄 관리자',
     defaultEmail: 'admin@hit-in.app',
     features: ['가맹사 심사 및 승인', '전체 매출 & 정산 대사', '통합 시스템 정책 관제']
   }
@@ -106,9 +106,9 @@ export const LoginView: React.FC = () => {
 
   // --- Login State ---
   const [selectedRole, setSelectedRole] = useState<PartnerRole>('field_owner');
-  const [email, setEmail] = useState('field_manager@platoon.kr');
-  const [password, setPassword] = useState('••••••••');
-  const [phone, setPhone] = useState('010-8921-4432');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [loginMethod, setLoginMethod] = useState<'email' | 'pass'>('email');
   const [socialLoading, setSocialLoading] = useState<'kakao' | 'google' | null>(null);
 
@@ -129,13 +129,6 @@ export const LoginView: React.FC = () => {
 
   const handleRoleChange = (role: PartnerRole) => {
     setSelectedRole(role);
-    const cat = PARTNER_CATEGORIES.find(c => c.role === role);
-    if (cat) {
-      setEmail(cat.defaultEmail);
-      if (role === 'field_owner') setPhone('010-8921-4432');
-      else if (role === 'shop_owner') setPhone('010-3329-8812');
-      else setPhone('02-555-8910');
-    }
   };
 
   const getRoleMetadata = (role: PartnerRole) => {
@@ -1256,6 +1249,7 @@ export const LoginView: React.FC = () => {
                         type="email"
                         className="form-input"
                         style={{ width: '100%', paddingLeft: '38px' }}
+                        placeholder="partner@arena.kr"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         required
@@ -1271,6 +1265,7 @@ export const LoginView: React.FC = () => {
                         type="password"
                         className="form-input"
                         style={{ width: '100%', paddingLeft: '38px' }}
+                        placeholder="비밀번호 입력"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         required

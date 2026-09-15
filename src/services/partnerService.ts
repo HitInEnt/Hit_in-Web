@@ -30,15 +30,15 @@ const API_BASE_URL =
   'https://api.hitin.kr/api/v1';
 
 const STORAGE_KEYS = {
-  SLOTS: 'hitin_partner_slots_v2',
-  BOOKINGS: 'hitin_partner_bookings_v2',
-  PROFILES: 'hitin_partner_profiles_v2',
-  PRODUCTS: 'hitin_partner_products_v2',
-  SETTLEMENTS: 'hitin_partner_settlements_v2',
-  CLIENTS: 'hitin_partner_clients_v2',
-  FIELDS: 'hitin_partner_fields_v2',
-  USER_POINTS: 'hitin_user_points_v1',
-  POINT_TRANSACTIONS: 'hitin_point_transactions_v1'
+  SLOTS: 'hitin_partner_slots_v4',
+  BOOKINGS: 'hitin_partner_bookings_v4',
+  PROFILES: 'hitin_partner_profiles_v4',
+  PRODUCTS: 'hitin_partner_products_v4',
+  SETTLEMENTS: 'hitin_partner_settlements_v4',
+  CLIENTS: 'hitin_partner_clients_v4',
+  FIELDS: 'hitin_partner_fields_v4',
+  USER_POINTS: 'hitin_user_points_v4',
+  POINT_TRANSACTIONS: 'hitin_point_transactions_v4'
 };
 
 
