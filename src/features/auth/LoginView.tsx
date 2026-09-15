@@ -10,7 +10,13 @@ import {
   Mail, 
   Smartphone,
   CheckCircle2,
-  Loader2
+  Loader2,
+  User,
+  FileText,
+  Check,
+  HelpCircle,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
@@ -32,9 +38,73 @@ const KakaoIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
   </svg>
 );
 
+interface PartnerCategoryOption {
+  role: PartnerRole;
+  badge: string;
+  badgeBg: string;
+  badgeColor: string;
+  title: string;
+  subTitle: string;
+  desc: string;
+  icon: React.ComponentType<{ size?: number; color?: string; style?: React.CSSProperties }>;
+  defaultBiz: string;
+  defaultName: string;
+  defaultEmail: string;
+  features: string[];
+}
+
+const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
+  {
+    role: 'field_owner',
+    badge: 'ARENA / FIELD',
+    badgeBg: 'rgba(255, 90, 31, 0.15)',
+    badgeColor: 'var(--acc)',
+    title: '필드 사장님',
+    subTitle: '경기장 & 아레나 운영',
+    desc: '타임슬롯 게임 예약, 실시간 QR 체크인 및 관제',
+    icon: Layers,
+    defaultBiz: '플래툰 아레나 경기점',
+    defaultName: '김태식 대표',
+    defaultEmail: 'field_manager@platoon.kr',
+    features: ['타임슬롯/정기전 등록', '실시간 QR 체크인', '현장 결제 & 대관 관리']
+  },
+  {
+    role: 'shop_owner',
+    badge: 'GUNSHOP & GEAR',
+    badgeBg: 'rgba(56, 189, 248, 0.15)',
+    badgeColor: '#38bdf8',
+    title: '건샵 사장님',
+    subTitle: '밀리터리 용품 & 건샵 / 렌탈',
+    desc: '에어소프트 용품/장비 재고 관리, 렌탈 장비 현황',
+    icon: ShoppingBag,
+    defaultBiz: '건스미스 서울본점',
+    defaultName: '박성호 실장',
+    defaultEmail: 'contact@gunsmith.co.kr',
+    features: ['용품/장비 재고 관리', '렌탈 패키지 현황', '정비/튜닝 의뢰 접수']
+  },
+  {
+    role: 'hq_admin',
+    badge: 'HQ PLATFORM',
+    badgeBg: 'rgba(199, 249, 78, 0.2)',
+    badgeColor: 'var(--lime-chip)',
+    title: '본사 총괄 관리자',
+    subTitle: 'HIT IN 운영센터 / CRM',
+    desc: '전국 가맹사 심사 승인, 매출 정산 및 플랫폼 관제',
+    icon: ShieldCheck,
+    defaultBiz: 'HIT IN 본사 운영센터',
+    defaultName: '최민준 총괄팀장',
+    defaultEmail: 'admin@hit-in.app',
+    features: ['가맹사 심사 및 승인', '전체 매출 & 정산 대사', '통합 시스템 정책 관제']
+  }
+];
+
 export const LoginView: React.FC = () => {
   const { login, theme, toggleTheme, showToast } = usePartner();
 
+  // Auth Mode: 'login' | 'signup'
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+
+  // --- Login State ---
   const [selectedRole, setSelectedRole] = useState<PartnerRole>('field_owner');
   const [email, setEmail] = useState('field_manager@platoon.kr');
   const [password, setPassword] = useState('••••••••');
@@ -42,42 +112,41 @@ export const LoginView: React.FC = () => {
   const [loginMethod, setLoginMethod] = useState<'email' | 'pass'>('email');
   const [socialLoading, setSocialLoading] = useState<'kakao' | 'google' | null>(null);
 
+  // --- Sign-up State ---
+  const [signupRole, setSignupRole] = useState<PartnerRole>('field_owner');
+  const [signupName, setSignupName] = useState('');
+  const [signupBusinessName, setSignupBusinessName] = useState('');
+  const [signupBusinessNumber, setSignupBusinessNumber] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupPasswordConfirm, setSignupPasswordConfirm] = useState('');
+  const [agreeTerms, setAgreeTerms] = useState(true);
+
+  const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
+
+  const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === (authMode === 'signup' ? signupRole : selectedRole)) || PARTNER_CATEGORIES[0];
+
   const handleRoleChange = (role: PartnerRole) => {
     setSelectedRole(role);
-    if (role === 'field_owner') {
-      setEmail('field_manager@platoon.kr');
-      setPhone('010-8921-4432');
-    } else if (role === 'shop_owner') {
-      setEmail('contact@gunsmith.co.kr');
-      setPhone('010-3329-8812');
-    } else {
-      setEmail('admin@hit-in.app');
-      setPhone('02-555-8910');
+    const cat = PARTNER_CATEGORIES.find(c => c.role === role);
+    if (cat) {
+      setEmail(cat.defaultEmail);
+      if (role === 'field_owner') setPhone('010-8921-4432');
+      else if (role === 'shop_owner') setPhone('010-3329-8812');
+      else setPhone('02-555-8910');
     }
   };
 
   const getRoleMetadata = (role: PartnerRole) => {
-    if (role === 'shop_owner') {
-      return {
-        businessName: '건스미스 서울본점',
-        userName: '박성호 실장',
-        partnerId: 'shp_01'
-      };
-    } else if (role === 'hq_admin') {
-      return {
-        businessName: 'HIT IN 본사 운영센터',
-        userName: '최민준 총괄팀장',
-        partnerId: 'hq_01'
-      };
-    }
+    const cat = PARTNER_CATEGORIES.find(c => c.role === role) || PARTNER_CATEGORIES[0];
+    const prefix = role === 'field_owner' ? 'fld' : role === 'shop_owner' ? 'shp' : 'hq';
     return {
-      businessName: '플래툰 아레나 경기점',
-      userName: '김태식 대표',
-      partnerId: 'fld_01'
+      businessName: cat.defaultBiz,
+      userName: cat.defaultName,
+      partnerId: `${prefix}_01`
     };
   };
-
-  const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
 
   // Auto initialize Kakao SDK & check for OAuth redirect code on mount
   React.useEffect(() => {
@@ -104,6 +173,7 @@ export const LoginView: React.FC = () => {
     if (authCode) {
       const exchangeKakaoAuthCode = async () => {
         setSocialLoading('kakao');
+        const effectiveRole = authMode === 'signup' ? signupRole : selectedRole;
         try {
           window.history.replaceState({}, document.title, window.location.pathname);
           const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY || '19d9e85a2aac46f54287103a4ca3f01f';
@@ -128,28 +198,28 @@ export const LoginView: React.FC = () => {
             });
             const userData = await userRes.json();
             const profile = userData.kakao_account?.profile;
-            const meta = getRoleMetadata(selectedRole);
+            const meta = getRoleMetadata(effectiveRole);
 
             login({
               email: userData.kakao_account?.email || `kakao_${userData.id}@kakao.com`,
-              role: selectedRole,
-              businessName: meta.businessName,
-              name: profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName,
+              role: effectiveRole,
+              businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+              name: authMode === 'signup' && signupName ? signupName : (profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName),
               partnerId: meta.partnerId,
               avatarUrl: profile?.profile_image_url || 'https://t1.kakaocdn.net/account_images/default_profile.jpeg',
               provider: 'kakao'
             });
 
-            showToast(`카카오 계정(${profile?.nickname || '회원'}님)으로 로그인되었습니다.`, 'success');
+            showToast(`카카오 계정(${profile?.nickname || '회원'}님)으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
           } else {
             throw new Error('카카오 토큰 교환 실패');
           }
         } catch (err) {
           console.warn('[Kakao] Code exchange error:', err);
-          const meta = getRoleMetadata(selectedRole);
+          const meta = getRoleMetadata(effectiveRole);
           login({
-            email: `kakao_${selectedRole}@kakao.com`,
-            role: selectedRole,
+            email: `kakao_${effectiveRole}@kakao.com`,
+            role: effectiveRole,
             businessName: meta.businessName,
             name: `${meta.userName} (카카오)`,
             partnerId: meta.partnerId,
@@ -164,17 +234,18 @@ export const LoginView: React.FC = () => {
 
       exchangeKakaoAuthCode();
     }
-  }, [selectedRole]);
+  }, [selectedRole, signupRole, authMode]);
 
-  // 소셜 로그인 (카카오 / 구글) 핸들러
+  // 소셜 로그인 / 가입 핸들러
   const handleSocialLogin = async (provider: 'kakao' | 'google') => {
     setSocialLoading(provider);
-    const meta = getRoleMetadata(selectedRole);
+    const effectiveRole = authMode === 'signup' ? signupRole : selectedRole;
+    const meta = getRoleMetadata(effectiveRole);
 
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const kakaoJsKey = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY || import.meta.env.NEXT_PUBLIC_KAKAO_JS_KEY || '14a3863dc2024f7f36c6d9a01082bdda';
 
-    // ── 1. Google OAuth 2.0 (Google Identity Services) ──
+    // ── 1. Google OAuth 2.0 ──
     if (provider === 'google' && googleClientId) {
       if (window.google?.accounts?.oauth2) {
         try {
@@ -183,13 +254,12 @@ export const LoginView: React.FC = () => {
             scope: 'email profile openid',
             callback: async (tokenResponse: any) => {
               if (tokenResponse.error) {
-                showToast(`Google 로그인 취소됨: ${tokenResponse.error}`, 'error');
+                showToast(`Google 인증 취소됨: ${tokenResponse.error}`, 'error');
                 setSocialLoading(null);
                 return;
               }
 
               try {
-                // Fetch actual user profile from Google API
                 const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                   headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
                 });
@@ -197,19 +267,19 @@ export const LoginView: React.FC = () => {
 
                 login({
                   email: googleProfile.email,
-                  role: selectedRole,
-                  businessName: meta.businessName,
-                  name: googleProfile.name ? `${googleProfile.name} (${selectedRole === 'field_owner' ? '필드 대표' : selectedRole === 'shop_owner' ? '건샵 실장' : '본사 CRM'})` : meta.userName,
+                  role: effectiveRole,
+                  businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+                  name: authMode === 'signup' && signupName ? signupName : (googleProfile.name ? `${googleProfile.name}` : meta.userName),
                   partnerId: meta.partnerId,
                   avatarUrl: googleProfile.picture || 'https://lh3.googleusercontent.com/a/default-user',
                   provider: 'google'
                 });
 
-                showToast(`Google 계정(${googleProfile.email})으로 로그인되었습니다.`, 'success');
+                showToast(`Google 계정(${googleProfile.email})으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
               } catch (fetchErr) {
                 login({
                   email: 'google_user@gmail.com',
-                  role: selectedRole,
+                  role: effectiveRole,
                   businessName: meta.businessName,
                   name: `${meta.userName} (Google)`,
                   partnerId: meta.partnerId,
@@ -235,11 +305,10 @@ export const LoginView: React.FC = () => {
       }
     }
 
-    // ── 2. Kakao OAuth 2.0 (Kakao JavaScript SDK & Direct Popup) ──
+    // ── 2. Kakao OAuth 2.0 ──
     if (provider === 'kakao') {
       const kakaoKey = kakaoJsKey || '14a3863dc2024f7f36c6d9a01082bdda';
 
-      // Method A: Kakao JS SDK Popup Login
       if (window.Kakao) {
         try {
           if (!window.Kakao.isInitialized()) {
@@ -255,21 +324,21 @@ export const LoginView: React.FC = () => {
                     const profile = kakaoAccount?.profile;
                     login({
                       email: kakaoAccount?.email || `kakao_${res.id}@kakao.com`,
-                      role: selectedRole,
-                      businessName: meta.businessName,
-                      name: profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName,
+                      role: effectiveRole,
+                      businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+                      name: authMode === 'signup' && signupName ? signupName : (profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName),
                       partnerId: meta.partnerId,
                       avatarUrl: profile?.profile_image_url || 'https://api.dicebear.com/7.x/bottts/svg?seed=TeddyCommander&backgroundColor=ffdfbf',
                       provider: 'kakao'
                     });
-                    showToast(`카카오 계정(${profile?.nickname || '회원'}님)으로 로그인되었습니다.`, 'success');
+                    showToast(`카카오 계정(${profile?.nickname || '회원'}님)으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
                     setSocialLoading(null);
                   },
                   fail: function(fetchErr: any) {
                     console.warn('[Kakao] user info failed:', fetchErr);
                     login({
                       email: `kakao_partner@kakao.com`,
-                      role: selectedRole,
+                      role: effectiveRole,
                       businessName: meta.businessName,
                       name: `${meta.userName} (카카오)`,
                       partnerId: meta.partnerId,
@@ -291,10 +360,9 @@ export const LoginView: React.FC = () => {
                   showToast(`카카오 로그인: ${desc || '인증 오류'}`, 'warning');
                 }
 
-                // Fallback login so user is never stuck
                 login({
-                  email: `kakao_${selectedRole}@kakao.com`,
-                  role: selectedRole,
+                  email: `kakao_${effectiveRole}@kakao.com`,
+                  role: effectiveRole,
                   businessName: meta.businessName,
                   name: `${meta.userName} (카카오)`,
                   partnerId: meta.partnerId,
@@ -325,13 +393,12 @@ export const LoginView: React.FC = () => {
       }
     }
 
-    // ── 3. Fallback (Key not configured or Offline Demo Mode) ──
+    // ── 3. Fallback (Demo Mode) ──
     try {
-      await new Promise(r => setTimeout(r, 600));
-
+      await new Promise(r => setTimeout(r, 500));
       const socialEmail = provider === 'kakao' 
-        ? `kakao_${selectedRole}@kakao.com` 
-        : `google_${selectedRole}@gmail.com`;
+        ? `kakao_${effectiveRole}@kakao.com` 
+        : `google_${effectiveRole}@gmail.com`;
       const socialName = provider === 'kakao' 
         ? `${meta.userName} (카카오)` 
         : `${meta.userName} (Google)`;
@@ -341,7 +408,7 @@ export const LoginView: React.FC = () => {
 
       login({
         email: socialEmail,
-        role: selectedRole,
+        role: effectiveRole,
         businessName: meta.businessName,
         name: socialName,
         partnerId: meta.partnerId,
@@ -351,19 +418,19 @@ export const LoginView: React.FC = () => {
 
       showToast(
         provider === 'kakao' 
-          ? '카카오 계정으로 파트너 로그인이 완료되었습니다.' 
-          : 'Google 계정으로 파트너 로그인이 완료되었습니다.',
+          ? `카카오 계정으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인이 완료되었습니다.` 
+          : `Google 계정으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인이 완료되었습니다.`,
         'success'
       );
     } catch (err) {
-      showToast('소셜 로그인 중 오류가 발생했습니다.', 'error');
+      showToast('소셜 인증 중 오류가 발생했습니다.', 'error');
     } finally {
       setSocialLoading(null);
     }
   };
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  // 로그인 제출
+  const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const meta = getRoleMetadata(selectedRole);
 
@@ -379,22 +446,68 @@ export const LoginView: React.FC = () => {
     showToast('파트너 포털에 성공적으로 로그인했습니다.', 'success');
   };
 
+  // 신규 회원가입 제출
+  const handleSignUpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!signupName.trim()) {
+      showToast('대표자 성명을 입력해주세요.', 'warning');
+      return;
+    }
+    if (!signupBusinessName.trim()) {
+      showToast('사업장 상호명을 입력해주세요.', 'warning');
+      return;
+    }
+    if (!signupEmail.trim() || !signupEmail.includes('@')) {
+      showToast('올바른 이메일 주소를 입력해주세요.', 'warning');
+      return;
+    }
+    if (signupPassword.length < 6) {
+      showToast('비밀번호는 6자리 이상이어야 합니다.', 'warning');
+      return;
+    }
+    if (signupPassword !== signupPasswordConfirm) {
+      showToast('비밀번호 확인이 일치하지 않습니다.', 'error');
+      return;
+    }
+    if (!agreeTerms) {
+      showToast('파트너 이용약관 및 개인정보 처리에 동의해주세요.', 'warning');
+      return;
+    }
+
+    const prefix = signupRole === 'field_owner' ? 'fld' : signupRole === 'shop_owner' ? 'shp' : 'hq';
+    const newPartnerId = `${prefix}_${Math.floor(1000 + Math.random() * 9000)}`;
+
+    login({
+      email: signupEmail,
+      role: signupRole,
+      name: signupName,
+      businessName: signupBusinessName,
+      partnerId: newPartnerId,
+      avatarUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(signupBusinessName)}`,
+      provider: 'email'
+    });
+
+    const roleKorean = signupRole === 'field_owner' ? '필드 사장님' : signupRole === 'shop_owner' ? '건샵 사장님' : '본사 총괄 관리자';
+    showToast(`🎉 [${roleKorean}] 파트너 회원가입이 완료되었습니다! 환영합니다.`, 'success');
+  };
+
   return (
     <div style={{
       width: '100vw',
-      height: '100vh',
+      minHeight: '100vh',
       backgroundColor: 'var(--bg)',
       color: 'var(--txt)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      overflow: 'hidden',
-      padding: '20px'
+      overflowY: 'auto',
+      padding: '24px 16px'
     }}>
       {/* Background Gradients */}
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         top: '-20%',
         right: '-10%',
         width: '600px',
@@ -404,7 +517,7 @@ export const LoginView: React.FC = () => {
         pointerEvents: 'none'
       }} />
       <div style={{
-        position: 'absolute',
+        position: 'fixed',
         bottom: '-20%',
         left: '-10%',
         width: '500px',
@@ -414,330 +527,812 @@ export const LoginView: React.FC = () => {
         pointerEvents: 'none'
       }} />
 
-      {/* Login Card */}
+      {/* Main Container Card */}
       <div className="card-panel" style={{
-        width: '92%',
-        maxWidth: '460px',
+        width: '100%',
+        maxWidth: authMode === 'signup' ? '540px' : '460px',
         background: 'var(--card)',
         border: '1px solid var(--line)',
         borderRadius: 'var(--radius-xl)',
         boxShadow: 'var(--shadow-lg)',
-        padding: '28px 22px',
+        padding: authMode === 'signup' ? '28px 24px' : '28px 22px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '18px',
+        gap: '20px',
         zIndex: 10,
-        animation: 'fadeIn 0.25s ease-out'
+        margin: 'auto 0',
+        animation: 'fadeIn 0.25s ease-out',
+        transition: 'max-width 0.25s ease'
       }}>
         {/* Brand Header */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
+            width: '46px',
+            height: '46px',
             borderRadius: 'var(--radius-lg)',
             background: 'linear-gradient(135deg, var(--acc) 0%, var(--accd) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 16px rgba(255, 90, 31, 0.4)',
+            boxShadow: '0 4px 16px rgba(255, 90, 31, 0.35)',
             marginBottom: '10px'
           }}>
-            <Sparkles size={26} color="#ffffff" />
+            <Sparkles size={24} color="#ffffff" />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="tactical-font" style={{ fontSize: '24px', letterSpacing: '0.08em', color: 'var(--txt)' }}>
               HIT IN
             </span>
-            <span className="badge badge-lime" style={{ fontSize: '11px' }}>
+            <span className="badge badge-lime" style={{ fontSize: '11px', fontWeight: 800 }}>
               PARTNER B2B
             </span>
           </div>
           <p style={{ fontSize: '13px', color: 'var(--mut)', marginTop: '4px' }}>
-            에어소프트 경기장 & 건샵 파트너사 전용 관리자 포털
+            {authMode === 'signup' 
+              ? '에어소프트 경기장 & 건샵 신규 제휴 파트너 가입' 
+              : '에어소프트 경기장 & 건샵 파트너사 전용 관리자 포털'}
           </p>
         </div>
 
-        {/* Role Switcher Pills */}
-        <div>
-          <label className="form-label" style={{ marginBottom: '6px', display: 'block' }}>
-            파트너 권한 유형 선택
-          </label>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '6px',
-            background: 'var(--panel)',
-            padding: '4px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--line)'
-          }}>
-            <button
-              type="button"
-              onClick={() => handleRoleChange('field_owner')}
-              style={{
-                padding: '8px 4px',
-                fontSize: '12px',
-                fontWeight: 700,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: selectedRole === 'field_owner' ? 'var(--acc)' : 'transparent',
-                color: selectedRole === 'field_owner' ? '#fff' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <Layers size={15} />
-              필드 사장님
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleChange('shop_owner')}
-              style={{
-                padding: '8px 4px',
-                fontSize: '12px',
-                fontWeight: 700,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: selectedRole === 'shop_owner' ? 'var(--acc)' : 'transparent',
-                color: selectedRole === 'shop_owner' ? '#fff' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <ShoppingBag size={15} />
-              건샵 사장님
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleChange('hq_admin')}
-              style={{
-                padding: '8px 4px',
-                fontSize: '12px',
-                fontWeight: 700,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: selectedRole === 'hq_admin' ? 'var(--lime-chip)' : 'transparent',
-                color: selectedRole === 'hq_admin' ? 'var(--ink-fixed)' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <ShieldCheck size={15} />
-              본사 CRM
-            </button>
-          </div>
-        </div>
-
-        {/* ── Social Login Buttons (Kakao & Google) ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {/* Kakao Login Button */}
+        {/* ── Mode Switcher Tabs (로그인 vs 신규 회원가입) ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          background: 'var(--panel)',
+          padding: '4px',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--line)'
+        }}>
           <button
             type="button"
-            onClick={() => handleSocialLogin('kakao')}
-            disabled={socialLoading !== null}
+            onClick={() => setAuthMode('login')}
             style={{
-              width: '100%',
-              height: '46px',
-              backgroundColor: '#FEE500',
-              color: '#191919',
-              border: 'none',
-              borderRadius: 'var(--radius-md)',
+              padding: '9px 8px',
+              fontSize: '13px',
               fontWeight: 700,
-              fontSize: '14px',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px',
-              cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
+              gap: '6px',
               transition: 'all 0.15s ease',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+              background: authMode === 'login' ? 'var(--card)' : 'transparent',
+              color: authMode === 'login' ? 'var(--txt)' : 'var(--mut)',
+              boxShadow: authMode === 'login' ? 'var(--shadow-sm)' : 'none'
             }}
           >
-            {socialLoading === 'kakao' ? (
-              <>
-                <Loader2 size={18} className="spin" />
-                <span>카카오 로그인 중...</span>
-              </>
-            ) : (
-              <>
-                <KakaoIcon size={19} />
-                <span>카카오톡으로 1초 시작하기</span>
-              </>
-            )}
+            <LogIn size={15} color={authMode === 'login' ? 'var(--acc)' : 'currentColor'} />
+            파트너 로그인
           </button>
-
-          {/* Google Login Button */}
           <button
             type="button"
-            onClick={() => handleSocialLogin('google')}
-            disabled={socialLoading !== null}
+            onClick={() => setAuthMode('signup')}
             style={{
-              width: '100%',
-              height: '46px',
-              backgroundColor: 'var(--panel)',
-              color: 'var(--txt)',
-              border: '1px solid var(--line)',
-              borderRadius: 'var(--radius-md)',
-              fontWeight: 600,
-              fontSize: '14px',
+              padding: '9px 8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px',
-              cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
-              transition: 'all 0.15s ease'
+              gap: '6px',
+              transition: 'all 0.15s ease',
+              background: authMode === 'signup' ? 'var(--acc)' : 'transparent',
+              color: authMode === 'signup' ? '#ffffff' : 'var(--mut)',
+              boxShadow: authMode === 'signup' ? '0 2px 8px rgba(255, 90, 31, 0.3)' : 'none'
             }}
           >
-            {socialLoading === 'google' ? (
-              <>
-                <Loader2 size={18} className="spin" />
-                <span>Google 인증 진행 중...</span>
-              </>
-            ) : (
-              <>
-                <GoogleIcon size={18} />
-                <span>Google 계정으로 계속하기</span>
-              </>
-            )}
-          </button>
-
-          {/* Help link for Kakao setup */}
-          <div style={{ textAlign: 'center', marginTop: '2px' }}>
-            <button
-              type="button"
-              onClick={() => setIsKakaoGuideOpen(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--mut)',
-                fontSize: '11px',
-                textDecoration: 'underline',
-                cursor: 'pointer'
-              }}
-            >
-              카카오 소셜 로그인 연동 설정 가이드 (도메인/키 설정)
-            </button>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-          <span style={{ fontSize: '12px', color: 'var(--dim)', fontWeight: 500 }}>또는</span>
-          <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-        </div>
-
-        {/* Login Method Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--line)' }}>
-          <button
-            type="button"
-            onClick={() => setLoginMethod('email')}
-            style={{
-              flex: 1,
-              padding: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              background: 'transparent',
-              border: 'none',
-              borderBottom: loginMethod === 'email' ? '2px solid var(--acc)' : '2px solid transparent',
-              color: loginMethod === 'email' ? 'var(--acc)' : 'var(--mut)',
-              cursor: 'pointer'
-            }}
-          >
-            이메일 / 아이디
-          </button>
-          <button
-            type="button"
-            onClick={() => setLoginMethod('pass')}
-            style={{
-              flex: 1,
-              padding: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              background: 'transparent',
-              border: 'none',
-              borderBottom: loginMethod === 'pass' ? '2px solid var(--acc)' : '2px solid transparent',
-              color: loginMethod === 'pass' ? 'var(--acc)' : 'var(--mut)',
-              cursor: 'pointer'
-            }}
-          >
-            PASS 본인인증
+            <UserPlus size={15} />
+            신규 파트너 회원가입
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {loginMethod === 'email' ? (
-            <>
+        {/* ════════════════════════════════════════════════════════════
+            AUTH MODE: SIGN-UP (회원가입 모드)
+           ════════════════════════════════════════════════════════════ */}
+        {authMode === 'signup' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            
+            {/* 1. 가입분야 선택 메뉴 (필드사장 / 건샵사장 / 본사) */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '13px' }}>
+                  🎯 파트너 가입 분야 선택 <span style={{ color: 'var(--acc)' }}>*</span>
+                </label>
+                <span style={{ fontSize: '11px', color: 'var(--mut)' }}>
+                  운영 사업 형태에 맞게 선택
+                </span>
+              </div>
+
+              {/* 3 Categories Cards Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {PARTNER_CATEGORIES.map(cat => {
+                  const isSelected = signupRole === cat.role;
+                  const IconComp = cat.icon;
+                  return (
+                    <div
+                      key={cat.role}
+                      onClick={() => setSignupRole(cat.role)}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 'var(--radius-md)',
+                        background: isSelected ? 'var(--card2)' : 'var(--panel)',
+                        border: isSelected 
+                          ? `2px solid ${cat.badgeColor}` 
+                          : '1px solid var(--line)',
+                        boxShadow: isSelected ? `0 0 12px ${cat.badgeColor}25` : 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: 'var(--radius-md)',
+                          background: isSelected ? cat.badgeBg : 'var(--card)',
+                          border: `1px solid ${isSelected ? cat.badgeColor : 'var(--line)'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <IconComp size={18} color={isSelected ? cat.badgeColor : 'var(--mut)'} />
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontWeight: 800, fontSize: '14px', color: isSelected ? 'var(--txt)' : 'var(--mut)' }}>
+                              {cat.title}
+                            </span>
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: 700,
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              background: cat.badgeBg,
+                              color: cat.badgeColor
+                            }}>
+                              {cat.badge}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '11.5px', color: isSelected ? 'var(--txt)' : 'var(--dim)', margin: '2px 0 0 0' }}>
+                            {cat.subTitle} · {cat.desc}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        border: isSelected ? `6px solid ${cat.badgeColor}` : '2px solid var(--dim)',
+                        background: '#ffffff',
+                        flexShrink: 0,
+                        transition: 'all 0.15s ease'
+                      }} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Selected Category Feature Hint */}
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--panel)',
+              border: '1px solid var(--line)',
+              fontSize: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: activeCategoryConfig.badgeColor, fontWeight: 700 }}>
+                <CheckCircle2 size={14} />
+                <span>[{activeCategoryConfig.title}] 등록 시 제공되는 주요 기능</span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+                {activeCategoryConfig.features.map((feat, idx) => (
+                  <span key={idx} style={{
+                    fontSize: '11px',
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'var(--card)',
+                    border: '1px solid var(--line)',
+                    color: 'var(--txt)'
+                  }}>
+                    ✓ {feat}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Social Quick Sign-Up ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={() => handleSocialLogin('kakao')}
+                disabled={socialLoading !== null}
+                style={{
+                  width: '100%',
+                  height: '44px',
+                  backgroundColor: '#FEE500',
+                  color: '#191919',
+                  border: 'none',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 700,
+                  fontSize: '13.5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {socialLoading === 'kakao' ? (
+                  <>
+                    <Loader2 size={16} className="spin" />
+                    <span>카카오 가입 처리 중...</span>
+                  </>
+                ) : (
+                  <>
+                    <KakaoIcon size={18} />
+                    <span>[{activeCategoryConfig.title}] 카카오 1초 간편가입</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSocialLogin('google')}
+                disabled={socialLoading !== null}
+                style={{
+                  width: '100%',
+                  height: '42px',
+                  backgroundColor: 'var(--panel)',
+                  color: 'var(--txt)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {socialLoading === 'google' ? (
+                  <>
+                    <Loader2 size={16} className="spin" />
+                    <span>Google 가입 처리 중...</span>
+                  </>
+                ) : (
+                  <>
+                    <GoogleIcon size={17} />
+                    <span>Google 계정으로 간편 가입</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+              <span style={{ fontSize: '11.5px', color: 'var(--dim)', fontWeight: 500 }}>또는 직접 정보 입력</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+            </div>
+
+            {/* Direct Sign-Up Form */}
+            <form onSubmit={handleSignUpSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Row 1: 대표자명 & 상호명 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>대표자(담당자)명 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <User size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                      placeholder="예: 홍길동 대표"
+                      value={signupName}
+                      onChange={e => setSignupName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>사업장 상호명 <span style={{ color: 'var(--acc)' }}>*</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <Building2 size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                      placeholder={signupRole === 'field_owner' ? '예: 플래툰 아레나 경기점' : signupRole === 'shop_owner' ? '예: 택티컬 건스미스 본점' : 'HIT IN 본사'}
+                      value={signupBusinessName}
+                      onChange={e => setSignupBusinessName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2: 사업자등록번호 & 대표 연락처 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>사업자등록번호</label>
+                  <div style={{ position: 'relative' }}>
+                    <FileText size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                      placeholder="123-45-67890"
+                      value={signupBusinessNumber}
+                      onChange={e => setSignupBusinessNumber(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>대표 연락처 (휴대폰) <span style={{ color: 'var(--acc)' }}>*</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <Smartphone size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="tel"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                      placeholder="010-0000-0000"
+                      value={signupPhone}
+                      onChange={e => setSignupPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 3: 로그인 이메일 (아이디) */}
               <div className="form-group">
-                <label className="form-label">파트너 로그인 이메일</label>
+                <label className="form-label" style={{ fontSize: '12px' }}>로그인 이메일 (아이디) <span style={{ color: 'var(--acc)' }}>*</span></label>
                 <div style={{ position: 'relative' }}>
-                  <Mail size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Mail size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="email"
                     className="form-input"
-                    style={{ width: '100%', paddingLeft: '38px' }}
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                    placeholder="partner@arena.kr"
+                    value={signupEmail}
+                    onChange={e => setSignupEmail(e.target.value)}
                     required
                   />
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">비밀번호</label>
-                <div style={{ position: 'relative' }}>
-                  <Lock size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="password"
-                    className="form-input"
-                    style={{ width: '100%', paddingLeft: '38px' }}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                  />
+              {/* Row 4: 비밀번호 & 비밀번호 확인 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>비밀번호 (6자 이상) <span style={{ color: 'var(--acc)' }}>*</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="password"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
+                      placeholder="비밀번호 입력"
+                      value={signupPassword}
+                      onChange={e => setSignupPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>
+                    비밀번호 확인 <span style={{ color: 'var(--acc)' }}>*</span>
+                    {signupPasswordConfirm && (
+                      <span style={{ 
+                        marginLeft: '6px', 
+                        fontSize: '11px', 
+                        color: signupPassword === signupPasswordConfirm ? 'var(--lime-chip)' : 'var(--danger)' 
+                      }}>
+                        {signupPassword === signupPasswordConfirm ? '✓ 일치' : '✕ 불일치'}
+                      </span>
+                    )}
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="password"
+                      className="form-input"
+                      style={{ 
+                        width: '100%', 
+                        paddingLeft: '32px', 
+                        fontSize: '13px',
+                        borderColor: signupPasswordConfirm && signupPassword !== signupPasswordConfirm ? 'var(--danger)' : undefined
+                      }}
+                      placeholder="비밀번호 재입력"
+                      value={signupPasswordConfirm}
+                      onChange={e => setSignupPasswordConfirm(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="form-group">
-              <label className="form-label">대표자 휴대폰 번호</label>
-              <div style={{ position: 'relative' }}>
-                <Smartphone size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+
+              {/* Terms Checkbox */}
+              <label style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                fontSize: '12px', 
+                color: 'var(--txt)', 
+                cursor: 'pointer',
+                marginTop: '4px'
+              }}>
                 <input
-                  type="tel"
-                  className="form-input"
-                  style={{ width: '100%', paddingLeft: '38px' }}
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                  placeholder="010-0000-0000"
-                  required
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={e => setAgreeTerms(e.target.checked)}
+                  style={{ accentColor: 'var(--acc)', width: '15px', height: '15px', cursor: 'pointer' }}
                 />
+                <span>HIT IN 파트너 서비스 이용약관 및 개인정보 처리방침에 동의합니다.</span>
+              </label>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', marginTop: '6px', fontWeight: 800 }}
+              >
+                <span>✨ [{activeCategoryConfig.title}] 파트너 가입 완료</span>
+                <ArrowRight size={16} />
+              </button>
+            </form>
+
+            {/* Switch to Login Link */}
+            <div style={{ textAlign: 'center', fontSize: '12.5px', color: 'var(--mut)' }}>
+              이미 HIT IN 파트너 계정이 있으신가요?{' '}
+              <button
+                type="button"
+                onClick={() => setAuthMode('login')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--acc)',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                기존 계정으로 로그인하기
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* ════════════════════════════════════════════════════════════
+              AUTH MODE: LOGIN (로그인 모드)
+             ════════════════════════════════════════════════════════════ */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            
+            {/* Quick Demo Role Switcher */}
+            <div>
+              <label className="form-label" style={{ marginBottom: '6px', display: 'block', fontSize: '12px' }}>
+                체험 및 빠른 로그인 권한 선택
+              </label>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '6px',
+                background: 'var(--panel)',
+                padding: '4px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--line)'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => handleRoleChange('field_owner')}
+                  style={{
+                    padding: '8px 4px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    borderRadius: 'var(--radius-sm)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    background: selectedRole === 'field_owner' ? 'var(--acc)' : 'transparent',
+                    color: selectedRole === 'field_owner' ? '#fff' : 'var(--mut)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <Layers size={15} />
+                  필드 사장님
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRoleChange('shop_owner')}
+                  style={{
+                    padding: '8px 4px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    borderRadius: 'var(--radius-sm)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    background: selectedRole === 'shop_owner' ? 'var(--acc)' : 'transparent',
+                    color: selectedRole === 'shop_owner' ? '#fff' : 'var(--mut)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <ShoppingBag size={15} />
+                  건샵 사장님
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRoleChange('hq_admin')}
+                  style={{
+                    padding: '8px 4px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    borderRadius: 'var(--radius-sm)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    background: selectedRole === 'hq_admin' ? 'var(--lime-chip)' : 'transparent',
+                    color: selectedRole === 'hq_admin' ? 'var(--ink-fixed)' : 'var(--mut)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <ShieldCheck size={15} />
+                  본사 CRM
+                </button>
               </div>
             </div>
-          )}
 
-          <button
-            type="submit"
-            className="btn btn-primary btn-lg"
-            style={{ width: '100%', marginTop: '4px' }}
-          >
-            <span>{selectedRole === 'hq_admin' ? '본사 CRM 로그인' : '파트너 포털 로그인'}</span>
-            <ArrowRight size={16} />
-          </button>
-        </form>
+            {/* Social Logins */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={() => handleSocialLogin('kakao')}
+                disabled={socialLoading !== null}
+                style={{
+                  width: '100%',
+                  height: '44px',
+                  backgroundColor: '#FEE500',
+                  color: '#191919',
+                  border: 'none',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 700,
+                  fontSize: '13.5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s ease',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                }}
+              >
+                {socialLoading === 'kakao' ? (
+                  <>
+                    <Loader2 size={18} className="spin" />
+                    <span>카카오 로그인 중...</span>
+                  </>
+                ) : (
+                  <>
+                    <KakaoIcon size={19} />
+                    <span>카카오톡으로 1초 시작하기</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSocialLogin('google')}
+                disabled={socialLoading !== null}
+                style={{
+                  width: '100%',
+                  height: '42px',
+                  backgroundColor: 'var(--panel)',
+                  color: 'var(--txt)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--radius-md)',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  cursor: socialLoading !== null ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {socialLoading === 'google' ? (
+                  <>
+                    <Loader2 size={18} className="spin" />
+                    <span>Google 인증 진행 중...</span>
+                  </>
+                ) : (
+                  <>
+                    <GoogleIcon size={18} />
+                    <span>Google 계정으로 계속하기</span>
+                  </>
+                )}
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '2px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsKakaoGuideOpen(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--mut)',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  카카오 소셜 로그인 연동 설정 가이드 (도메인/키 설정)
+                </button>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+              <span style={{ fontSize: '11.5px', color: 'var(--dim)', fontWeight: 500 }}>또는</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+            </div>
+
+            {/* Login Method Tabs */}
+            <div style={{ display: 'flex', borderBottom: '1px solid var(--line)' }}>
+              <button
+                type="button"
+                onClick={() => setLoginMethod('email')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: loginMethod === 'email' ? '2px solid var(--acc)' : '2px solid transparent',
+                  color: loginMethod === 'email' ? 'var(--acc)' : 'var(--mut)',
+                  cursor: 'pointer'
+                }}
+              >
+                이메일 / 아이디
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMethod('pass')}
+                style={{
+                  flex: 1,
+                  padding: '8px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: loginMethod === 'pass' ? '2px solid var(--acc)' : '2px solid transparent',
+                  color: loginMethod === 'pass' ? 'var(--acc)' : 'var(--mut)',
+                  cursor: 'pointer'
+                }}
+              >
+                PASS 본인인증
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {loginMethod === 'email' ? (
+                <>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '12px' }}>파트너 로그인 이메일</label>
+                    <div style={{ position: 'relative' }}>
+                      <Mail size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="email"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '38px' }}
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '12px' }}>비밀번호</label>
+                    <div style={{ position: 'relative' }}>
+                      <Lock size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input
+                        type="password"
+                        className="form-input"
+                        style={{ width: '100%', paddingLeft: '38px' }}
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="form-group">
+                  <label className="form-label" style={{ fontSize: '12px' }}>대표자 휴대폰 번호</label>
+                  <div style={{ position: 'relative' }}>
+                    <Smartphone size={16} color="var(--dim)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="tel"
+                      className="form-input"
+                      style={{ width: '100%', paddingLeft: '38px' }}
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                      placeholder="010-0000-0000"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', marginTop: '4px', fontWeight: 700 }}
+              >
+                <span>{selectedRole === 'hq_admin' ? '본사 CRM 로그인' : '파트너 포털 로그인'}</span>
+                <ArrowRight size={16} />
+              </button>
+            </form>
+
+            {/* Link to Sign-up */}
+            <div style={{
+              padding: '12px',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--panel)',
+              border: '1px solid var(--line)',
+              textAlign: 'center',
+              fontSize: '12.5px'
+            }}>
+              <span style={{ color: 'var(--mut)' }}>아직 HIT IN 제휴 파트너가 아니신가요? </span>
+              <button
+                type="button"
+                onClick={() => setAuthMode('signup')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--acc)',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                신규 파트너 회원가입 ↗
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Footer info */}
         <div style={{
@@ -789,7 +1384,7 @@ export const LoginView: React.FC = () => {
             </div>
 
             <div style={{ fontSize: '13px', lineHeight: '1.6', color: 'var(--txt)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ padding: '12px', backgroundColor: 'rgba(254, 229, 0, 0.12)', border: '1px solid rgba(254, 229, 0, 0.3)', borderRadius: '8px', color: '#fff' }}>
+              <div style={{ padding: '12px', backgroundColor: 'rgba(254, 229, 0, 0.12)', border: '1px solid rgba(254, 229, 0, 0.3)', borderRadius: '8px' }}>
                 💡 <strong>카카오 공식 로그인 팝업이 뜨지 않거나 오류가 날 때:</strong><br />
                 카카오 보안 정책상 <strong>[카카오 디벨로퍼스 콘솔]</strong>에 현재 접속 주소(도메인)가 등록되어 있어야만 정상 작동합니다.
               </div>
@@ -866,4 +1461,3 @@ export const LoginView: React.FC = () => {
     </div>
   );
 };
-
