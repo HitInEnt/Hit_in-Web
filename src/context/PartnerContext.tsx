@@ -94,7 +94,7 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
 
 export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem('hitin_partner_auth') !== 'false';
+    return localStorage.getItem('hitin_partner_auth') === 'true';
   });
 
   const [role, setRoleState] = useState<PartnerRole>(() => {
