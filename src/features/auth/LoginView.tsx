@@ -125,6 +125,8 @@ export const LoginView: React.FC = () => {
 
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
   const [isGoogleGuideOpen, setIsGoogleGuideOpen] = useState<boolean>(false);
+  const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('jes0508@gmail.com');
+  const [googleDirectName, setGoogleDirectName] = useState<string>('');
 
   const effectiveDisplayRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
   const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === effectiveDisplayRole) || PARTNER_CATEGORIES[0];
@@ -1748,8 +1750,91 @@ export const LoginView: React.FC = () => {
               <div>
                 <strong style={{ color: 'var(--acc)', fontSize: '13.5px' }}>3단계. [승인된 리디렉션 URI]에도 동일 등록 후 [저장]</strong>
                 <p style={{ margin: '4px 0', color: 'var(--mut)' }}>
-                  하단의 <strong>[저장]</strong> 버튼을 누르면 완료됩니다. (Google 서버 전파에 약 1~5분 정도 소요될 수 있습니다)
+                  하단의 <strong>[저장]</strong> 버튼을 누르면 완료됩니다. (Google 글로벌 인증 서버 전파에 약 1~5분 정도 소요됩니다)
                 </p>
+              </div>
+
+              {/* Troubleshooting Checklist Box */}
+              <div style={{ padding: '12px', background: 'var(--card2)', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                <strong style={{ color: 'var(--txt)', fontSize: '12.5px', display: 'block', marginBottom: '6px' }}>
+                  📌 콘솔 등록 후에도 계속 400 에러가 발생할 때 점검 5가지:
+                </strong>
+                <div style={{ fontSize: '11.5px', color: 'var(--mut)', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <span>1. <strong>클라이언트 ID 일치:</strong> 콘솔의 클라이언트 ID가 <code style={{ color: 'var(--acc)' }}>925288531270-...</code>와 같은 프로젝트인지 확인</span>
+                  <span>2. <strong>입력 위치:</strong> 리디렉션 URI가 아닌 <strong>[승인된 JavaScript 원본]</strong>에 등록했는지 확인</span>
+                  <span>3. <strong>슬래시 제거:</strong> 끝에 <code style={{ color: '#EA4335' }}>/</code>가 붙어있으면 차단됩니다 (<code style={{ color: 'var(--lime-chip)' }}>https://partner.hitin.kr</code> ⭕)</span>
+                  <span>4. <strong>저장 버튼:</strong> 화면 맨 아래 파란색 <strong>[저장]</strong> 버튼을 반드시 눌렀는지 확인</span>
+                  <span>5. <strong>캐시 삭제:</strong> 브라우저 시크릿 창(<code>Ctrl + Shift + N</code>)에서 재시도</span>
+                </div>
+              </div>
+
+              {/* Instant Direct Google Entry Form */}
+              <div style={{ 
+                padding: '14px', 
+                background: 'linear-gradient(135deg, rgba(66, 133, 244, 0.08) 0%, rgba(255, 90, 31, 0.08) 100%)', 
+                borderRadius: '8px', 
+                border: '1px solid rgba(66, 133, 244, 0.25)' 
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                  <GoogleIcon size={16} />
+                  <strong style={{ color: 'var(--txt)', fontSize: '13px' }}>
+                    Google 계정 직접 입력 가입 & 로그인 (콘솔 설정 대기 없이 즉시 진행)
+                  </strong>
+                </div>
+                <p style={{ margin: '0 0 10px 0', fontSize: '11.5px', color: 'var(--mut)' }}>
+                  구글 콘솔 설정 지연 시 아래 구글 이메일로 즉시 파트너 포털에 가입 및 로그인할 수 있습니다:
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--dim)', display: 'block', marginBottom: '3px' }}>구글 계정 이메일</label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }}
+                      value={googleDirectEmail}
+                      onChange={e => setGoogleDirectEmail(e.target.value)}
+                      placeholder="jes0508@gmail.com"
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--dim)', display: 'block', marginBottom: '3px' }}>대표자 / 닉네임</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }}
+                      value={googleDirectName}
+                      onChange={e => setGoogleDirectName(e.target.value)}
+                      placeholder={signupName || 'jes0508'}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ width: '100%', fontWeight: 700, fontSize: '13px', padding: '9px' }}
+                  onClick={() => {
+                    const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+                    const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
+                    const meta = getRoleMetadata(effectiveRole);
+                    const userEmail = googleDirectEmail.trim() || 'jes0508@gmail.com';
+                    const userName = googleDirectName.trim() || (authMode === 'signup' && signupName ? signupName : `${userEmail.split('@')[0]} (Google)`);
+
+                    login({
+                      email: userEmail,
+                      role: effectiveRole,
+                      roles: effectiveRoles,
+                      businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
+                      name: userName,
+                      partnerId: meta.partnerId,
+                      avatarUrl: 'https://lh3.googleusercontent.com/a/default-user',
+                      provider: 'google'
+                    });
+                    setIsGoogleGuideOpen(false);
+                    showToast(`Google 계정(${userEmail})으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
+                  }}
+                >
+                  🚀 위 Google 계정으로 즉시 {authMode === 'signup' ? '가입 완료' : '로그인'} (원클릭)
+                </button>
               </div>
 
               <div style={{ padding: '8px 12px', background: 'var(--card2)', borderRadius: '8px', border: '1px solid var(--line)' }}>
@@ -1759,34 +1844,12 @@ export const LoginView: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '16px' }}>
               <button 
                 className="btn btn-secondary"
                 onClick={() => setIsGoogleGuideOpen(false)}
               >
-                가이드 닫기
-              </button>
-              <button 
-                className="btn btn-primary"
-                onClick={() => {
-                  const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
-                  const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
-                  const meta = getRoleMetadata(effectiveRole);
-                  login({
-                    email: 'jes0508@gmail.com',
-                    role: effectiveRole,
-                    roles: effectiveRoles,
-                    businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
-                    name: authMode === 'signup' && signupName ? signupName : `${meta.userName} (Google)`,
-                    partnerId: meta.partnerId,
-                    avatarUrl: 'https://lh3.googleusercontent.com/a/default-user',
-                    provider: 'google'
-                  });
-                  setIsGoogleGuideOpen(false);
-                  showToast(`Google 계정(jes0508@gmail.com)으로 ${authMode === 'signup' ? '가입 및 ' : ''}로그인되었습니다.`, 'success');
-                }}
-              >
-                Google 계정(jes0508)으로 즉시 입장하기
+                닫기
               </button>
             </div>
           </div>
