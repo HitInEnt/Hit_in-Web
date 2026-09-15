@@ -5,6 +5,7 @@ export interface PartnerUser {
   name: string;
   email: string;
   role: PartnerRole;
+  roles?: PartnerRole[]; // 복수 가입분야 (e.g. ['field_owner', 'shop_owner'])
   businessName: string;
   businessNumber: string;
   phone: string;

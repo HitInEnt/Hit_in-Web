@@ -88,7 +88,8 @@ const NAV_ITEMS: NavItem[] = [
 export const Sidebar: React.FC = () => {
   const { role, user, activeTab, setActiveTab, setRole, logout, showToast, isMobileMenuOpen, setIsMobileMenuOpen, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
 
-  const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.includes(role));
+  const userRoles = (user?.roles && user.roles.length > 0) ? user.roles : [role];
+  const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.some(r => userRoles.includes(r)));
 
   const handleLogout = () => {
     logout();

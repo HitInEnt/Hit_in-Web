@@ -14,9 +14,12 @@ import {
   Image as ImageIcon,
   Upload,
   Link as LinkIcon,
-  RotateCcw
+  RotateCcw,
+  Layers,
+  ShoppingBag
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
+import { PartnerRole } from '../../types';
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -81,6 +84,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState(user.phone || '');
   const [businessNumber, setBusinessNumber] = useState(user.businessNumber || '');
+  const [selectedRoles, setSelectedRoles] = useState<PartnerRole[]>(user.roles && user.roles.length > 0 ? user.roles : [user.role]);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || PRESET_AVATARS[0]);
   const [customAvatarInput, setCustomAvatarInput] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -95,6 +99,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
       setEmail(user.email);
       setPhone(user.phone || '');
       setBusinessNumber(user.businessNumber || '');
+      setSelectedRoles(user.roles && user.roles.length > 0 ? user.roles : [user.role]);
       setAvatarUrl(user.avatarUrl || PRESET_AVATARS[0]);
       setShowCustomInput(false);
       setCustomAvatarInput('');
@@ -102,6 +107,20 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
   }, [isOpen, user]);
 
   if (!isOpen) return null;
+
+  const handleToggleRole = (roleKey: PartnerRole) => {
+    setSelectedRoles(prev => {
+      if (prev.includes(roleKey)) {
+        if (prev.length <= 1) {
+          showToast('최소 1개 이상의 운영 분야를 선택해야 합니다.', 'warning');
+          return prev;
+        }
+        return prev.filter(r => r !== roleKey);
+      } else {
+        return [...prev, roleKey];
+      }
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +133,10 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
       showToast('사업장(파트너사)명을 입력해주세요.', 'error');
       return;
     }
+    if (selectedRoles.length === 0) {
+      showToast('최소 1개 이상의 운영 분야를 선택해주세요.', 'warning');
+      return;
+    }
 
     updateProfile({
       name: name.trim(),
@@ -121,10 +144,12 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
       email: email.trim(),
       phone: phone.trim(),
       businessNumber: businessNumber.trim(),
+      roles: selectedRoles,
+      role: selectedRoles.includes(role) ? role : selectedRoles[0],
       avatarUrl
     });
 
-    showToast('프로필 정보가 성공적으로 변경되었습니다.', 'success');
+    showToast('프로필 및 운영 분야 정보가 성공적으로 변경되었습니다.', 'success');
     onClose();
   };
 
@@ -622,6 +647,70 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                   onChange={e => setBusinessNumber(e.target.value)}
                   placeholder="124-86-90123"
                 />
+              </div>
+            </div>
+
+            {/* Multi-Role Operating Category Selector */}
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label className="form-label" style={{ marginBottom: 0, fontWeight: 700 }}>
+                  운영 가입분야 설정 (복수 선택 가능) <span style={{ color: 'var(--acc)' }}>*</span>
+                </label>
+                <span style={{ fontSize: '11px', color: 'var(--mut)' }}>
+                  {selectedRoles.length}개 분야 활성화
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {[
+                  { role: 'field_owner' as PartnerRole, label: '필드 사장님', sub: '경기장/예약', icon: Layers, color: 'var(--acc)' },
+                  { role: 'shop_owner' as PartnerRole, label: '건샵 사장님', sub: '렌탈/재고', icon: ShoppingBag, color: '#38bdf8' },
+                  { role: 'hq_admin' as PartnerRole, label: '본사 CRM', sub: '플랫폼관제', icon: ShieldCheck, color: 'var(--lime-chip)' }
+                ].map(item => {
+                  const isChecked = selectedRoles.includes(item.role);
+                  const IconComp = item.icon;
+                  return (
+                    <button
+                      key={item.role}
+                      type="button"
+                      onClick={() => handleToggleRole(item.role)}
+                      style={{
+                        padding: '10px 8px',
+                        borderRadius: 'var(--radius-md)',
+                        border: isChecked ? `2px solid ${item.color}` : '1px solid var(--line)',
+                        background: isChecked ? 'var(--card2)' : 'var(--panel)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isChecked ? `0 0 10px ${item.color}25` : 'none'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                        <IconComp size={16} color={isChecked ? item.color : 'var(--mut)'} />
+                        <div style={{
+                          width: '16px',
+                          height: '16px',
+                          borderRadius: '4px',
+                          background: isChecked ? item.color : 'transparent',
+                          border: isChecked ? `1px solid ${item.color}` : '1px solid var(--dim)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          {isChecked && <Check size={11} color={item.role === 'hq_admin' ? '#000' : '#fff'} strokeWidth={3} />}
+                        </div>
+                      </div>
+                      <div style={{ fontWeight: 700, fontSize: '12px', color: isChecked ? 'var(--txt)' : 'var(--mut)', marginTop: '2px' }}>
+                        {item.label}
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--dim)' }}>
+                        {item.sub}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

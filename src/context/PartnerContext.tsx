@@ -24,6 +24,7 @@ interface ToastNotification {
 interface LoginPayload {
   email: string;
   role: PartnerRole;
+  roles?: PartnerRole[];
   businessName?: string;
   name?: string;
   partnerId?: string;
@@ -157,14 +158,15 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const defaultForRole = initialPartnerUsers.find(u => u.role === payload.role) || initialPartnerUsers[0];
     const customUser: PartnerUser = {
       id: existingProfile?.id || `usr_${payload.role}_${Date.now()}`,
-      name: existingProfile?.name || payload.name || defaultForRole.name,
+      name: payload.name || existingProfile?.name || defaultForRole.name,
       email: payload.email || existingProfile?.email || defaultForRole.email,
       role: payload.role,
-      businessName: existingProfile?.businessName || payload.businessName || defaultForRole.businessName,
+      roles: payload.roles || existingProfile?.roles || [payload.role],
+      businessName: payload.businessName || existingProfile?.businessName || defaultForRole.businessName,
       businessNumber: existingProfile?.businessNumber || defaultForRole.businessNumber || '124-86-90123',
       phone: existingProfile?.phone || defaultForRole.phone || '010-8921-4432',
-      partnerId: existingProfile?.partnerId || payload.partnerId || defaultForRole.partnerId,
-      avatarUrl: existingProfile?.avatarUrl || payload.avatarUrl || defaultForRole.avatarUrl
+      partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
+      avatarUrl: payload.avatarUrl || existingProfile?.avatarUrl || defaultForRole.avatarUrl
     };
 
     localStorage.setItem(`hitin_custom_user_${payload.role}`, JSON.stringify(customUser));
@@ -183,7 +185,8 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setUser(prev => {
       const nextUser: PartnerUser = {
         ...prev,
-        ...updated
+        ...updated,
+        roles: updated.roles || prev.roles || [updated.role || prev.role]
       };
       // Persist across all relevant keys so edits remain permanent
       localStorage.setItem(`hitin_custom_user_${nextUser.role}`, JSON.stringify(nextUser));

@@ -113,7 +113,7 @@ export const LoginView: React.FC = () => {
   const [socialLoading, setSocialLoading] = useState<'kakao' | 'google' | null>(null);
 
   // --- Sign-up State ---
-  const [signupRole, setSignupRole] = useState<PartnerRole>('field_owner');
+  const [signupRoles, setSignupRoles] = useState<PartnerRole[]>(['field_owner']);
   const [signupName, setSignupName] = useState('');
   const [signupBusinessName, setSignupBusinessName] = useState('');
   const [signupBusinessNumber, setSignupBusinessNumber] = useState('');
@@ -125,7 +125,40 @@ export const LoginView: React.FC = () => {
 
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
 
-  const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === (authMode === 'signup' ? signupRole : selectedRole)) || PARTNER_CATEGORIES[0];
+  const effectiveDisplayRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+  const activeCategoryConfig = PARTNER_CATEGORIES.find(c => c.role === effectiveDisplayRole) || PARTNER_CATEGORIES[0];
+
+  const handleToggleSignupRole = (roleToToggle: PartnerRole) => {
+    setSignupRoles(prev => {
+      if (prev.includes(roleToToggle)) {
+        if (prev.length <= 1) {
+          showToast('최소 1개 이상의 가입 분야를 선택해야 합니다.', 'warning');
+          return prev;
+        }
+        return prev.filter(r => r !== roleToToggle);
+      } else {
+        return [...prev, roleToToggle];
+      }
+    });
+  };
+
+  const getSelectedRolesLabel = (roles: PartnerRole[]) => {
+    const names = roles.map(r => {
+      if (r === 'field_owner') return '필드 사장님';
+      if (r === 'shop_owner') return '건샵 사장님';
+      return '본사 총괄 관리자';
+    });
+    return names.join(' + ');
+  };
+
+  const getSelectedRolesShortLabel = (roles: PartnerRole[]) => {
+    const names = roles.map(r => {
+      if (r === 'field_owner') return '🏟️ 경기장 필드';
+      if (r === 'shop_owner') return '🔫 건샵/렌탈';
+      return '🛡️ 본사CRM';
+    });
+    return names.join(' + ');
+  };
 
   const handleRoleChange = (role: PartnerRole) => {
     setSelectedRole(role);
@@ -166,7 +199,8 @@ export const LoginView: React.FC = () => {
     if (authCode) {
       const exchangeKakaoAuthCode = async () => {
         setSocialLoading('kakao');
-        const effectiveRole = authMode === 'signup' ? signupRole : selectedRole;
+        const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+        const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
         try {
           window.history.replaceState({}, document.title, window.location.pathname);
           const restApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY || '19d9e85a2aac46f54287103a4ca3f01f';
@@ -196,6 +230,7 @@ export const LoginView: React.FC = () => {
             login({
               email: userData.kakao_account?.email || `kakao_${userData.id}@kakao.com`,
               role: effectiveRole,
+              roles: effectiveRoles,
               businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
               name: authMode === 'signup' && signupName ? signupName : (profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName),
               partnerId: meta.partnerId,
@@ -213,6 +248,7 @@ export const LoginView: React.FC = () => {
           login({
             email: `kakao_${effectiveRole}@kakao.com`,
             role: effectiveRole,
+            roles: effectiveRoles,
             businessName: meta.businessName,
             name: `${meta.userName} (카카오)`,
             partnerId: meta.partnerId,
@@ -227,12 +263,13 @@ export const LoginView: React.FC = () => {
 
       exchangeKakaoAuthCode();
     }
-  }, [selectedRole, signupRole, authMode]);
+  }, [selectedRole, signupRoles, authMode]);
 
   // 소셜 로그인 / 가입 핸들러
   const handleSocialLogin = async (provider: 'kakao' | 'google') => {
     setSocialLoading(provider);
-    const effectiveRole = authMode === 'signup' ? signupRole : selectedRole;
+    const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
+    const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
     const meta = getRoleMetadata(effectiveRole);
 
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -261,6 +298,7 @@ export const LoginView: React.FC = () => {
                 login({
                   email: googleProfile.email,
                   role: effectiveRole,
+                  roles: effectiveRoles,
                   businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
                   name: authMode === 'signup' && signupName ? signupName : (googleProfile.name ? `${googleProfile.name}` : meta.userName),
                   partnerId: meta.partnerId,
@@ -273,6 +311,7 @@ export const LoginView: React.FC = () => {
                 login({
                   email: 'google_user@gmail.com',
                   role: effectiveRole,
+                  roles: effectiveRoles,
                   businessName: meta.businessName,
                   name: `${meta.userName} (Google)`,
                   partnerId: meta.partnerId,
@@ -318,6 +357,7 @@ export const LoginView: React.FC = () => {
                     login({
                       email: kakaoAccount?.email || `kakao_${res.id}@kakao.com`,
                       role: effectiveRole,
+                      roles: effectiveRoles,
                       businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName : meta.businessName,
                       name: authMode === 'signup' && signupName ? signupName : (profile?.nickname ? `${profile.nickname} (카카오)` : meta.userName),
                       partnerId: meta.partnerId,
@@ -332,6 +372,7 @@ export const LoginView: React.FC = () => {
                     login({
                       email: `kakao_partner@kakao.com`,
                       role: effectiveRole,
+                      roles: effectiveRoles,
                       businessName: meta.businessName,
                       name: `${meta.userName} (카카오)`,
                       partnerId: meta.partnerId,
@@ -356,6 +397,7 @@ export const LoginView: React.FC = () => {
                 login({
                   email: `kakao_${effectiveRole}@kakao.com`,
                   role: effectiveRole,
+                  roles: effectiveRoles,
                   businessName: meta.businessName,
                   name: `${meta.userName} (카카오)`,
                   partnerId: meta.partnerId,
@@ -402,6 +444,7 @@ export const LoginView: React.FC = () => {
       login({
         email: socialEmail,
         role: effectiveRole,
+        roles: effectiveRoles,
         businessName: meta.businessName,
         name: socialName,
         partnerId: meta.partnerId,
@@ -430,6 +473,7 @@ export const LoginView: React.FC = () => {
     login({
       email,
       role: selectedRole,
+      roles: [selectedRole],
       businessName: meta.businessName,
       name: meta.userName,
       partnerId: meta.partnerId,
@@ -443,6 +487,10 @@ export const LoginView: React.FC = () => {
   const handleSignUpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (signupRoles.length === 0) {
+      showToast('최소 1개 이상의 가입 분야를 선택해주세요.', 'warning');
+      return;
+    }
     if (!signupName.trim()) {
       showToast('대표자 성명을 입력해주세요.', 'warning');
       return;
@@ -468,12 +516,14 @@ export const LoginView: React.FC = () => {
       return;
     }
 
-    const prefix = signupRole === 'field_owner' ? 'fld' : signupRole === 'shop_owner' ? 'shp' : 'hq';
+    const primaryRole = signupRoles[0] || 'field_owner';
+    const prefix = signupRoles.includes('field_owner') ? 'fld' : signupRoles.includes('shop_owner') ? 'shp' : 'hq';
     const newPartnerId = `${prefix}_${Math.floor(1000 + Math.random() * 9000)}`;
 
     login({
       email: signupEmail,
-      role: signupRole,
+      role: primaryRole,
+      roles: signupRoles,
       name: signupName,
       businessName: signupBusinessName,
       partnerId: newPartnerId,
@@ -481,8 +531,8 @@ export const LoginView: React.FC = () => {
       provider: 'email'
     });
 
-    const roleKorean = signupRole === 'field_owner' ? '필드 사장님' : signupRole === 'shop_owner' ? '건샵 사장님' : '본사 총괄 관리자';
-    showToast(`🎉 [${roleKorean}] 파트너 회원가입이 완료되었습니다! 환영합니다.`, 'success');
+    const rolesKorean = getSelectedRolesLabel(signupRoles);
+    showToast(`🎉 [${rolesKorean}] 파트너 회원가입이 완료되었습니다! 환영합니다.`, 'success');
   };
 
   return (
@@ -630,26 +680,42 @@ export const LoginView: React.FC = () => {
         {authMode === 'signup' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             
-            {/* 1. 가입분야 선택 메뉴 (필드사장 / 건샵사장 / 본사) */}
+            {/* 1. 가입분야 선택 메뉴 (필드사장 / 건샵사장 / 본사 - 복수 선택 가능) */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '13px' }}>
-                  🎯 파트너 가입 분야 선택 <span style={{ color: 'var(--acc)' }}>*</span>
-                </label>
-                <span style={{ fontSize: '11px', color: 'var(--mut)' }}>
-                  운영 사업 형태에 맞게 선택
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <label className="form-label" style={{ margin: 0, fontWeight: 700, fontSize: '13px' }}>
+                    🎯 파트너 가입 분야 선택 <span style={{ color: 'var(--acc)' }}>*</span>
+                  </label>
+                  <span style={{
+                    fontSize: '10.5px',
+                    fontWeight: 700,
+                    padding: '2px 7px',
+                    borderRadius: 'var(--radius-pill)',
+                    background: 'rgba(255, 90, 31, 0.15)',
+                    color: 'var(--acc)',
+                    border: '1px solid rgba(255, 90, 31, 0.3)'
+                  }}>
+                    복수 선택 가능
+                  </span>
+                </div>
+                <span style={{ fontSize: '11.5px', color: 'var(--mut)', fontWeight: 600 }}>
+                  {signupRoles.length}개 분야 선택됨
                 </span>
               </div>
+              <p style={{ fontSize: '11.5px', color: 'var(--mut)', margin: '0 0 10px 0', lineHeight: 1.4 }}>
+                ※ 경기장과 건샵을 동시 운영하시는 경우 둘 다 체크하여 하나의 계정으로 타임슬롯 및 재고를 통합 관리하세요.
+              </p>
 
-              {/* 3 Categories Cards Grid */}
+              {/* 3 Categories Multi-Select Cards */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {PARTNER_CATEGORIES.map(cat => {
-                  const isSelected = signupRole === cat.role;
+                  const isSelected = signupRoles.includes(cat.role);
                   const IconComp = cat.icon;
                   return (
                     <div
                       key={cat.role}
-                      onClick={() => setSignupRole(cat.role)}
+                      onClick={() => handleToggleSignupRole(cat.role)}
                       style={{
                         padding: '12px 14px',
                         borderRadius: 'var(--radius-md)',
@@ -657,13 +723,14 @@ export const LoginView: React.FC = () => {
                         border: isSelected 
                           ? `2px solid ${cat.badgeColor}` 
                           : '1px solid var(--line)',
-                        boxShadow: isSelected ? `0 0 12px ${cat.badgeColor}25` : 'none',
+                        boxShadow: isSelected ? `0 0 14px ${cat.badgeColor}30` : 'none',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.18s ease',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        gap: '12px'
+                        gap: '12px',
+                        userSelect: 'none'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -695,6 +762,19 @@ export const LoginView: React.FC = () => {
                             }}>
                               {cat.badge}
                             </span>
+                            {isSelected && (
+                              <span style={{
+                                fontSize: '9.5px',
+                                fontWeight: 700,
+                                padding: '1px 5px',
+                                borderRadius: '3px',
+                                background: 'rgba(34, 197, 94, 0.15)',
+                                color: '#22c55e',
+                                border: '1px solid rgba(34, 197, 94, 0.3)'
+                              }}>
+                                ✓ 선택됨
+                              </span>
+                            )}
                           </div>
                           <p style={{ fontSize: '11.5px', color: isSelected ? 'var(--txt)' : 'var(--dim)', margin: '2px 0 0 0' }}>
                             {cat.subTitle} · {cat.desc}
@@ -702,49 +782,73 @@ export const LoginView: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Tactical Checkbox Indicator */}
                       <div style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        border: isSelected ? `6px solid ${cat.badgeColor}` : '2px solid var(--dim)',
-                        background: '#ffffff',
+                        width: '22px',
+                        height: '22px',
+                        borderRadius: '6px',
+                        border: isSelected ? `2px solid ${cat.badgeColor}` : '2px solid var(--dim)',
+                        background: isSelected ? cat.badgeColor : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         flexShrink: 0,
                         transition: 'all 0.15s ease'
-                      }} />
+                      }}>
+                        {isSelected && <Check size={14} color="#ffffff" strokeWidth={3} />}
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Selected Category Feature Hint */}
+            {/* Selected Categories Feature Hints */}
             <div style={{
-              padding: '10px 14px',
+              padding: '12px 14px',
               borderRadius: 'var(--radius-md)',
               background: 'var(--panel)',
               border: '1px solid var(--line)',
               fontSize: '12px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '4px'
+              gap: '8px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: activeCategoryConfig.badgeColor, fontWeight: 700 }}>
-                <CheckCircle2 size={14} />
-                <span>[{activeCategoryConfig.title}] 등록 시 제공되는 주요 기능</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--acc)', fontWeight: 700 }}>
+                  <CheckCircle2 size={14} />
+                  <span>선택한 {signupRoles.length}개 가입분야 통합 지원 기능</span>
+                </div>
+                <span style={{ fontSize: '11px', color: 'var(--mut)' }}>
+                  {getSelectedRolesShortLabel(signupRoles)}
+                </span>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
-                {activeCategoryConfig.features.map((feat, idx) => (
-                  <span key={idx} style={{
-                    fontSize: '11px',
-                    padding: '2px 8px',
-                    borderRadius: 'var(--radius-pill)',
-                    background: 'var(--card)',
-                    border: '1px solid var(--line)',
-                    color: 'var(--txt)'
-                  }}>
-                    ✓ {feat}
-                  </span>
-                ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '2px' }}>
+                {signupRoles.map(roleKey => {
+                  const catConfig = PARTNER_CATEGORIES.find(c => c.role === roleKey);
+                  if (!catConfig) return null;
+                  return (
+                    <div key={roleKey} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: catConfig.badgeColor }}>
+                        • {catConfig.title} ({catConfig.subTitle})
+                      </span>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {catConfig.features.map((feat, idx) => (
+                          <span key={idx} style={{
+                            fontSize: '11px',
+                            padding: '2px 8px',
+                            borderRadius: 'var(--radius-pill)',
+                            background: 'var(--card)',
+                            border: '1px solid var(--line)',
+                            color: 'var(--txt)'
+                          }}>
+                            ✓ {feat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -779,7 +883,7 @@ export const LoginView: React.FC = () => {
                 ) : (
                   <>
                     <KakaoIcon size={18} />
-                    <span>[{activeCategoryConfig.title}] 카카오 1초 간편가입</span>
+                    <span>[{getSelectedRolesShortLabel(signupRoles)}] 카카오 1초 간편가입</span>
                   </>
                 )}
               </button>
@@ -813,7 +917,7 @@ export const LoginView: React.FC = () => {
                 ) : (
                   <>
                     <GoogleIcon size={17} />
-                    <span>Google 계정으로 간편 가입</span>
+                    <span>[{getSelectedRolesShortLabel(signupRoles)}] Google 간편 가입</span>
                   </>
                 )}
               </button>
@@ -854,7 +958,15 @@ export const LoginView: React.FC = () => {
                       type="text"
                       className="form-input"
                       style={{ width: '100%', paddingLeft: '32px', fontSize: '13px' }}
-                      placeholder={signupRole === 'field_owner' ? '예: 플래툰 아레나 경기점' : signupRole === 'shop_owner' ? '예: 택티컬 건스미스 본점' : 'HIT IN 본사'}
+                      placeholder={
+                        signupRoles.includes('field_owner') && signupRoles.includes('shop_owner')
+                          ? '예: 플래툰 아레나 & 택티컬 건샵 경기본점'
+                          : signupRoles.includes('field_owner')
+                          ? '예: 플래툰 아레나 경기점'
+                          : signupRoles.includes('shop_owner')
+                          ? '예: 택티컬 건스미스 본점'
+                          : 'HIT IN 본사'
+                      }
                       value={signupBusinessName}
                       onChange={e => setSignupBusinessName(e.target.value)}
                       required
