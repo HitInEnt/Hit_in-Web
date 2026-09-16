@@ -856,38 +856,6 @@ export const LoginView: React.FC = () => {
                   </>
                 )}
               </button>
-
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsGoogleGuideOpen(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#EA4335',
-                    fontSize: '10.5px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    fontWeight: 600
-                  }}
-                >
-                  ⚡ Google 400 origin_mismatch 오류 해결 가이드
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsKakaoGuideOpen(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--mut)',
-                    fontSize: '10.5px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer'
-                  }}
-                >
-                  카카오 연동 설정
-                </button>
-              </div>
             </div>
 
             {/* Direct Sign-Up Accordion / Toggle Button */}
@@ -1255,38 +1223,6 @@ export const LoginView: React.FC = () => {
                   </>
                 )}
               </button>
-
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsGoogleGuideOpen(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#EA4335',
-                    fontSize: '10.5px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    fontWeight: 600
-                  }}
-                >
-                  ⚡ Google 400 origin_mismatch 오류 해결 가이드
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsKakaoGuideOpen(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--mut)',
-                    fontSize: '10.5px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer'
-                  }}
-                >
-                  카카오 연동 설정
-                </button>
-              </div>
             </div>
 
             {/* Divider */}
