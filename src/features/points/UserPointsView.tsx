@@ -376,7 +376,7 @@ export const UserPointsView: React.FC = () => {
             </span>
           </div>
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-            현장 <strong>QR 체크인 (1일 1회 +1,000 P)</strong>과 <strong>게임 후기·매너 평점(+500 P)</strong> 적립 현황 및 사용자별 누적 포인트를 실시간으로 조회하고 관리합니다.
+            현장 <strong>QR 체크인 (1일 1회 +1,000 P)</strong>과 <strong>게임 후기·매너 평점(-5점 ~ +5점 평가에 따라 -50P ~ +5P 지급/차감)</strong> 적립 현황 및 사용자별 누적 포인트를 실시간으로 조회하고 관리합니다.
           </p>
         </div>
 
@@ -396,7 +396,7 @@ export const UserPointsView: React.FC = () => {
             style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}
           >
             <Star size={15} color="#eab308" />
-            게임후기·평점 적립
+            게임후기·평점 등록 (-50P ~ +5P)
           </button>
           <button 
             className="btn btn-primary"
@@ -873,7 +873,7 @@ export const UserPointsView: React.FC = () => {
                   gap: '4px'
                 }}
               >
-                <Star size={12} /> 게임 후기·매너 평점 (+500 P)
+                <Star size={12} /> 게임 후기·매너 평점 (-50P ~ +5P)
               </button>
               <button
                 onClick={() => setReasonFilter('manual_adjust')}
@@ -944,13 +944,19 @@ export const UserPointsView: React.FC = () => {
                         {/* Description & Review Info */}
                         <td style={{ padding: '12px 8px' }}>
                           <div style={{ color: '#ddd' }}>{tx.description}</div>
-                          {tx.reviewRating && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                              <div style={{ display: 'flex', color: '#eab308' }}>
-                                {Array.from({ length: tx.reviewRating }).map((_, i) => (
-                                  <Star key={i} size={11} fill="#eab308" />
-                                ))}
-                              </div>
+                          {tx.reviewRating !== undefined && tx.reviewRating !== null && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
+                              <span style={{
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                backgroundColor: tx.reviewRating < 0 ? 'rgba(239, 68, 68, 0.15)' : tx.reviewRating === 0 ? 'rgba(148, 163, 184, 0.15)' : 'rgba(234, 179, 8, 0.15)',
+                                color: tx.reviewRating < 0 ? '#ef4444' : tx.reviewRating === 0 ? '#94a3b8' : '#eab308',
+                                border: `1px solid ${tx.reviewRating < 0 ? 'rgba(239, 68, 68, 0.3)' : tx.reviewRating === 0 ? 'rgba(148, 163, 184, 0.3)' : 'rgba(234, 179, 8, 0.3)'}`
+                              }}>
+                                ★ {tx.reviewRating > 0 ? `+${tx.reviewRating}` : tx.reviewRating}점
+                              </span>
                               {tx.reviewComment && (
                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                                   "{tx.reviewComment}"
@@ -982,12 +988,12 @@ export const UserPointsView: React.FC = () => {
                           <span style={{
                             fontSize: '14px',
                             fontWeight: '700',
-                            color: tx.type === 'earn' ? '#22c55e' : '#ef4444',
+                            color: tx.amount === 0 ? '#94a3b8' : (tx.type === 'earn' && tx.amount > 0) ? '#22c55e' : '#ef4444',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '2px'
                           }}>
-                            {tx.type === 'earn' ? '+' : '-'}{Math.abs(tx.amount).toLocaleString()} P
+                            {tx.amount === 0 ? '0' : (tx.type === 'earn' && tx.amount > 0) ? `+${tx.amount.toLocaleString()}` : `-${Math.abs(tx.amount).toLocaleString()}`} P
                           </span>
                         </td>
                       </tr>
@@ -1132,7 +1138,7 @@ export const UserPointsView: React.FC = () => {
                   }}
                 >
                   <Star size={14} color="#eab308" style={{ marginRight: '4px' }} />
-                  게임후기 적립 (+500P)
+                  게임후기·평점 등록 (-50P ~ +5P)
                 </button>
                 <button 
                   className="btn btn-primary"
@@ -1259,7 +1265,7 @@ export const UserPointsView: React.FC = () => {
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Star size={20} color="#eab308" />
-                <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>게임 후기 & 매너 평점 적립</h2>
+                <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>게임 후기 & 매너 평점 적립 / 차감</h2>
               </div>
               <button className="btn-icon" onClick={() => setIsReviewModalOpen(false)}>
                 <X size={18} />
@@ -1267,21 +1273,45 @@ export const UserPointsView: React.FC = () => {
             </div>
 
             <div style={{ padding: '20px' }}>
+              {/* Point Notice Banner */}
               <div style={{
-                padding: '12px',
-                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                padding: '14px 16px',
+                backgroundColor: 'rgba(234, 179, 8, 0.08)',
                 border: '1px solid rgba(234, 179, 8, 0.25)',
                 borderRadius: '8px',
                 marginBottom: '16px',
                 fontSize: '12px',
-                color: '#eab308',
-                lineHeight: '1.5'
+                lineHeight: '1.6'
               }}>
-                ⭐ <strong>후기 적립 안내:</strong> 필드 게임 참가 후 동료 플레이어 및 경기장에 매너 평가/후기를 남기면 <strong>건당 +500 P</strong>가 적립됩니다.
+                <div style={{ fontWeight: '700', color: '#eab308', marginBottom: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <Star size={14} fill="#eab308" />
+                  <span>게임 후기 & 매너 평점 포인트 적립/차감 안내</span>
+                </div>
+                <div style={{ color: 'var(--txt)', marginBottom: '6px' }}>
+                  평가 별점(<strong>-5점 ~ +5점</strong>) 부여에 따라 포인트가 차등 지급 또는 차감됩니다:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px', fontSize: '11.5px' }}>
+                  <div style={{ color: '#ef4444' }}>
+                    🔴 <strong>-5점 ~ -1점 (비매너/불량):</strong> -50P ~ -10P 차감
+                    <div style={{ fontSize: '10.5px', color: 'var(--mut)', marginTop: '1px' }}>
+                      (-5점: -50P / -4점: -40P / -3점: -30P / -2점: -20P / -1점: -10P)
+                    </div>
+                  </div>
+                  <div style={{ color: 'var(--mut)' }}>
+                    ⚪ <strong>0점 (보통 평가):</strong> 0 P (변동 없음)
+                  </div>
+                  <div style={{ color: '#22c55e' }}>
+                    🟢 <strong>+1점 ~ +5점 (우수 매너/시설 호평):</strong> +1P ~ +5P 지급
+                    <div style={{ fontSize: '10.5px', color: 'var(--mut)', marginTop: '1px' }}>
+                      (+1점: +1P / +2점: +2P / +3점: +3P / +4점: +4P / +5점: +5P)
+                    </div>
+                  </div>
+                </div>
               </div>
 
+              {/* User Selection */}
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
                   작성 회원 선택
                 </label>
                 <select 
@@ -1298,40 +1328,77 @@ export const UserPointsView: React.FC = () => {
                 </select>
               </div>
 
-              {/* Star Rating selector */}
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
-                  매너 & 경기 평점 (1 ~ 5★)
-                </label>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setReviewRating(star)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                    >
-                      <Star 
-                        size={28} 
-                        fill={star <= reviewRating ? '#eab308' : 'none'} 
-                        color={star <= reviewRating ? '#eab308' : 'var(--text-muted)'} 
-                      />
-                    </button>
-                  ))}
-                  <span style={{ fontSize: '14px', fontWeight: '700', color: '#eab308', marginLeft: '6px' }}>
-                    {reviewRating}점 / 5.0점
+              {/* -5 ~ +5 Rating Selector */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)', margin: 0 }}>
+                    매너 & 경기 평점 선택 (-5 ~ +5점)
+                  </label>
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: '800',
+                    color: reviewRating < 0 ? '#ef4444' : reviewRating === 0 ? '#94a3b8' : '#22c55e',
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-pill)',
+                    background: reviewRating < 0 ? 'rgba(239,68,68,0.15)' : reviewRating === 0 ? 'rgba(148,163,184,0.15)' : 'rgba(34,197,94,0.15)',
+                    border: `1px solid ${reviewRating < 0 ? 'rgba(239,68,68,0.3)' : reviewRating === 0 ? 'rgba(148,163,184,0.3)' : 'rgba(34,197,94,0.3)'}`
+                  }}>
+                    {reviewRating > 0 ? `+${reviewRating}` : reviewRating}점 
+                    ({reviewRating < 0 ? `${reviewRating * 10}P 차감` : reviewRating === 0 ? '0P' : `+${reviewRating}P 지급`})
                   </span>
+                </div>
+
+                {/* Rating 11-Button Palette */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(11, 1fr)',
+                  gap: '4px',
+                  background: 'var(--panel)',
+                  padding: '6px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--line)'
+                }}>
+                  {[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5].map(val => {
+                    const isSelected = reviewRating === val;
+                    const isNegative = val < 0;
+                    const isZero = val === 0;
+                    const btnColor = isNegative ? '#ef4444' : isZero ? '#94a3b8' : '#22c55e';
+                    const activeBg = isNegative ? 'rgba(239,68,68,0.25)' : isZero ? 'rgba(148,163,184,0.25)' : 'rgba(34,197,94,0.25)';
+                    const activeBorder = isNegative ? '#ef4444' : isZero ? '#94a3b8' : '#22c55e';
+
+                    return (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setReviewRating(val)}
+                        style={{
+                          padding: '8px 2px',
+                          borderRadius: 'var(--radius-sm)',
+                          border: isSelected ? `2px solid ${activeBorder}` : '1px solid var(--line)',
+                          background: isSelected ? activeBg : 'transparent',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '2px',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <span style={{ fontSize: '13px', fontWeight: 800, color: isSelected ? btnColor : 'var(--txt)' }}>
+                          {val > 0 ? `+${val}` : val}
+                        </span>
+                        <span style={{ fontSize: '9px', color: isSelected ? btnColor : 'var(--dim)', fontWeight: 600 }}>
+                          {val < 0 ? `${val * 10}P` : val === 0 ? '0P' : `+${val}P`}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Review Comment */}
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
                   게임 후기 및 매너 코멘트
                 </label>
                 <textarea
@@ -1344,19 +1411,41 @@ export const UserPointsView: React.FC = () => {
                 />
               </div>
 
-              <div style={{
-                padding: '12px 16px',
-                backgroundColor: 'var(--bg-card)',
-                borderRadius: '8px',
-                border: '1px solid var(--line)',
-                marginBottom: '20px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>지급 포인트</span>
-                <span style={{ fontSize: '18px', fontWeight: '800', color: '#eab308' }}>+500 P</span>
-              </div>
+              {/* Calculated Points Preview */}
+              {(() => {
+                const calculatedPoints = reviewRating < 0 ? reviewRating * 10 : reviewRating;
+                const isDeduct = calculatedPoints < 0;
+                const isZero = calculatedPoints === 0;
+
+                return (
+                  <div style={{
+                    padding: '12px 16px',
+                    backgroundColor: isDeduct ? 'rgba(239, 68, 68, 0.1)' : isZero ? 'rgba(148, 163, 184, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                    borderRadius: '8px',
+                    border: `1px solid ${isDeduct ? 'rgba(239, 68, 68, 0.3)' : isZero ? 'rgba(148, 163, 184, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+                    marginBottom: '20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                        {isDeduct ? '차감 예정 포인트 (비매너 감점)' : isZero ? '반영 포인트' : '지급 예정 포인트 (매너 가점)'}
+                      </div>
+                      <div style={{ fontSize: '11px', color: isDeduct ? '#ef4444' : isZero ? '#94a3b8' : '#22c55e', marginTop: '2px', fontWeight: 600 }}>
+                        평점 {reviewRating > 0 ? `+${reviewRating}` : reviewRating}점 기준
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: '20px',
+                      fontWeight: '800',
+                      color: isDeduct ? '#ef4444' : isZero ? '#94a3b8' : '#22c55e'
+                    }}>
+                      {isDeduct ? `${calculatedPoints} P` : isZero ? '0 P' : `+${calculatedPoints} P`}
+                    </span>
+                  </div>
+                );
+              })()}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                 <button className="btn btn-secondary" onClick={() => setIsReviewModalOpen(false)}>
@@ -1365,9 +1454,18 @@ export const UserPointsView: React.FC = () => {
                 <button 
                   className="btn btn-primary"
                   onClick={handleExecuteReviewGrant}
-                  style={{ backgroundColor: '#eab308', color: '#000', border: 'none', fontWeight: '700' }}
+                  style={{
+                    backgroundColor: reviewRating < 0 ? '#ef4444' : reviewRating === 0 ? '#64748b' : '#eab308',
+                    color: reviewRating === 0 ? '#fff' : reviewRating < 0 ? '#fff' : '#000',
+                    border: 'none',
+                    fontWeight: '700'
+                  }}
                 >
-                  후기 등록 및 +500P 적립
+                  {reviewRating < 0 
+                    ? `후기 등록 및 ${Math.abs(reviewRating * 10)}P 차감`
+                    : reviewRating === 0
+                    ? '후기 등록 (0P)'
+                    : `후기 등록 및 +${reviewRating}P 적립`}
                 </button>
               </div>
             </div>

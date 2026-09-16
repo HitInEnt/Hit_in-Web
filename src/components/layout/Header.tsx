@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'checkin':
         return { title: '실시간 현장입장 관리', desc: '사용자 QR 등록 시 실시간 자동 카운팅 및 게이트 입장 현황' };
       case 'user_points':
-        return { title: '사용자 & 포인트 관리', desc: '고객 QR 체크인 +1,000P 및 후기/매너 포인트 내역' };
+        return { title: '사용자 & 포인트 관리', desc: '고객 QR 체크인 +1,000P 및 후기/매너 평점(-50P~+5P) 포인트 내역' };
       case 'shop_inventory':
         return { title: '건샵 렌탈 장비 & 재고 관리', desc: '필드 연계 렌탈 총기, 보호구 및 비비탄/가스 소모품 수량' };
       case 'field_manage':

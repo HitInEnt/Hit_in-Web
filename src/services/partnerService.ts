@@ -643,6 +643,14 @@ export class PartnerService {
     };
   }
 
+  static calculateReviewPoints(rating: number): number {
+    const r = Math.max(-5, Math.min(5, Math.round(rating)));
+    if (r < 0) {
+      return r * 10; // -5 => -50, -4 => -40, -3 => -30, -2 => -20, -1 => -10
+    }
+    return r; // 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5
+  }
+
   static recordReviewRatingPoints(
     userId: string,
     rating: number,
@@ -656,21 +664,24 @@ export class PartnerService {
     const summaries = this.getUserPointSummaries();
     const userSummary = summaries.find(s => s.userId === userId) || initialUserPointSummaries[0];
 
-    const pointsToAward = 500;
+    const cleanRating = Math.max(-5, Math.min(5, Math.round(rating)));
+    const pointsToAward = this.calculateReviewPoints(cleanRating);
+    const isDeduct = pointsToAward < 0;
+
     const newTx: UserPointTransaction = {
       id: `tx_pt_${Date.now()}`,
       userId: userSummary.userId,
       userName: userSummary.userName,
       userNickname: userSummary.userNickname,
       userPhone: userSummary.phone,
-      type: 'earn',
+      type: isDeduct ? 'use' : 'earn',
       amount: pointsToAward,
       reason: 'review_rating',
-      description: '게임 후기 및 플레이어 상호 매너 평가 작성 완료',
+      description: `게임 후기 및 매너 평가 (${cleanRating > 0 ? '+' : ''}${cleanRating}점: ${pointsToAward > 0 ? '+' : ''}${pointsToAward} P)`,
       partnerId,
       partnerName,
       partnerType: 'field',
-      reviewRating: rating,
+      reviewRating: cleanRating,
       reviewComment: comment,
       targetSlotTitle: slotTitle,
       createdAt: nowStr
@@ -683,17 +694,23 @@ export class PartnerService {
     if (sIdx !== -1) {
       summaries[sIdx] = {
         ...summaries[sIdx],
-        totalPoints: summaries[sIdx].totalPoints + pointsToAward,
+        totalPoints: Math.max(0, summaries[sIdx].totalPoints + pointsToAward),
         reviewsWrittenCount: summaries[sIdx].reviewsWrittenCount + 1,
         recentTransactions: [newTx, ...summaries[sIdx].recentTransactions.slice(0, 5)]
       };
       setStorage(STORAGE_KEYS.USER_POINTS, summaries);
     }
 
+    const message = pointsToAward < 0
+      ? `게임 후기 및 매너 평점(${cleanRating}점) 반영 완료 (${Math.abs(pointsToAward)} P 차감)`
+      : pointsToAward === 0
+      ? `게임 후기 및 매너 평점(0점) 등록 완료 (0 P)`
+      : `게임 후기 및 매너 평점(+${cleanRating}점) 적립 완료 (+${pointsToAward} P)`;
+
     return {
       success: true,
       pointsAwarded: pointsToAward,
-      message: `게임 후기 및 매너 평점 적립 완료 (+${pointsToAward} P)`,
+      message,
       transaction: newTx
     };
   }
