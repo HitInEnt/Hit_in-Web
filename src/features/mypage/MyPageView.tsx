@@ -639,7 +639,7 @@ export const MyPageView: React.FC = () => {
           <span>고객지원: <strong>hitinent@gmail.com</strong></span>
         </div>
         <div>
-          © 2025 HIT IN Corp. All rights reserved. | 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
+          © 2026 HitInEnt. All rights reserved. | 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
         </div>
       </footer>
     </div>

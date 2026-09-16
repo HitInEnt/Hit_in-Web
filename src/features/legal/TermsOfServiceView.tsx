@@ -271,8 +271,8 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
               lineHeight: 1.7
             }}>
               <p style={{ margin: 0 }}>• <strong>서비스명:</strong> HIT IN 파트너 센터 (https://partner.hitin.kr)</p>
-              <p style={{ margin: 0 }}>• <strong>운영사:</strong> HIT IN (HitInEnt)</p>
-              <p style={{ margin: 0 }}>• <strong>고객지원 이메일:</strong> support@hit-in.app / jes0508@gmail.com</p>
+              <p style={{ margin: 0 }}>• <strong>운영사:</strong> HitInEnt</p>
+              <p style={{ margin: 0 }}>• <strong>고객지원 이메일:</strong> hitinent@gmail.com</p>
               <p style={{ margin: 0 }}>• <strong>공식 웹사이트:</strong> <a href="https://partner.hitin.kr" style={{ color: 'var(--acc)' }}>https://partner.hitin.kr</a></p>
             </div>
           </section>
@@ -289,7 +289,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
         borderTop: '1px solid var(--line)',
         marginTop: '60px'
       }}>
-        © 2025 HIT IN Corp. All rights reserved. | <a href="/terms.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>이용약관</a> | <a href="/privacy.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>개인정보처리방침</a>
+        © 2026 HitInEnt. All rights reserved. | <a href="/terms.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>이용약관</a> | <a href="/privacy.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>개인정보처리방침</a>
       </footer>
     </div>
   );

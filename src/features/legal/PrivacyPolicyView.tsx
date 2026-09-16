@@ -156,7 +156,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, on
             HIT IN 개인정보처리방침
           </h1>
           <p style={{ fontSize: '14px', color: 'var(--mut)', lineHeight: 1.6, margin: 0 }}>
-            핫식스피플엔터테인먼트(이하 “회사”)는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.
+            HitInEnt(이하 “회사”)는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.
           </p>
           <div style={{ fontSize: '12.5px', color: 'var(--dim)', marginTop: '8px' }}>
             적용 대상: HIT IN 서비스 및 <code style={{ color: 'var(--txt)' }}>https://partner.hitin.kr</code>에서 제공되는 관련 서비스
@@ -383,7 +383,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, on
           }}>
             <div style={{ background: 'var(--panel)', padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)' }}>
               <div style={{ fontSize: '11px', color: 'var(--dim)', marginBottom: '2px' }}>개인정보처리자 (회사명)</div>
-              <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--txt)' }}>핫식스피플엔터테인먼트 (HitInEnt)</div>
+              <div style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--txt)' }}>HitInEnt</div>
             </div>
             <div style={{ background: 'var(--panel)', padding: '12px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--line)' }}>
               <div style={{ fontSize: '11px', color: 'var(--dim)', marginBottom: '2px' }}>서비스명</div>
@@ -430,7 +430,7 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, on
         fontSize: '12px',
         color: 'var(--dim)'
       }}>
-        <p>© 2026 핫식스피플엔터테인먼트 (HitInEnt). All rights reserved.</p>
+        <p>© 2026 HitInEnt. All rights reserved.</p>
         <p style={{ marginTop: '4px' }}>
           <a href="/terms.html" style={{ color: 'var(--mut)', textDecoration: 'underline' }}>서비스 이용약관</a> • <a href="/privacy.html" style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'underline' }}>개인정보처리방침</a> • 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
         </p>
