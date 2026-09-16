@@ -62,7 +62,7 @@ const NAV_ITEMS: NavItem[] = [
     id: 'shop_inventory',
     label: '렌탈 & 소모품 재고',
     icon: PackageCheck,
-    allowedRoles: ['hq_admin']
+    allowedRoles: ['shop_owner', 'hq_admin']
   },
   {
     id: 'field_manage',
@@ -95,8 +95,12 @@ const NAV_ITEMS: NavItem[] = [
 export const Sidebar: React.FC = () => {
   const { role, user, activeTab, setActiveTab, setRole, logout, showToast, isMobileMenuOpen, setIsMobileMenuOpen, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
 
-  const userRoles = (user?.roles && user.roles.length > 0) ? user.roles : [role];
-  const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.some(r => userRoles.includes(r)));
+  const isHqUser = (user?.roles && user.roles.includes('hq_admin')) || user?.role === 'hq_admin';
+  const effectiveRoles: PartnerRole[] = isHqUser
+    ? ['field_owner', 'shop_owner', 'hq_admin']
+    : (user?.roles && user.roles.length > 0 ? user.roles.filter(r => r !== 'hq_admin') : [role === 'hq_admin' ? 'field_owner' : role]);
+
+  const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.some(r => effectiveRoles.includes(r)));
 
   const handleLogout = () => {
     logout();
@@ -170,82 +174,96 @@ export const Sidebar: React.FC = () => {
             color: 'var(--dim)',
             textTransform: 'uppercase',
             marginBottom: '8px',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.05em',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}>
-            현재 관리자 권한 모드
+            <span>현재 관리자 권한 모드</span>
+            {user.status === 'pending_approval' && (
+              <span className="badge badge-orange" style={{ fontSize: '9.5px', padding: '1px 5px' }}>
+                심사대기
+              </span>
+            )}
           </div>
           <div style={{
             background: 'var(--panel)',
             borderRadius: 'var(--radius-md)',
             padding: '4px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: `repeat(${isHqUser ? 3 : (effectiveRoles.length > 1 ? 2 : 1)}, 1fr)`,
             gap: '4px',
             border: '1px solid var(--line)'
           }}>
-            <button
-              onClick={() => setRole('field_owner')}
-              style={{
-                padding: '6px 2px',
-                fontSize: '11px',
-                fontWeight: 600,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: role === 'field_owner' ? 'var(--acc)' : 'transparent',
-                color: role === 'field_owner' ? '#fff' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '2px'
-              }}
-            >
-              <Layers size={13} />
-              필드사장
-            </button>
-            <button
-              onClick={() => setRole('shop_owner')}
-              style={{
-                padding: '6px 2px',
-                fontSize: '11px',
-                fontWeight: 600,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: role === 'shop_owner' ? 'var(--acc)' : 'transparent',
-                color: role === 'shop_owner' ? '#fff' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '2px'
-              }}
-            >
-              <ShoppingBag size={13} />
-              건샵사장
-            </button>
-            <button
-              onClick={() => setRole('hq_admin')}
-              style={{
-                padding: '6px 2px',
-                fontSize: '11px',
-                fontWeight: 600,
-                borderRadius: 'var(--radius-sm)',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                background: role === 'hq_admin' ? 'var(--lime-chip)' : 'transparent',
-                color: role === 'hq_admin' ? 'var(--ink-fixed)' : 'var(--mut)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '2px'
-              }}
-            >
-              <ShieldAlert size={13} />
-              본사CRM
-            </button>
+            {(isHqUser || effectiveRoles.includes('field_owner')) && (
+              <button
+                onClick={() => setRole('field_owner')}
+                style={{
+                  padding: '6px 2px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  background: role === 'field_owner' ? 'var(--acc)' : 'transparent',
+                  color: role === 'field_owner' ? '#fff' : 'var(--mut)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px'
+                }}
+              >
+                <Layers size={13} />
+                필드사장
+              </button>
+            )}
+            {(isHqUser || effectiveRoles.includes('shop_owner')) && (
+              <button
+                onClick={() => setRole('shop_owner')}
+                style={{
+                  padding: '6px 2px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  background: role === 'shop_owner' ? '#38bdf8' : 'transparent',
+                  color: role === 'shop_owner' ? '#000' : 'var(--mut)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px'
+                }}
+              >
+                <ShoppingBag size={13} />
+                건샵사장
+              </button>
+            )}
+            {isHqUser && (
+              <button
+                onClick={() => setRole('hq_admin')}
+                style={{
+                  padding: '6px 2px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-sm)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  background: role === 'hq_admin' ? 'var(--lime-chip)' : 'transparent',
+                  color: role === 'hq_admin' ? 'var(--ink-fixed)' : 'var(--mut)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px'
+                }}
+              >
+                <ShieldAlert size={13} />
+                본사CRM
+              </button>
+            )}
           </div>
         </div>
 

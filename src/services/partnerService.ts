@@ -5,6 +5,8 @@ import {
   RentalProduct, 
   SettlementRecord, 
   ClientPartner, 
+  ClientStatus,
+  PartnerRole,
   FieldInfo,
   CheckInStatus,
   UserPointTransaction,
@@ -363,6 +365,32 @@ export class PartnerService {
     return clients[idx];
   }
 
+  static getClientByEmail(email: string): ClientPartner | undefined {
+    const clients = this.getClients();
+    return clients.find(c => c.email.toLowerCase() === email.toLowerCase());
+  }
+
+  static checkUserApproval(email: string, role: PartnerRole): 'active' | 'pending_approval' | 'suspended' {
+    // 1. HQ Admin account is always active
+    if (role === 'hq_admin') {
+      return 'active';
+    }
+
+    // 2. Built-in default test accounts
+    if (email === 'field@partner.hitin.kr' || email === 'shop@partner.hitin.kr' || email === 'admin@hit-in.app') {
+      return 'active';
+    }
+
+    // 3. Check client record
+    const client = this.getClientByEmail(email);
+    if (client) {
+      return client.status;
+    }
+
+    // 4. Default for new signups is pending_approval
+    return 'pending_approval';
+  }
+
   static updateClientStatus(id: string, status: ClientPartner['status'], commissionRate?: number): ClientPartner | null {
     const clients = this.getClients();
     const idx = clients.findIndex(c => c.id === id);
@@ -372,6 +400,32 @@ export class PartnerService {
       clients[idx].commissionRate = commissionRate;
     }
     setStorage(STORAGE_KEYS.CLIENTS, clients);
+
+    // Also update any saved user profile matching this client's email or ID
+    const targetEmail = clients[idx].email;
+    if (targetEmail) {
+      const emailKey = `hitin_custom_user_email_${targetEmail}`;
+      const savedUserStr = localStorage.getItem(emailKey);
+      if (savedUserStr) {
+        try {
+          const userObj = JSON.parse(savedUserStr);
+          userObj.status = status;
+          localStorage.setItem(emailKey, JSON.stringify(userObj));
+        } catch {}
+      }
+    }
+
+    // Update general active custom user if it matches
+    const generalStored = localStorage.getItem('hitin_custom_user');
+    if (generalStored) {
+      try {
+        const userObj = JSON.parse(generalStored);
+        if (userObj.email === targetEmail || userObj.partnerId === id) {
+          userObj.status = status;
+          localStorage.setItem('hitin_custom_user', JSON.stringify(userObj));
+        }
+      } catch {}
+    }
 
     // Sync to API
     fetch(`${API_BASE_URL}/clients/${id}`, {
@@ -396,13 +450,14 @@ export class PartnerService {
     return true;
   }
 
-  static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string }): void {
+  static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string; status?: 'active' | 'pending_approval' | 'suspended' }): void {
     if (user.role === 'hq_admin') return; // Do not register HQ admin as merchant client
     const clients = this.getClients();
     const type = user.role === 'field_owner' ? 'field' : 'shop';
     const partnerId = user.partnerId || user.id;
+    const initialStatus = user.status || 'pending_approval';
 
-    const existingIdx = clients.findIndex(c => c.id === partnerId || c.email === user.email);
+    const existingIdx = clients.findIndex(c => c.id === partnerId || (user.email && c.email.toLowerCase() === user.email.toLowerCase()));
     if (existingIdx !== -1) {
       clients[existingIdx] = {
         ...clients[existingIdx],
@@ -410,7 +465,8 @@ export class PartnerService {
         representative: user.name || clients[existingIdx].representative,
         phone: user.phone || clients[existingIdx].phone,
         email: user.email || clients[existingIdx].email,
-        businessNumber: user.businessNumber || clients[existingIdx].businessNumber
+        businessNumber: user.businessNumber || clients[existingIdx].businessNumber,
+        status: user.status || clients[existingIdx].status || 'pending_approval'
       };
       setStorage(STORAGE_KEYS.CLIENTS, clients);
     } else {
@@ -424,7 +480,7 @@ export class PartnerService {
         businessNumber: user.businessNumber || '',
         region: '경기/수도권',
         address: '',
-        status: 'active',
+        status: initialStatus,
         contractDate: new Date().toISOString().slice(0, 10),
         commissionRate: 0.08,
         totalRevenue: 0,

@@ -157,17 +157,27 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     const defaultForRole = initialPartnerUsers.find(u => u.role === payload.role) || initialPartnerUsers[0];
+    const userEmail = payload.email || existingProfile?.email || defaultForRole.email;
+    const approvalStatus = existingProfile?.status || PartnerService.checkUserApproval(userEmail, payload.role);
+
+    // If not authorized as HQ, restrict roles to merchant roles only
+    const isHqRole = payload.role === 'hq_admin';
+    const cleanRoles = isHqRole 
+      ? ['hq_admin'] as PartnerRole[] 
+      : ((payload.roles || existingProfile?.roles || [payload.role]).filter(r => r !== 'hq_admin') as PartnerRole[]);
+
     const customUser: PartnerUser = {
       id: existingProfile?.id || `usr_${payload.role}_${Date.now()}`,
       name: payload.name || existingProfile?.name || defaultForRole.name,
-      email: payload.email || existingProfile?.email || defaultForRole.email,
+      email: userEmail,
       role: payload.role,
-      roles: payload.roles || existingProfile?.roles || [payload.role],
+      roles: cleanRoles.length > 0 ? cleanRoles : [payload.role],
       businessName: payload.businessName || existingProfile?.businessName || defaultForRole.businessName,
       businessNumber: existingProfile?.businessNumber || defaultForRole.businessNumber || '124-86-90123',
       phone: existingProfile?.phone || defaultForRole.phone || '010-8921-4432',
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
-      avatarUrl: payload.avatarUrl || existingProfile?.avatarUrl || defaultForRole.avatarUrl
+      avatarUrl: payload.avatarUrl || existingProfile?.avatarUrl || defaultForRole.avatarUrl,
+      status: approvalStatus
     };
 
     localStorage.setItem(`hitin_custom_user_${payload.role}`, JSON.stringify(customUser));
@@ -184,10 +194,16 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateProfile = useCallback((updated: Partial<PartnerUser>) => {
     setUser(prev => {
+      const isHqUser = prev.role === 'hq_admin' || (prev.roles && prev.roles.includes('hq_admin'));
+      const sanitizedRoles = isHqUser
+        ? (updated.roles || prev.roles || [updated.role || prev.role])
+        : (updated.roles || prev.roles || [updated.role || prev.role]).filter(r => r !== 'hq_admin');
+
       const nextUser: PartnerUser = {
         ...prev,
         ...updated,
-        roles: updated.roles || prev.roles || [updated.role || prev.role]
+        roles: sanitizedRoles.length > 0 ? sanitizedRoles : [updated.role || prev.role],
+        status: updated.status || prev.status || 'pending_approval'
       };
       // Persist across all relevant keys so edits remain permanent
       localStorage.setItem(`hitin_custom_user_${nextUser.role}`, JSON.stringify(nextUser));
@@ -217,12 +233,25 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   const setRole = useCallback((newRole: PartnerRole) => {
+    // Prevent non-HQ accounts from switching to hq_admin
+    const currentUser = user;
+    const isHq = currentUser.role === 'hq_admin' || (currentUser.roles && currentUser.roles.includes('hq_admin'));
+    if (newRole === 'hq_admin' && !isHq) {
+      return;
+    }
+
     setRoleState(newRole);
-    setUser(getUserForRole(newRole));
+    setUser(prev => {
+      const next = getUserForRole(newRole, prev.email);
+      return {
+        ...next,
+        status: prev.status || next.status || 'active'
+      };
+    });
     localStorage.setItem('hitin_partner_role', newRole);
     setActiveTabState('dashboard');
     setRefreshKey(prev => prev + 1);
-  }, []);
+  }, [user]);
 
   const toggleTheme = useCallback(() => {
     setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));

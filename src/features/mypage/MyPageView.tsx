@@ -224,6 +224,16 @@ export const MyPageView: React.FC = () => {
               <span className={`badge ${currentTheme.badge}`} style={{ fontSize: '11px', padding: '3px 8px' }}>
                 {currentTheme.label}
               </span>
+              {user.status === 'pending_approval' && (
+                <span className="badge badge-orange" style={{ fontSize: '11px', padding: '3px 8px', fontWeight: 800 }}>
+                  ⏳ 가맹 심사 대기 중
+                </span>
+              )}
+              {user.status === 'active' && (
+                <span className="badge badge-lime" style={{ fontSize: '11px', padding: '3px 8px', fontWeight: 800 }}>
+                  ✓ 가맹 승인 완료
+                </span>
+              )}
             </div>
             <div style={{ fontSize: '12.5px', color: 'var(--mut)', marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <span>대표자: <strong>{name}</strong></span>
@@ -349,11 +359,11 @@ export const MyPageView: React.FC = () => {
               <label className="form-label" style={{ marginBottom: '8px', display: 'block' }}>
                 운영 분야 선택 (복수 선택 가능)
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin')) ? 3 : 2}, 1fr)`, gap: '8px' }}>
                 {[
                   { role: 'field_owner' as PartnerRole, label: '🏟️ 경기장/필드', sub: '타임슬롯 & QR' },
                   { role: 'shop_owner' as PartnerRole, label: '🔫 건샵/용품', sub: '렌탈 & 재고' },
-                  { role: 'hq_admin' as PartnerRole, label: '👑 본사 관리', sub: 'CRM & 플랫폼' }
+                  ...((role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin'))) ? [{ role: 'hq_admin' as PartnerRole, label: '👑 본사 관리', sub: 'CRM & 플랫폼' }] : [])
                 ].map(item => {
                   const isChecked = selectedRoles.includes(item.role);
                   return (
@@ -364,8 +374,8 @@ export const MyPageView: React.FC = () => {
                       style={{
                         padding: '10px 8px',
                         borderRadius: 'var(--radius-md)',
-                        background: isChecked ? 'rgba(255, 90, 31, 0.12)' : 'var(--panel)',
-                        border: `1px solid ${isChecked ? 'var(--acc)' : 'var(--line)'}`,
+                        background: isChecked ? (item.role === 'shop_owner' ? 'rgba(56, 189, 248, 0.15)' : item.role === 'hq_admin' ? 'rgba(199, 249, 78, 0.15)' : 'rgba(255, 90, 31, 0.12)') : 'var(--panel)',
+                        border: `1px solid ${isChecked ? (item.role === 'shop_owner' ? '#38bdf8' : item.role === 'hq_admin' ? 'var(--lime-chip)' : 'var(--acc)') : 'var(--line)'}`,
                         cursor: 'pointer',
                         textAlign: 'center',
                         transition: 'all 0.15s ease'

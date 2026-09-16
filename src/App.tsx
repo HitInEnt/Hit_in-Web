@@ -20,6 +20,7 @@ import { MyPageView } from './features/mypage/MyPageView';
 import { LoginView } from './features/auth/LoginView';
 import { PrivacyPolicyView } from './features/legal/PrivacyPolicyView';
 import { TermsOfServiceView } from './features/legal/TermsOfServiceView';
+import { PendingApprovalBanner } from './components/common/PendingApprovalBanner';
 
 // Modals
 import { QuickCheckInModal } from './components/common/QuickCheckInModal';
@@ -154,6 +155,16 @@ const PartnerAppInner: React.FC = () => {
       case 'settlement':
         return <SettlementView />;
       case 'hq_clients':
+        if (role !== 'hq_admin') {
+          return (
+            <DashboardView
+              onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
+              onOpenAddSlot={() => handleOpenAddSlot()}
+              onOpenAddProduct={() => setIsAddProductOpen(true)}
+              onInspectPlayer={handleInspectPlayer}
+            />
+          );
+        }
         return <HqClientsView />;
       case 'mypage':
         return <MyPageView />;
@@ -200,6 +211,11 @@ const PartnerAppInner: React.FC = () => {
           onOpenAddSlot={() => handleOpenAddSlot()}
           onOpenAddProduct={() => setIsAddProductOpen(true)}
         />
+
+        {/* Pending Approval Banner for awaiting partners */}
+        {user.status === 'pending_approval' && activeTab !== 'mypage' && (
+          <PendingApprovalBanner />
+        )}
 
         {/* Dynamic Page Content */}
         {renderActiveView()}

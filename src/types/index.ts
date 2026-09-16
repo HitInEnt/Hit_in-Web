@@ -11,6 +11,7 @@ export interface PartnerUser {
   phone: string;
   partnerId: string;
   avatarUrl?: string;
+  status?: 'active' | 'pending_approval' | 'suspended';
 }
 
 export type GameType = 
