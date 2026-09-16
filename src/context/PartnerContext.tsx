@@ -66,11 +66,13 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
 
   // 1. Check if email-specific saved profile exists
   if (specificEmail) {
-    const emailStored = localStorage.getItem(`hitin_custom_user_email_${specificEmail}`);
+    const emailStored = localStorage.getItem(`hitin_custom_user_email_${specificEmail.toLowerCase()}`);
     if (emailStored) {
       try {
         const parsed = JSON.parse(emailStored);
-        if (parsed.role === r) return parsed;
+        if (parsed.email && parsed.email.toLowerCase() === specificEmail.toLowerCase()) {
+          return { ...parsed, role: r };
+        }
       } catch {}
     }
   }
@@ -80,7 +82,9 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
   if (generalStored) {
     try {
       const parsed = JSON.parse(generalStored);
-      if (parsed.role === r) return parsed;
+      if (parsed.role === r || (parsed.roles && parsed.roles.includes(r))) {
+        return { ...parsed, role: r };
+      }
     } catch {}
   }
 
@@ -89,7 +93,7 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
   if (roleSpecific) {
     try {
       const parsed = JSON.parse(roleSpecific);
-      return parsed;
+      return { ...parsed, role: r };
     } catch {}
   }
 
@@ -187,6 +191,11 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     localStorage.setItem(`hitin_custom_user_${assignedRole}`, JSON.stringify(customUser));
+    if (effectiveRoles && effectiveRoles.length > 0) {
+      effectiveRoles.forEach(r => {
+        localStorage.setItem(`hitin_custom_user_${r}`, JSON.stringify({ ...customUser, role: r }));
+      });
+    }
     if (customUser.email) {
       localStorage.setItem(`hitin_custom_user_email_${customUser.email.toLowerCase()}`, JSON.stringify(customUser));
     }
@@ -213,8 +222,13 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       };
       // Persist across all relevant keys so edits remain permanent
       localStorage.setItem(`hitin_custom_user_${nextUser.role}`, JSON.stringify(nextUser));
+      if (nextUser.roles && nextUser.roles.length > 0) {
+        nextUser.roles.forEach(r => {
+          localStorage.setItem(`hitin_custom_user_${r}`, JSON.stringify({ ...nextUser, role: r }));
+        });
+      }
       if (nextUser.email) {
-        localStorage.setItem(`hitin_custom_user_email_${nextUser.email}`, JSON.stringify(nextUser));
+        localStorage.setItem(`hitin_custom_user_email_${nextUser.email.toLowerCase()}`, JSON.stringify(nextUser));
       }
       localStorage.setItem(`hitin_custom_user_id_${nextUser.id}`, JSON.stringify(nextUser));
       localStorage.setItem('hitin_custom_user', JSON.stringify(nextUser));
@@ -246,16 +260,28 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
+    const allowedRoles = isHq 
+      ? ['field_owner', 'shop_owner', 'hq_admin'] 
+      : (currentUser.roles && currentUser.roles.length > 0 ? currentUser.roles : [currentUser.role]);
+
+    if (!allowedRoles.includes(newRole)) {
+      return;
+    }
+
     setRoleState(newRole);
     setUser(prev => {
-      const next = getUserForRole(newRole, prev.email);
-      return {
-        ...next,
-        status: prev.status || next.status || 'active'
+      const updated: PartnerUser = {
+        ...prev,
+        role: newRole
       };
+      localStorage.setItem(`hitin_custom_user_${newRole}`, JSON.stringify(updated));
+      if (updated.email) {
+        localStorage.setItem(`hitin_custom_user_email_${updated.email.toLowerCase()}`, JSON.stringify(updated));
+      }
+      localStorage.setItem('hitin_custom_user', JSON.stringify(updated));
+      return updated;
     });
     localStorage.setItem('hitin_partner_role', newRole);
-    setActiveTabState('dashboard');
     setRefreshKey(prev => prev + 1);
   }, [user]);
 

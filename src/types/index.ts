@@ -191,6 +191,7 @@ export interface ClientPartner {
   id: string;
   name: string; // 상호명
   type: 'field' | 'shop' | 'hq'; // 가입분야
+  roles?: PartnerRole[]; // 복수 가입분야 목록 (e.g. ['field_owner', 'shop_owner'])
   representative: string; // 대표자 성명
   phone: string; // 대표 연락처
   email: string; // 로그인 이메일

@@ -109,19 +109,19 @@ export const Header: React.FC<HeaderProps> = ({
             <h1 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--txt)', letterSpacing: '-0.02em', margin: 0 }}>
               {title}
             </h1>
-            {role === 'field_owner' && (
-              <span className="badge badge-outline" style={{ fontSize: '10px', padding: '2px 6px' }}>
+            {((user.roles && user.roles.includes('field_owner')) || role === 'field_owner') && (
+              <span className={`badge ${role === 'field_owner' ? 'badge-orange' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
                 🏟️ 필드
               </span>
             )}
-            {role === 'shop_owner' && (
-              <span className="badge badge-outline" style={{ fontSize: '10px', padding: '2px 6px' }}>
+            {((user.roles && user.roles.includes('shop_owner')) || role === 'shop_owner') && (
+              <span className={`badge ${role === 'shop_owner' ? 'badge-cyan' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
                 🔫 건샵
               </span>
             )}
-            {role === 'hq_admin' && (
-              <span className="badge badge-lime" style={{ fontSize: '10px', padding: '2px 6px' }}>
-                👑 HQ
+            {((user.roles && user.roles.includes('hq_admin')) || role === 'hq_admin') && (
+              <span className={`badge ${role === 'hq_admin' ? 'badge-lime' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                👑 본사
               </span>
             )}
           </div>

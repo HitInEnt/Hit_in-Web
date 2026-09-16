@@ -56,8 +56,8 @@ export const HqClientsView: React.FC = () => {
 
   const filteredClients = useMemo(() => {
     let list = clients;
-    if (typeFilter === 'field') list = list.filter(c => c.type === 'field');
-    if (typeFilter === 'shop') list = list.filter(c => c.type === 'shop');
+    if (typeFilter === 'field') list = list.filter(c => c.type === 'field' || (c.roles && c.roles.includes('field_owner')));
+    if (typeFilter === 'shop') list = list.filter(c => c.type === 'shop' || (c.roles && c.roles.includes('shop_owner')));
     if (typeFilter === 'pending') list = list.filter(c => c.status === 'pending_approval');
     if (typeFilter === 'suspended') list = list.filter(c => c.status === 'suspended');
 
@@ -364,14 +364,29 @@ export const HqClientsView: React.FC = () => {
 
                       {/* Role/Category */}
                       <td>
-                        <span className="badge" style={{
-                          fontSize: '11px',
-                          background: c.type === 'field' ? 'rgba(255, 90, 31, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-                          color: c.type === 'field' ? 'var(--acc)' : '#38bdf8',
-                          border: `1px solid ${c.type === 'field' ? 'rgba(255, 90, 31, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`
-                        }}>
-                          {c.type === 'field' ? '🏟️ 필드사장' : c.type === 'shop' ? '🔫 건샵사장' : '👑 본사'}
-                        </span>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                          {c.roles && c.roles.length > 0 ? (
+                            c.roles.map(r => (
+                              <span key={r} className="badge" style={{
+                                fontSize: '10.5px',
+                                background: r === 'field_owner' ? 'rgba(255, 90, 31, 0.15)' : r === 'shop_owner' ? 'rgba(56, 189, 248, 0.15)' : 'rgba(199, 249, 78, 0.2)',
+                                color: r === 'field_owner' ? 'var(--acc)' : r === 'shop_owner' ? '#38bdf8' : 'var(--lime-chip)',
+                                border: `1px solid ${r === 'field_owner' ? 'rgba(255, 90, 31, 0.3)' : r === 'shop_owner' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(199, 249, 78, 0.3)'}`
+                              }}>
+                                {r === 'field_owner' ? '🏟️ 필드사장' : r === 'shop_owner' ? '🔫 건샵사장' : '👑 본사'}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="badge" style={{
+                              fontSize: '10.5px',
+                              background: c.type === 'field' ? 'rgba(255, 90, 31, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                              color: c.type === 'field' ? 'var(--acc)' : '#38bdf8',
+                              border: `1px solid ${c.type === 'field' ? 'rgba(255, 90, 31, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`
+                            }}>
+                              {c.type === 'field' ? '🏟️ 필드사장' : c.type === 'shop' ? '🔫 건샵사장' : '👑 본사'}
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Representative */}

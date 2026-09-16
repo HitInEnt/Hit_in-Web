@@ -400,7 +400,7 @@ export class PartnerService {
     // Also update any saved user profile matching this client's email or ID
     const targetEmail = clients[idx].email;
     if (targetEmail) {
-      const emailKey = `hitin_custom_user_email_${targetEmail}`;
+      const emailKey = `hitin_custom_user_email_${targetEmail.toLowerCase()}`;
       const savedUserStr = localStorage.getItem(emailKey);
       if (savedUserStr) {
         try {
@@ -409,6 +409,20 @@ export class PartnerService {
           localStorage.setItem(emailKey, JSON.stringify(userObj));
         } catch {}
       }
+      // Update role-specific caches if matching
+      ['field_owner', 'shop_owner', 'hq_admin'].forEach(r => {
+        const rKey = `hitin_custom_user_${r}`;
+        const rStr = localStorage.getItem(rKey);
+        if (rStr) {
+          try {
+            const rObj = JSON.parse(rStr);
+            if (rObj.email && rObj.email.toLowerCase() === targetEmail.toLowerCase()) {
+              rObj.status = status;
+              localStorage.setItem(rKey, JSON.stringify(rObj));
+            }
+          } catch {}
+        }
+      });
     }
 
     // Update general active custom user if it matches
@@ -416,7 +430,7 @@ export class PartnerService {
     if (generalStored) {
       try {
         const userObj = JSON.parse(generalStored);
-        if (userObj.email === targetEmail || userObj.partnerId === id) {
+        if ((userObj.email && userObj.email.toLowerCase() === targetEmail?.toLowerCase()) || userObj.partnerId === id) {
           userObj.status = status;
           localStorage.setItem('hitin_custom_user', JSON.stringify(userObj));
         }
@@ -446,18 +460,21 @@ export class PartnerService {
     return true;
   }
 
-  static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string; status?: 'active' | 'pending_approval' | 'suspended' }): void {
+  static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string; status?: 'active' | 'pending_approval' | 'suspended'; roles?: PartnerRole[] }): void {
     if (user.role === 'hq_admin') return; // Do not register HQ admin as merchant client
     const clients = this.getClients();
-    const type = user.role === 'field_owner' ? 'field' : 'shop';
+    const type = (user.roles && user.roles.includes('field_owner')) ? 'field' : (user.role === 'field_owner' ? 'field' : 'shop');
     const partnerId = user.partnerId || user.id;
     const initialStatus = user.status || 'pending_approval';
+    const effectiveRoles = user.roles && user.roles.length > 0 ? user.roles : [user.role];
 
-    const existingIdx = clients.findIndex(c => c.id === partnerId || (user.email && c.email.toLowerCase() === user.email.toLowerCase()));
+    const existingIdx = clients.findIndex(c => c.id === partnerId || (user.email && c.email && c.email.toLowerCase() === user.email.toLowerCase()));
     if (existingIdx !== -1) {
       clients[existingIdx] = {
         ...clients[existingIdx],
         name: user.businessName || clients[existingIdx].name,
+        type: (effectiveRoles.includes('field_owner')) ? 'field' : clients[existingIdx].type,
+        roles: effectiveRoles,
         representative: user.name || clients[existingIdx].representative,
         phone: user.phone || clients[existingIdx].phone,
         email: user.email || clients[existingIdx].email,
@@ -470,6 +487,7 @@ export class PartnerService {
         id: partnerId,
         name: user.businessName || `${user.name} 파트너`,
         type,
+        roles: effectiveRoles,
         representative: user.name,
         phone: user.phone || '',
         email: user.email,
