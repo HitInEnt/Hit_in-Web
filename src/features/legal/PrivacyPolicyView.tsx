@@ -432,7 +432,18 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, on
       }}>
         <p>© 2026 HitInEnt. All rights reserved.</p>
         <p style={{ marginTop: '4px' }}>
-          <a href="/terms.html" style={{ color: 'var(--mut)', textDecoration: 'underline' }}>서비스 이용약관</a> • <a href="/privacy.html" style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'underline' }}>개인정보처리방침</a> • 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
+          <a 
+            href="/terms" 
+            onClick={(e) => {
+              if (onNavigateTerms) {
+                e.preventDefault();
+                onNavigateTerms();
+              }
+            }}
+            style={{ color: 'var(--mut)', textDecoration: 'underline', cursor: 'pointer' }}
+          >
+            서비스 이용약관
+          </a> • <a href="/privacy" style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'underline' }}>개인정보처리방침</a> • 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
         </p>
       </footer>
     </div>

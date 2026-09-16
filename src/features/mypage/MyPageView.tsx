@@ -248,7 +248,8 @@ export const MyPageView: React.FC = () => {
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
-              window.open('/privacy.html', '_blank');
+              window.history.pushState({}, '', '/privacy');
+              window.dispatchEvent(new PopStateEvent('popstate'));
             }}
           >
             <ShieldCheck size={14} color="#60A5FA" />
@@ -258,7 +259,8 @@ export const MyPageView: React.FC = () => {
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
-              window.open('/terms.html', '_blank');
+              window.history.pushState({}, '', '/terms');
+              window.dispatchEvent(new PopStateEvent('popstate'));
             }}
           >
             <Scale size={14} color="var(--acc)" />
@@ -525,11 +527,14 @@ export const MyPageView: React.FC = () => {
               </p>
             </div>
             <a
-              href="/privacy.html"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/privacy"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/privacy');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               className="btn btn-secondary btn-sm"
-              style={{ justifyContent: 'center', gap: '6px', fontWeight: 600 }}
+              style={{ justifyContent: 'center', gap: '6px', fontWeight: 600, cursor: 'pointer' }}
             >
               <span>개인정보처리방침 전문 열람</span>
               <ExternalLink size={13} />
@@ -560,11 +565,14 @@ export const MyPageView: React.FC = () => {
               </p>
             </div>
             <a
-              href="/terms.html"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/terms"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/terms');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               className="btn btn-secondary btn-sm"
-              style={{ justifyContent: 'center', gap: '6px', fontWeight: 600 }}
+              style={{ justifyContent: 'center', gap: '6px', fontWeight: 600, cursor: 'pointer' }}
             >
               <span>서비스 이용약관 전문 열람</span>
               <ExternalLink size={13} />
@@ -628,11 +636,27 @@ export const MyPageView: React.FC = () => {
         gap: '6px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '14px' }}>
-          <a href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mut)', textDecoration: 'underline' }}>
+          <a 
+            href="/terms" 
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/terms');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{ color: 'var(--mut)', textDecoration: 'underline', cursor: 'pointer' }}
+          >
             서비스 이용약관
           </a>
           <span>•</span>
-          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline' }}>
+          <a 
+            href="/privacy" 
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState({}, '', '/privacy');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer' }}
+          >
             개인정보처리방침
           </a>
           <span>•</span>

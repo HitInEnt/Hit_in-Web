@@ -1046,9 +1046,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   />
                   <span>
                     <a 
-                      href="/terms.html" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                      href="/terms" 
                       onClick={(e) => {
                         if (onOpenTerms) {
                           e.preventDefault();
@@ -1060,9 +1058,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                       서비스 이용약관
                     </a> 및{' '}
                     <a 
-                      href="/privacy.html" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                      href="/privacy" 
                       onClick={(e) => {
                         if (onOpenPrivacy) {
                           e.preventDefault();
@@ -1321,9 +1317,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
             border: '1px solid var(--line)'
           }}>
             <a 
-              href="/terms.html" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+              href="/terms" 
               onClick={(e) => {
                 if (onOpenTerms) {
                   e.preventDefault();
@@ -1336,9 +1330,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
             </a>
             <span style={{ color: 'var(--dim)' }}>•</span>
             <a 
-              href="/privacy.html" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+              href="/privacy" 
               onClick={(e) => {
                 if (onOpenPrivacy) {
                   e.preventDefault();

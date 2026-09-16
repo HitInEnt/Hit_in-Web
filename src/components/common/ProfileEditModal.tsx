@@ -755,9 +755,13 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
               {/* Policy Links Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <a
-                  href="/privacy.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/privacy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClose();
+                    window.history.pushState({}, '', '/privacy');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -770,7 +774,8 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                     color: 'var(--txt)',
                     fontSize: '11.5px',
                     fontWeight: 600,
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    cursor: 'pointer'
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--acc)';
@@ -789,9 +794,13 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                 </a>
 
                 <a
-                  href="/terms.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/terms"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onClose();
+                    window.history.pushState({}, '', '/terms');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -804,7 +813,8 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                     color: 'var(--txt)',
                     fontSize: '11.5px',
                     fontWeight: 600,
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    cursor: 'pointer'
                   }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.borderColor = 'var(--acc)';

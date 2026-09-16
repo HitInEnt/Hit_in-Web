@@ -193,7 +193,7 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
               제3조 (약관의 효력 및 개정)
             </h2>
             <p style={{ fontSize: '13.5px', color: 'var(--mut)', lineHeight: 1.7, margin: '0 0 8px 0' }}>
-              1. 회사는 본 약관의 내용을 파트너 회원이 쉽게 알 수 있도록 서비스 초기 화면 또는 연결 화면(https://partner.hitin.kr/terms.html)에 게시합니다.
+              1. 회사는 본 약관의 내용을 파트너 회원이 쉽게 알 수 있도록 서비스 초기 화면 또는 연결 화면(https://partner.hitin.kr/terms)에 게시합니다.
             </p>
             <p style={{ fontSize: '13.5px', color: 'var(--mut)', lineHeight: 1.7, margin: 0 }}>
               2. 회사는 관련 법령을 위배하지 않는 범위에서 본 약관을 개정할 수 있으며, 개정 시 적용일자 7일 전(중요한 변경의 경우 30일 전)부터 웹사이트를 통해 공지합니다.
@@ -242,7 +242,16 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
               제6조 (개인정보보호 및 데이터 파기)
             </h2>
             <p style={{ fontSize: '13.5px', color: 'var(--mut)', lineHeight: 1.7, margin: 0 }}>
-              회사는 개인정보 보호법 등 관계 법령이 정하는 바에 따라 파트너 회원의 개인정보를 보호하며, 구체적인 수집 항목, 목적, 공유 여부 및 삭제 요청 절차는 회사의 <a href="/privacy.html" style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline' }}>개인정보처리방침</a>에 따릅니다.
+              회사는 개인정보 보호법 등 관계 법령이 정하는 바에 따라 파트너 회원의 개인정보를 보호하며, 구체적인 수집 항목, 목적, 공유 여부 및 삭제 요청 절차는 회사의 <a 
+                href="/privacy" 
+                onClick={(e) => {
+                  if (onNavigatePrivacy) {
+                    e.preventDefault();
+                    onNavigatePrivacy();
+                  }
+                }}
+                style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer' }}
+              >개인정보처리방침</a>에 따릅니다.
             </p>
           </section>
 
@@ -289,7 +298,16 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
         borderTop: '1px solid var(--line)',
         marginTop: '60px'
       }}>
-        © 2026 HitInEnt. All rights reserved. | <a href="/terms.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>이용약관</a> | <a href="/privacy.html" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>개인정보처리방침</a>
+        © 2026 HitInEnt. All rights reserved. | <a href="/terms" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>이용약관</a> | <a 
+          href="/privacy" 
+          onClick={(e) => {
+            if (onNavigatePrivacy) {
+              e.preventDefault();
+              onNavigatePrivacy();
+            }
+          }}
+          style={{ color: 'var(--dim)', textDecoration: 'underline', cursor: 'pointer' }}
+        >개인정보처리방침</a>
       </footer>
     </div>
   );

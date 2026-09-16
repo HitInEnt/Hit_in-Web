@@ -87,10 +87,12 @@ const PartnerAppInner: React.FC = () => {
           onBack={() => {
             window.history.pushState({}, '', '/');
             setCurrentPath('/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
           onNavigateTerms={() => {
             window.history.pushState({}, '', '/terms');
             setCurrentPath('/terms');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
         />
         <ToastContainer />
@@ -106,10 +108,12 @@ const PartnerAppInner: React.FC = () => {
           onBack={() => {
             window.history.pushState({}, '', '/');
             setCurrentPath('/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
           onNavigatePrivacy={() => {
             window.history.pushState({}, '', '/privacy');
             setCurrentPath('/privacy');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
         />
         <ToastContainer />
