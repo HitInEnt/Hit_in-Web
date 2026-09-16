@@ -27,6 +27,8 @@ interface LoginPayload {
   role: PartnerRole;
   roles?: PartnerRole[];
   businessName?: string;
+  businessNumber?: string;
+  phone?: string;
   name?: string;
   partnerId?: string;
   avatarUrl?: string;
@@ -160,21 +162,19 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const userEmail = payload.email || existingProfile?.email || defaultForRole.email;
     const approvalStatus = existingProfile?.status || PartnerService.checkUserApproval(userEmail, payload.role);
 
-    // If not authorized as HQ, restrict roles to merchant roles only
-    const isHqRole = payload.role === 'hq_admin';
-    const cleanRoles = isHqRole 
-      ? ['hq_admin'] as PartnerRole[] 
-      : ((payload.roles || existingProfile?.roles || [payload.role]).filter(r => r !== 'hq_admin') as PartnerRole[]);
+    const effectiveRoles = payload.roles && payload.roles.length > 0 
+      ? payload.roles 
+      : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [payload.role]);
 
     const customUser: PartnerUser = {
       id: existingProfile?.id || `usr_${payload.role}_${Date.now()}`,
       name: payload.name || existingProfile?.name || defaultForRole.name,
       email: userEmail,
       role: payload.role,
-      roles: cleanRoles.length > 0 ? cleanRoles : [payload.role],
-      businessName: payload.businessName || existingProfile?.businessName || defaultForRole.businessName,
-      businessNumber: existingProfile?.businessNumber || defaultForRole.businessNumber || '124-86-90123',
-      phone: existingProfile?.phone || defaultForRole.phone || '010-8921-4432',
+      roles: effectiveRoles,
+      businessName: payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || defaultForRole.businessName),
+      businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || defaultForRole.businessNumber),
+      phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || defaultForRole.phone),
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
       avatarUrl: payload.avatarUrl || existingProfile?.avatarUrl || defaultForRole.avatarUrl,
       status: approvalStatus
