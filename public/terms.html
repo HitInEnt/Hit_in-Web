@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>서비스 이용약관 | HIT IN 파트너 센터 (Terms of Service)</title>
-  <meta name="description" content="HIT IN 파트너 센터(partner.hitin.kr)의 서비스 이용약관입니다.">
+  <meta name="description" content="HIT IN 파트너 센터(partner.hitin.kr)의 공식 서비스 이용약관(Application Terms of Service)입니다. 파트너 회원 계정 생성, Google OAuth 연동, 서비스 이용 조건 및 권리 의무를 규정합니다.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,14 +18,25 @@
       --txt-muted: #94A3B8;
       --txt-dim: #64748B;
       --acc: #FF5A1F;
+      --acc-glow: rgba(255, 90, 31, 0.15);
+      --badge-bg: rgba(66, 133, 244, 0.12);
+      --badge-color: #60A5FA;
+      --success: #10B981;
       --line: #24324D;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--txt);
       line-height: 1.7;
+      padding: 0;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
     }
     .header {
       background: rgba(19, 27, 46, 0.85);
@@ -43,62 +54,318 @@
       justify-content: space-between;
       align-items: center;
     }
-    .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--txt); }
-    .logo-badge { background: var(--acc); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; }
-    .logo-title { font-size: 17px; font-weight: 800; }
-    .back-btn { background: var(--card); border: 1px solid var(--card-border); color: var(--txt); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; }
-    .container { max-width: 900px; margin: 40px auto 80px; padding: 0 24px; }
-    .content-box { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 36px; }
-    h1 { font-size: 26px; font-weight: 800; margin-bottom: 16px; color: #fff; }
-    h2 { font-size: 18px; font-weight: 700; color: #fff; margin: 24px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
-    p { margin-bottom: 12px; font-size: 14px; color: var(--txt-muted); }
-    ul, ol { margin-left: 20px; margin-bottom: 14px; font-size: 14px; color: var(--txt-muted); }
-    li { margin-bottom: 6px; }
-    .footer { text-align: center; padding: 30px 24px; font-size: 12px; color: var(--txt-dim); border-top: 1px solid var(--card-border); }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--txt);
+    }
+    .logo-badge {
+      background: var(--acc);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .logo-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--txt-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--acc);
+      background: rgba(255, 90, 31, 0.1);
+    }
+    .back-btn {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--txt);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: var(--line);
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
+    }
+    .title-banner {
+      background: linear-gradient(135deg, rgba(255, 90, 31, 0.1) 0%, rgba(66, 133, 244, 0.1) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+    .title-banner h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .title-banner p {
+      color: var(--txt-muted);
+      font-size: 14px;
+    }
+    .meta-info {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--txt-dim);
+      flex-wrap: wrap;
+    }
+    .content-box {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 36px;
+    }
+    .section {
+      margin-bottom: 36px;
+    }
+    .section:last-child {
+      margin-bottom: 0;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .num {
+      background: var(--acc);
+      color: #fff;
+      font-size: 12px;
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 800;
+    }
+    p {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--txt-muted);
+    }
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: var(--txt-muted);
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    strong {
+      color: var(--txt);
+      font-weight: 600;
+    }
+    .highlight-box {
+      background: rgba(255, 90, 31, 0.08);
+      border: 1px solid rgba(255, 90, 31, 0.3);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 13.5px;
+      color: var(--txt);
+    }
+    .highlight-box.blue {
+      background: rgba(66, 133, 244, 0.08);
+      border-color: rgba(66, 133, 244, 0.3);
+    }
+    .contact-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 12px;
+    }
+    .footer {
+      text-align: center;
+      padding: 30px 24px;
+      font-size: 12px;
+      color: var(--txt-dim);
+      border-top: 1px solid var(--card-border);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 16px; margin-top: 20px; }
+      .content-box { padding: 24px 18px; }
+      .title-banner { padding: 24px 18px; }
+      .title-banner h1 { font-size: 20px; }
+    }
   </style>
 </head>
 <body>
+
   <header class="header">
     <div class="header-inner">
       <a href="/" class="logo-area">
         <span class="logo-badge">HIT IN</span>
         <span class="logo-title">파트너 센터</span>
       </a>
-      <a href="/" class="back-btn">← 홈으로 이동</a>
+      <div class="nav-links">
+        <a href="/terms.html" class="nav-link active">이용약관</a>
+        <a href="/privacy.html" class="nav-link">개인정보처리방침</a>
+        <a href="/" class="back-btn">← 홈으로 이동</a>
+      </div>
     </div>
   </header>
 
   <main class="container">
+    <div class="title-banner">
+      <h1>서비스 이용약관 <span style="font-size: 14px; font-weight: 500; color: var(--txt-dim);">(Application Terms of Service)</span></h1>
+      <p>본 약관은 HIT IN(이하 "회사")이 제공하는 HIT IN 파트너 센터 웹/애플리케이션(https://partner.hitin.kr) 및 관련 제반 서비스(이하 "서비스")를 이용함에 있어 회사와 이용자(이하 "파트너 회원") 간의 권리, 의무 및 책임사항, 서비스 이용 조건 및 절차를 규정함을 목적으로 합니다.</p>
+      <div class="meta-info">
+        <span>• 적용 대상: HIT IN 파트너 센터 이용 사업자 및 회원</span>
+        <span>• 최종 개정일: 2025년 3월 1일</span>
+        <span>• 시행일자: 2025년 3월 1일</span>
+      </div>
+    </div>
+
     <div class="content-box">
-      <h1>서비스 이용약관 <span style="font-size: 15px; font-weight: 500; color: var(--txt-dim);">(Terms of Service)</span></h1>
-      <p>본 약관은 HIT IN(이하 "회사")이 제공하는 HIT IN 파트너 센터(partner.hitin.kr) 및 관련 제반 서비스(이하 "서비스")를 이용함에 있어 회사와 이용자(이하 "파트너 회원")의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
-      
-      <h2>제1조 (목적 및 정의)</h2>
-      <p>1. 본 약관은 HIT IN 플랫폼 내 아레나/필드, 건샵, 운영사 등 파트너 회원이 제공하는 시설 및 상품 예약·판매·관제 서비스를 안전하고 공정하게 이용할 수 있도록 하기 위함입니다.</p>
-      <p>2. "파트너 회원"이라 함은 회사의 서비스에 접속하여 본 약관에 동의하고 파트너 계정을 생성한 사업자 또는 관리자를 말합니다.</p>
 
-      <h2>제2조 (약관의 효력 및 개정)</h2>
-      <p>1. 본 약관은 서비스 웹사이트에 게시함으로써 효력이 발생합니다.</p>
-      <p>2. 회사는 약관의 규제에 관한 법률 등 관련 법령을 위배하지 않는 범위에서 본 약관을 개정할 수 있습니다.</p>
+      <!-- 제1조: 목적 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">1</span> 목적 (Purpose)</h2>
+        <p>본 약관은 HIT IN 파트너 센터를 통해 제공되는 경기장/아레나 타임슬롯 예약 관리, 실시간 현장 QR 체크인, 건샵 용품 및 렌탈 재고 관리, 매출 정산 및 플랫폼 관제 시스템의 공정하고 투명한 이용에 관한 제반 사항을 규정함을 목적으로 합니다.</p>
+      </section>
 
-      <h2>제3조 (이용계약의 체결 및 인증)</h2>
-      <p>1. 이용계약은 파트너 회원이 되고자 하는 자가 약관 내용에 동의하고, Google 소셜 로그인 또는 자체 가입 절차를 거친 후 회사가 이를 승인함으로써 성립합니다.</p>
-      <p>2. 회사는 타인의 정보 도용이나 허위 정보 기재 시 서비스 이용을 제한할 수 있습니다.</p>
+      <!-- 제2조: 용어의 정의 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">2</span> 용어의 정의 (Definitions)</h2>
+        <ul>
+          <li><strong>"서비스"</strong>라 함은 회사가 파트너 회원에게 제공하는 HIT IN 파트너 센터(partner.hitin.kr) 웹 및 애플리케이션의 모든 관리 기능과 솔루션을 의미합니다.</li>
+          <li><strong>"파트너 회원"</strong>이라 함은 본 약관에 동의하고 Google OAuth 소셜 연동 또는 자체 가입을 통해 계정을 생성하여 서비스를 이용하는 경기장 운영자(필드 사장님), 건샵/용품점 운영자, 본사 관리자를 의미합니다.</li>
+          <li><strong>"Google OAuth 연동"</strong>이라 함은 Google 계정 인증 시스템을 통하여 별도의 복잡한 절차 없이 안전하게 로그인 및 회원 식별을 수행하는 소셜 인증 서비스를 의미합니다.</li>
+        </ul>
+      </section>
 
-      <h2>제4조 (개인정보보호)</h2>
-      <p>회사는 관련 법령이 정하는 바에 따라 파트너 회원의 개인정보를 보호하기 위해 노력하며, 개인정보의 보호 및 사용에 대해서는 관련 법령 및 회사의 <a href="/privacy.html" style="color: var(--acc);">개인정보처리방침</a>이 적용됩니다.</p>
+      <!-- 제3조: 약관의 명시 및 효력 변경 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">3</span> 약관의 명시와 개정 (Terms Updates)</h2>
+        <p>1. 회사는 본 약관의 내용을 파트너 회원이 쉽게 알 수 있도록 서비스 초기 화면 또는 연결 화면(https://partner.hitin.kr/terms.html)에 게시합니다.</p>
+        <p>2. 회사는 「약관의 규제에 관한 법률」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」 등 관련 법령을 위배하지 않는 범위에서 본 약관을 개정할 수 있습니다.</p>
+        <p>3. 회사가 약관을 개정할 경우에는 적용일자 및 개정 사유를 명시하여 적용일자 7일 전(중요한 변경의 경우 30일 전)부터 웹사이트 공지사항을 통해 공지합니다.</p>
+      </section>
 
-      <h2>제5조 (회사의 의무와 파트너의 의무)</h2>
-      <p>1. 회사는 안정적인 플랫폼 서비스 제공을 위해 최선을 다합니다.</p>
-      <p>2. 파트너 회원은 시설 예약 시간, 요금, 규정 등을 성실히 관리하고 등록해야 합니다.</p>
+      <!-- 제4조: 이용계약 체결 및 Google 계정 연동 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">4</span> 이용계약 체결 및 계정 생성 (Account & Google OAuth)</h2>
+        <p>1. 이용계약은 파트너 회원이 되고자 하는 자가 본 약관 및 개인정보처리방침에 동의한 후, Google 소셜 로그인 연동 또는 회원가입 양식을 작성하여 신청하고 회사가 이를 승인함으로써 체결됩니다.</p>
+        
+        <div class="highlight-box blue">
+          <strong>🔐 Google 계정 연동 및 데이터 처리:</strong><br />
+          파트너 회원이 Google 로그인을 이용할 경우, 회사는 인증 및 식별에 필요한 기본 프로필 정보(이메일, 이름, 프로필 사진, 고유 ID)만을 수집하며, Google API 서비스 사용자 데이터 정책(Google API Services User Data Policy)을 엄격히 준수합니다.
+        </div>
 
-      <h2>제6조 (계약 해지 및 탈퇴)</h2>
-      <p>파트너 회원은 언제든지 서비스 내 탈퇴 메뉴 또는 이메일(support@hit-in.app)을 통해 이용계약 해지를 신청할 수 있으며, 회사는 관련 법령이 정하는 바에 따라 신속히 처리합니다.</p>
+        <p>2. 타인의 정보(Google 계정, 사업자등록번호 등)를 도용하거나 허위 정보를 등록한 경우 서비스 이용이 즉시 정지되거나 계약이 해지될 수 있습니다.</p>
+      </section>
+
+      <!-- 제5조: 서비스의 제공 및 변경 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">5</span> 서비스의 내용 (Services Provided)</h2>
+        <p>회사는 파트너 회원에게 다음과 같은 통합 운영 관리 서비스를 제공합니다:</p>
+        <ul>
+          <li><strong>타임슬롯 & 게임 예약 관리:</strong> 경기장별 일정 등록, 실시간 예약 현황 조회 및 수동 예약 등록</li>
+          <li><strong>실시간 현장 QR 체크인:</strong> 입장객 QR 코드 스캔, 체크인 처리 및 이용자 매너/상태 조회</li>
+          <li><strong>건샵 & 렌탈 재고 관리:</strong> 밀리터리/에어소프트 용품, 대여 장비 현황 및 수량 관리</li>
+          <li><strong>매출 통계 및 정산 대사:</strong> 타임슬롯별 결제 내역 분석, 월간/일간 정산 명세서 제공</li>
+          <li><strong>파트너 설정 및 프로필 관리:</strong> 사업장 정보 수정, 다중 운영 권한 전환 및 데이터 삭제 관리</li>
+        </ul>
+      </section>
+
+      <!-- 제6조: 파트너 회원의 의무 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">6</span> 파트너 회원의 의무 (Partner Obligations)</h2>
+        <p>1. 파트너 회원은 시설의 예약 가능 시간, 요금, 이용 규칙 등의 정보를 정확하고 최신 상태로 유지하여야 합니다.</p>
+        <p>2. 파트너 회원은 자신의 계정 및 로그인 인증 수단(Google 계정 등)에 대한 관리 책임을 부담하며, 이를 제3자에게 양도하거나 대여할 수 없습니다.</p>
+        <p>3. 파트너 회원은 관련 법령, 본 약관, 서비스 운영 정책을 준수하여야 하며, 시스템의 정상적 운영을 방해하는 행위를 하여서는 안 됩니다.</p>
+      </section>
+
+      <!-- 제7조: 개인정보보호 및 데이터 관리 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">7</span> 개인정보의 보호 (Privacy Protection)</h2>
+        <p>1. 회사는 관련 법령이 정하는 바에 따라 파트너 회원의 개인정보를 보호하기 위해 적극 노력합니다.</p>
+        <p>2. 개인정보의 수집, 이용, 제공, 파기 및 삭제 요청에 관한 구체적인 사항은 회사의 <a href="/privacy.html" style="color: var(--acc); font-weight: 600; text-decoration: underline;">개인정보처리방침 (Privacy Policy)</a>을 따릅니다.</p>
+      </section>
+
+      <!-- 제8조: 계약 해지 및 이용 제한 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">8</span> 계약 해지 및 회원 탈퇴 (Termination & Account Deletion)</h2>
+        <p>1. 파트너 회원은 언제든지 서비스 내 [내 정보 수정] > [회원 탈퇴 및 데이터 삭제] 버튼을 누르거나, 고객센터 이메일(privacy@hit-in.app / support@hit-in.app)을 통해 이용계약 해지 및 데이터 영구 파기를 요청할 수 있습니다.</p>
+        <p>2. 탈퇴 처리 시 회원의 개인정보 및 연동 데이터는 개인정보처리방침 및 관련 법령에 따라 즉시 파기 또는 법정 기간 보관 후 파기됩니다.</p>
+      </section>
+
+      <!-- 제9조: 면책 조항 및 손해배상 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">9</span> 면책 조항 (Limitation of Liability)</h2>
+        <p>1. 회사는 천재지변, 기간통신사업자의 회선 장애, Google 등 외부 인증 플랫폼의 장애 등 불가항력으로 인하여 서비스를 제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.</p>
+        <p>2. 회사는 파트너 회원 간 또는 파트너 회원과 최종 이용자(게이머) 간에 발생한 개별적인 거래 및 분쟁에 관하여 고의 또는 중과실이 없는 한 책임을 지지 않습니다.</p>
+      </section>
+
+      <!-- 제10조: 준거법 및 관할법원 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">10</span> 준거법 및 재판관할 (Governing Law)</h2>
+        <p>1. 본 약관의 해석 및 회사와 파트너 회원 간의 분쟁에 대하여는 대한민국 법률을 적용합니다.</p>
+        <p>2. 서비스 이용과 관련하여 회사와 파트너 회원 사이에 발생한 분쟁에 대한 소송은 민사소송법상의 관할법원에 제기합니다.</p>
+      </section>
+
+      <!-- 부칙 및 연락처 -->
+      <section class="section">
+        <h2 class="section-title"><span class="num">11</span> 부칙 및 고객센터 안내</h2>
+        <p>• 본 약관은 <strong>2025년 3월 1일</strong>부터 시행됩니다.</p>
+        <div class="contact-card">
+          <ul style="list-style: none; margin-left: 0; margin-bottom: 0;">
+            <li>• <strong>서비스명:</strong> HIT IN 파트너 센터 (partner.hitin.kr)</li>
+            <li>• <strong>운영사:</strong> HIT IN (HitInEnt)</li>
+            <li>• <strong>문의 및 고객지원:</strong> <a href="mailto:support@hit-in.app" style="color: #60A5FA;">support@hit-in.app</a> / <a href="mailto:jes0508@gmail.com" style="color: #60A5FA;">jes0508@gmail.com</a></li>
+            <li>• <strong>공식 웹사이트:</strong> <a href="https://partner.hitin.kr" target="_blank" style="color: #60A5FA;">https://partner.hitin.kr</a></li>
+          </ul>
+        </div>
+      </section>
+
     </div>
   </main>
 
   <footer class="footer">
     <p>© 2025 HIT IN Corp. All rights reserved. | <a href="/terms.html" style="color: var(--txt-muted); text-decoration: underline;">이용약관</a> | <a href="/privacy.html" style="color: var(--txt-muted); text-decoration: underline;">개인정보처리방침</a></p>
   </footer>
+
 </body>
 </html>

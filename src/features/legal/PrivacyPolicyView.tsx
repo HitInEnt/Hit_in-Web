@@ -15,9 +15,10 @@ import { usePartner } from '../../context/PartnerContext';
 
 interface PrivacyPolicyViewProps {
   onBack?: () => void;
+  onNavigateTerms?: () => void;
 }
 
-export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack }) => {
+export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack, onNavigateTerms }) => {
   const { theme, toggleTheme } = usePartner();
 
   const handleGoBack = () => {
@@ -93,6 +94,22 @@ export const PrivacyPolicyView: React.FC<PrivacyPolicyViewProps> = ({ onBack }) 
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {onNavigateTerms && (
+              <button
+                onClick={onNavigateTerms}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--mut)',
+                  fontSize: '12.5px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                이용약관 보기 →
+              </button>
+            )}
             <button
               onClick={toggleTheme}
               style={{

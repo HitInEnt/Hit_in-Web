@@ -18,6 +18,7 @@ import { UserPointsView } from './features/points/UserPointsView';
 // Auth
 import { LoginView } from './features/auth/LoginView';
 import { PrivacyPolicyView } from './features/legal/PrivacyPolicyView';
+import { TermsOfServiceView } from './features/legal/TermsOfServiceView';
 
 // Modals
 import { QuickCheckInModal } from './components/common/QuickCheckInModal';
@@ -49,7 +50,8 @@ const PartnerAppInner: React.FC = () => {
     };
   }, []);
 
-  const isPrivacyRoute = currentPath.startsWith('/privacy') || currentPath.includes('#privacy') || currentPath.startsWith('/terms') || currentPath.includes('#terms');
+  const isPrivacyRoute = currentPath.startsWith('/privacy') || currentPath.includes('#privacy');
+  const isTermsRoute = currentPath.startsWith('/terms') || currentPath.includes('#terms');
 
   // Modal States
   const [isQuickCheckInOpen, setIsQuickCheckInOpen] = useState(false);
@@ -75,7 +77,7 @@ const PartnerAppInner: React.FC = () => {
     setInspectedUserId(userId);
   };
 
-  // If visiting Privacy Policy or Terms route, show it immediately without requiring login
+  // If visiting Privacy Policy, show it immediately without requiring login
   if (isPrivacyRoute) {
     return (
       <>
@@ -83,6 +85,29 @@ const PartnerAppInner: React.FC = () => {
           onBack={() => {
             window.history.pushState({}, '', '/');
             setCurrentPath('/');
+          }}
+          onNavigateTerms={() => {
+            window.history.pushState({}, '', '/terms');
+            setCurrentPath('/terms');
+          }}
+        />
+        <ToastContainer />
+      </>
+    );
+  }
+
+  // If visiting Terms of Service, show it immediately without requiring login
+  if (isTermsRoute) {
+    return (
+      <>
+        <TermsOfServiceView
+          onBack={() => {
+            window.history.pushState({}, '', '/');
+            setCurrentPath('/');
+          }}
+          onNavigatePrivacy={() => {
+            window.history.pushState({}, '', '/privacy');
+            setCurrentPath('/privacy');
           }}
         />
         <ToastContainer />
@@ -144,10 +169,16 @@ const PartnerAppInner: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <LoginView onOpenPrivacy={() => {
-          window.history.pushState({}, '', '/privacy');
-          setCurrentPath('/privacy');
-        }} />
+        <LoginView 
+          onOpenPrivacy={() => {
+            window.history.pushState({}, '', '/privacy');
+            setCurrentPath('/privacy');
+          }}
+          onOpenTerms={() => {
+            window.history.pushState({}, '', '/terms');
+            setCurrentPath('/terms');
+          }}
+        />
         <ToastContainer />
       </>
     );

@@ -100,9 +100,10 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
 
 interface LoginViewProps {
   onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
 }
 
-export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms }) => {
   const { login, theme, toggleTheme, showToast } = usePartner();
 
   // Auth Mode: 'login' | 'signup'
@@ -1049,9 +1050,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy }) => {
                       target="_blank" 
                       rel="noopener noreferrer" 
                       onClick={(e) => {
-                        if (onOpenPrivacy) {
+                        if (onOpenTerms) {
                           e.preventDefault();
-                          onOpenPrivacy();
+                          onOpenTerms();
                         }
                       }}
                       style={{ color: 'var(--txt)', textDecoration: 'underline' }}
@@ -1370,9 +1371,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy }) => {
               target="_blank" 
               rel="noopener noreferrer" 
               onClick={(e) => {
-                if (onOpenPrivacy) {
+                if (onOpenTerms) {
                   e.preventDefault();
-                  onOpenPrivacy();
+                  onOpenTerms();
                 }
               }}
               style={{ color: 'var(--mut)', textDecoration: 'underline' }}
