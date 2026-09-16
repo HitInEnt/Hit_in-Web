@@ -1293,7 +1293,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
           gap: '8px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>신규 입점 문의: <strong>partner@hit-in.app</strong></span>
+            <span>신규 입점 문의: <strong>hitinent@gmail.com</strong></span>
             <button
               type="button"
               onClick={toggleTheme}

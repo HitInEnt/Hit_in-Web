@@ -626,7 +626,7 @@ export const MyPageView: React.FC = () => {
             개인정보처리방침
           </a>
           <span>•</span>
-          <span>고객지원: <strong>support@hit-in.app</strong></span>
+          <span>고객지원: <strong>hitinent@gmail.com</strong></span>
         </div>
         <div>
           © 2025 HIT IN Corp. All rights reserved. | 대표 웹사이트: <a href="https://partner.hitin.kr" style={{ color: 'var(--dim)' }}>partner.hitin.kr</a>
