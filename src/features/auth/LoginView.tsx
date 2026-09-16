@@ -1259,81 +1259,23 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
               </button>
             </div>
 
-            {/* Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-              <span style={{ fontSize: '11px', color: 'var(--dim)', fontWeight: 500 }}>또는 이메일 로그인</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px' }}>파트너 로그인 이메일</label>
-                <div style={{ position: 'relative' }}>
-                  <Mail size={14} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="email"
-                    className="form-input"
-                    style={{ width: '100%', paddingLeft: '30px', fontSize: '11.5px' }}
-                    placeholder="partner@arena.kr"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label" style={{ fontSize: '11px' }}>비밀번호</label>
-                <div style={{ position: 'relative' }}>
-                  <Lock size={14} color="var(--dim)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="password"
-                    className="form-input"
-                    style={{ width: '100%', paddingLeft: '30px', fontSize: '11.5px' }}
-                    placeholder="비밀번호 입력"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%', marginTop: '2px', fontWeight: 700, padding: '9px' }}
-              >
-                <span>{selectedRole === 'hq_admin' ? '본사 CRM 로그인' : '파트너 포털 로그인'}</span>
-                <ArrowRight size={14} />
-              </button>
-            </form>
-
-            {/* Link to Sign-up */}
+            {/* Security Notice */}
             <div style={{
-              padding: '8px 10px',
+              padding: '10px 12px',
               borderRadius: 'var(--radius-md)',
               background: 'var(--panel)',
               border: '1px solid var(--line)',
               textAlign: 'center',
-              fontSize: '11.5px'
+              fontSize: '11.5px',
+              color: 'var(--mut)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              marginTop: '4px'
             }}>
-              <span style={{ color: 'var(--mut)' }}>아직 HIT IN 제휴 파트너가 아니신가요? </span>
-              <button
-                type="button"
-                onClick={() => setAuthMode('signup')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--acc)',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  textDecoration: 'underline'
-                }}
-              >
-                신규 파트너 회원가입 ↗
-              </button>
+              <ShieldCheck size={14} color="var(--green)" />
+              <span>Google 및 카카오 공식 연동으로 즉시 로그인됩니다.</span>
             </div>
           </div>
         )}
