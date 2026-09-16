@@ -1344,14 +1344,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
           fontSize: '11px',
           color: 'var(--mut)',
           borderTop: '1px solid var(--line)',
-          paddingTop: '8px',
+          paddingTop: '10px',
+          marginTop: '4px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '6px'
+          gap: '8px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>신규 입점 문의: <strong>partner@hit-in.app</strong></span>
             <button
+              type="button"
               onClick={toggleTheme}
               style={{
                 background: 'transparent',
@@ -1365,7 +1367,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
               {theme === 'dark' ? '☀️ 라이트' : '🌙 다크'}
             </button>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', fontSize: '11px', color: 'var(--dim)' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '12px',
+            fontSize: '11px',
+            padding: '6px 10px',
+            background: 'var(--panel)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--line)'
+          }}>
             <a 
               href="/terms.html" 
               target="_blank" 
@@ -1376,11 +1388,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   onOpenTerms();
                 }
               }}
-              style={{ color: 'var(--mut)', textDecoration: 'underline' }}
+              style={{ color: 'var(--txt)', fontWeight: 600, textDecoration: 'underline' }}
             >
               서비스 이용약관
             </a>
-            <span style={{ color: 'var(--line)' }}>|</span>
+            <span style={{ color: 'var(--dim)' }}>•</span>
             <a 
               href="/privacy.html" 
               target="_blank" 
@@ -1391,7 +1403,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   onOpenPrivacy();
                 }
               }}
-              style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline' }}
+              style={{ color: 'var(--acc)', fontWeight: 700, textDecoration: 'underline' }}
             >
               개인정보처리방침
             </a>

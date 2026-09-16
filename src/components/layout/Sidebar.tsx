@@ -82,6 +82,13 @@ const NAV_ITEMS: NavItem[] = [
     icon: Users2,
     badge: 'HQ',
     allowedRoles: ['hq_admin']
+  },
+  {
+    id: 'mypage',
+    label: '마이페이지 (내 정보)',
+    icon: UserCog,
+    badge: 'MY',
+    allowedRoles: ['field_owner', 'shop_owner', 'hq_admin']
   }
 ];
 

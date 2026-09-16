@@ -12,7 +12,8 @@ export type NavTab =
   | 'field_manage' 
   | 'shop_inventory' 
   | 'settlement' 
-  | 'hq_clients';
+  | 'hq_clients'
+  | 'mypage';
 
 
 interface ToastNotification {

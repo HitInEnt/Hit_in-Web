@@ -75,6 +75,8 @@ export const Header: React.FC<HeaderProps> = ({
         return { title: '정산 및 매출 분석', desc: '주별/월별 입금 정산서 대사 및 HIT IN 플랫폼 수수료 공제 내역' };
       case 'hq_clients':
         return { title: '본사 고객사(파트너) 관리 (CRM)', desc: '입점 필드·건샵 계약 관리, 심사 승인 및 수수료율 설정' };
+      case 'mypage':
+        return { title: '마이페이지 (내 정보 및 약관 설정)', desc: `${user.businessName} 업체 정보, 운영 분야, 개인정보처리방침 및 약관 관리` };
       default:
         return { title: 'HIT IN 파트너 관리자', desc: '고객사 전용 통합 운영 플랫폼' };
     }

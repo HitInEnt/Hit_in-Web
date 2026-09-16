@@ -14,6 +14,7 @@ import { ShopInventoryView } from './features/shop/ShopInventoryView';
 import { SettlementView } from './features/settlement/SettlementView';
 import { HqClientsView } from './features/hq/HqClientsView';
 import { UserPointsView } from './features/points/UserPointsView';
+import { MyPageView } from './features/mypage/MyPageView';
 
 // Auth
 import { LoginView } from './features/auth/LoginView';
@@ -154,6 +155,8 @@ const PartnerAppInner: React.FC = () => {
         return <SettlementView />;
       case 'hq_clients':
         return <HqClientsView />;
+      case 'mypage':
+        return <MyPageView />;
       default:
         return (
           <DashboardView
