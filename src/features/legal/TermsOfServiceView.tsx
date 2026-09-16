@@ -33,7 +33,11 @@ export const TermsOfServiceView: React.FC<TermsOfServiceViewProps> = ({ onBack, 
 
   return (
     <div style={{
-      minHeight: '100vh',
+      width: '100vw',
+      height: '100vh',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      WebkitOverflowScrolling: 'touch',
       backgroundColor: 'var(--bg)',
       color: 'var(--txt)',
       paddingBottom: '80px',
