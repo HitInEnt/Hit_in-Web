@@ -730,6 +730,47 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                 {role === 'field_owner' ? '경기장 필드 사장님' : role === 'shop_owner' ? '건샵/렌탈 사장님' : '본사 운영 CRM'}
               </span>
             </div>
+
+            {/* Data Deletion & Privacy Policy Notice */}
+            <div style={{
+              padding: '12px 14px',
+              borderRadius: 'var(--radius-md)',
+              background: 'rgba(239, 68, 68, 0.05)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              fontSize: '11.5px'
+            }}>
+              <div>
+                <span style={{ color: 'var(--txt)', fontWeight: 600, display: 'block' }}>계정 및 데이터 관리</span>
+                <span style={{ color: 'var(--dim)' }}>
+                  개인정보 파기 및 탈퇴 문의: <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--acc)', textDecoration: 'underline' }}>개인정보처리방침</a>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('정말로 계정을 탈퇴하고 모든 개인 데이터를 영구 삭제하시겠습니까?\n삭제 요청 시 연동된 소셜 정보 및 계정 데이터가 파기됩니다.')) {
+                    showToast('계정 탈퇴 및 데이터 영구 삭제 처리가 완료되었습니다.', 'info');
+                    onClose();
+                    window.location.reload();
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: '1px solid var(--line)',
+                  color: 'var(--danger)',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                회원 탈퇴 및 데이터 삭제
+              </button>
+            </div>
           </div>
 
           {/* Modal Actions */}

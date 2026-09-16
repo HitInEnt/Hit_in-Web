@@ -98,7 +98,11 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
   }
 ];
 
-export const LoginView: React.FC = () => {
+interface LoginViewProps {
+  onOpenPrivacy?: () => void;
+}
+
+export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy }) => {
   const { login, theme, toggleTheme, showToast } = usePartner();
 
   // Auth Mode: 'login' | 'signup'
@@ -1039,7 +1043,36 @@ export const LoginView: React.FC = () => {
                     onChange={e => setAgreeTerms(e.target.checked)}
                     style={{ accentColor: 'var(--acc)', width: '13px', height: '13px', cursor: 'pointer' }}
                   />
-                  <span>서비스 이용약관 및 개인정보 처리방침에 동의합니다.</span>
+                  <span>
+                    <a 
+                      href="/terms.html" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={(e) => {
+                        if (onOpenPrivacy) {
+                          e.preventDefault();
+                          onOpenPrivacy();
+                        }
+                      }}
+                      style={{ color: 'var(--txt)', textDecoration: 'underline' }}
+                    >
+                      서비스 이용약관
+                    </a> 및{' '}
+                    <a 
+                      href="/privacy.html" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      onClick={(e) => {
+                        if (onOpenPrivacy) {
+                          e.preventDefault();
+                          onOpenPrivacy();
+                        }
+                      }}
+                      style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline' }}
+                    >
+                      개인정보 처리방침
+                    </a>에 동의합니다.
+                  </span>
                 </label>
 
                 {/* Submit Button */}
@@ -1312,23 +1345,56 @@ export const LoginView: React.FC = () => {
           borderTop: '1px solid var(--line)',
           paddingTop: '8px',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          flexDirection: 'column',
+          gap: '6px'
         }}>
-          <span>신규 입점 문의: <strong>partner@hit-in.app</strong></span>
-          <button
-            onClick={toggleTheme}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--acc)',
-              fontSize: '10.5px',
-              cursor: 'pointer',
-              fontWeight: 600
-            }}
-          >
-            {theme === 'dark' ? '☀️ 라이트' : '🌙 다크'}
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>신규 입점 문의: <strong>partner@hit-in.app</strong></span>
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--acc)',
+                fontSize: '10.5px',
+                cursor: 'pointer',
+                fontWeight: 600
+              }}
+            >
+              {theme === 'dark' ? '☀️ 라이트' : '🌙 다크'}
+            </button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', fontSize: '11px', color: 'var(--dim)' }}>
+            <a 
+              href="/terms.html" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              onClick={(e) => {
+                if (onOpenPrivacy) {
+                  e.preventDefault();
+                  onOpenPrivacy();
+                }
+              }}
+              style={{ color: 'var(--mut)', textDecoration: 'underline' }}
+            >
+              서비스 이용약관
+            </a>
+            <span style={{ color: 'var(--line)' }}>|</span>
+            <a 
+              href="/privacy.html" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              onClick={(e) => {
+                if (onOpenPrivacy) {
+                  e.preventDefault();
+                  onOpenPrivacy();
+                }
+              }}
+              style={{ color: 'var(--acc)', fontWeight: 600, textDecoration: 'underline' }}
+            >
+              개인정보처리방침
+            </a>
+          </div>
         </div>
       </div>
 

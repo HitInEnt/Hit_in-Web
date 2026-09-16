@@ -17,6 +17,7 @@ import { UserPointsView } from './features/points/UserPointsView';
 
 // Auth
 import { LoginView } from './features/auth/LoginView';
+import { PrivacyPolicyView } from './features/legal/PrivacyPolicyView';
 
 // Modals
 import { QuickCheckInModal } from './components/common/QuickCheckInModal';
@@ -30,6 +31,25 @@ import { PartnerService } from './services/partnerService';
 
 const PartnerAppInner: React.FC = () => {
   const { activeTab, role, user, refreshKey, isAuthenticated, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
+
+  // Route state for non-authenticated pages like Privacy Policy & Terms
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    return typeof window !== 'undefined' ? (window.location.pathname + window.location.hash) : '';
+  });
+
+  React.useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname + window.location.hash);
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, []);
+
+  const isPrivacyRoute = currentPath.startsWith('/privacy') || currentPath.includes('#privacy') || currentPath.startsWith('/terms') || currentPath.includes('#terms');
 
   // Modal States
   const [isQuickCheckInOpen, setIsQuickCheckInOpen] = useState(false);
@@ -54,6 +74,21 @@ const PartnerAppInner: React.FC = () => {
   const handleInspectPlayer = (userId: string) => {
     setInspectedUserId(userId);
   };
+
+  // If visiting Privacy Policy or Terms route, show it immediately without requiring login
+  if (isPrivacyRoute) {
+    return (
+      <>
+        <PrivacyPolicyView
+          onBack={() => {
+            window.history.pushState({}, '', '/');
+            setCurrentPath('/');
+          }}
+        />
+        <ToastContainer />
+      </>
+    );
+  }
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -109,7 +144,10 @@ const PartnerAppInner: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <LoginView />
+        <LoginView onOpenPrivacy={() => {
+          window.history.pushState({}, '', '/privacy');
+          setCurrentPath('/privacy');
+        }} />
         <ToastContainer />
       </>
     );

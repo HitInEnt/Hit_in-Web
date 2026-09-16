@@ -479,6 +479,25 @@ export const Sidebar: React.FC = () => {
             <LogOut size={13} />
           </button>
         </div>
+
+        {/* Sidebar Footer Legal Links */}
+        <div style={{
+          padding: '8px 14px 12px 14px',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '10px',
+          fontSize: '10.5px',
+          color: 'var(--dim)',
+          borderTop: '1px solid var(--line)'
+        }}>
+          <a href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>
+            이용약관
+          </a>
+          <span>•</span>
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dim)', textDecoration: 'underline' }}>
+            개인정보처리방침
+          </a>
+        </div>
       </aside>
     </>
   );
