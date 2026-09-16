@@ -72,6 +72,7 @@ export interface BookingItem {
   playerReportCount: number;
   isFirstTimer: boolean;
   rentalOrders: RentalOrderSummary[];
+  assignedTeam?: 'red' | 'blue';
   createdAt: string;
 }
 
@@ -169,9 +170,14 @@ export interface UserPointTransaction {
   createdAt: string; // YYYY-MM-DD HH:mm
   // Additional metadata
   checkInDate?: string;
-  reviewRating?: number; // 1 ~ 5
+  reviewRating?: number; // -5 ~ +5
   reviewComment?: string;
   targetSlotTitle?: string;
+  evaluatorUserId?: string;
+  evaluatorName?: string;
+  evaluatorNickname?: string;
+  evaluatorTeam?: 'red' | 'blue';
+  targetTeam?: 'red' | 'blue';
 }
 
 export interface UserPointSummary {

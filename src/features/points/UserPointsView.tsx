@@ -25,7 +25,10 @@ import {
   TrendingUp, 
   X,
   Building2,
-  Check
+  Check,
+  Shield,
+  Swords,
+  Users
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerService } from '../../services/partnerService';
@@ -48,8 +51,23 @@ export const UserPointsView: React.FC = () => {
 
   // Form states for modals
   const [selectedUserId, setSelectedUserId] = useState<string>('');
+  
+  // Anti-Abuse Review & Team Assignment State
+  const [userTeamMap, setUserTeamMap] = useState<Record<string, 'red' | 'blue'>>({
+    'usr_01': 'red',
+    'usr_02': 'blue',
+    'usr_03': 'red',
+    'usr_04': 'blue',
+    'usr_05': 'red',
+    'usr_06': 'blue'
+  });
+  const [evaluatorUserId, setEvaluatorUserId] = useState<string>('');
+  const [targetUserId, setTargetUserId] = useState<string>('');
+  const [selectedSlotTitle, setSelectedSlotTitle] = useState<string>('[CQB 주말 정기전] 10:00 ~ 13:00');
+  const [isTeamManagerOpen, setIsTeamManagerOpen] = useState<boolean>(false);
   const [reviewRating, setReviewRating] = useState<number>(5);
-  const [reviewComment, setReviewComment] = useState<string>('');
+  const [reviewComment, setReviewComment] = useState<string>('상대팀과의 힛콜 매너가 매우 훌륭하고 정정당당한 플레이가 인상적이었습니다.');
+
   const [manualAmount, setManualAmount] = useState<string>('1000');
   const [manualReason, setManualReason] = useState<string>('');
 
@@ -61,6 +79,45 @@ export const UserPointsView: React.FC = () => {
   const transactions = useMemo(() => {
     return PartnerService.getUserPointTransactions();
   }, [refreshKey]);
+
+  // Anti-Abuse Computed Candidates
+  const effectiveEvaluatorId = evaluatorUserId || (userSummaries[0]?.userId ?? '');
+  const evaluator = useMemo(() => {
+    return userSummaries.find(u => u.userId === effectiveEvaluatorId) || userSummaries[0];
+  }, [userSummaries, effectiveEvaluatorId]);
+
+  const evaluatorTeam: 'red' | 'blue' = evaluator ? (userTeamMap[evaluator.userId] || 'red') : 'red';
+  const opposingTeam: 'red' | 'blue' = evaluatorTeam === 'red' ? 'blue' : 'red';
+
+  // Strictly filter candidates to ONLY players on the opposing team in the match
+  const opposingCandidates = useMemo(() => {
+    if (!evaluator) return [];
+    return userSummaries.filter(u => 
+      u.userId !== evaluator.userId && 
+      (userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red')) === opposingTeam
+    );
+  }, [userSummaries, evaluator, userTeamMap, opposingTeam]);
+
+  const effectiveTargetId = targetUserId && opposingCandidates.some(c => c.userId === targetUserId)
+    ? targetUserId
+    : (opposingCandidates[0]?.userId ?? '');
+
+  const targetUser = useMemo(() => {
+    return userSummaries.find(u => u.userId === effectiveTargetId);
+  }, [userSummaries, effectiveTargetId]);
+
+  const targetTeam: 'red' | 'blue' = opposingTeam;
+
+  // Toggle user team in game roster
+  const handleTogglePlayerTeam = (uId: string) => {
+    setUserTeamMap(prev => {
+      const curr = prev[uId] || (uId === 'usr_02' || uId === 'usr_04' || uId === 'usr_06' ? 'blue' : 'red');
+      return {
+        ...prev,
+        [uId]: curr === 'red' ? 'blue' : 'red'
+      };
+    });
+  };
 
   // Statistics calculation
   const stats = useMemo(() => {
@@ -133,13 +190,21 @@ export const UserPointsView: React.FC = () => {
   };
 
   const handleOpenReviewModal = (userId?: string) => {
-    if (userId) {
-      setSelectedUserId(userId);
-    } else if (userSummaries.length > 0) {
-      setSelectedUserId(userSummaries[0].userId);
+    if (userSummaries.length > 0) {
+      const initialEvalId = userId || userSummaries[0].userId;
+      setEvaluatorUserId(initialEvalId);
+      
+      const evTeam = userTeamMap[initialEvalId] || (initialEvalId === 'usr_02' || initialEvalId === 'usr_04' || initialEvalId === 'usr_06' ? 'blue' : 'red');
+      const oppTeam = evTeam === 'red' ? 'blue' : 'red';
+      const oppCandidates = userSummaries.filter(u => 
+        u.userId !== initialEvalId && 
+        (userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red')) === oppTeam
+      );
+      setTargetUserId(oppCandidates[0]?.userId || '');
     }
     setReviewRating(5);
-    setReviewComment('상대팀과의 힛콜 매너가 매우 훌륭하고 게임 몰입도가 높았습니다.');
+    setReviewComment('상대팀으로서 힛콜 매너가 매우 정직하고 깔끔한 플레이가 인상적이었습니다.');
+    setIsTeamManagerOpen(false);
     setIsReviewModalOpen(true);
   };
 
@@ -187,18 +252,39 @@ export const UserPointsView: React.FC = () => {
   };
 
   const handleExecuteReviewGrant = () => {
-    const targetUser = userSummaries.find(u => u.userId === selectedUserId);
+    if (!evaluator) {
+      showToast('평가를 작성할 회원(내 플레이어)을 선택해주세요.', 'warning');
+      return;
+    }
     if (!targetUser) {
-      showToast('선택된 사용자가 없습니다.', 'warning');
+      showToast('평가 대상인 상대팀 플레이어를 선택해주세요.', 'warning');
+      return;
+    }
+
+    // Strict Anti-Abuse Checks
+    if (evaluator.userId === targetUser.userId) {
+      showToast('어뷰징 방지: 본인 자신에게는 매너 평점을 남길 수 없습니다.', 'warning');
+      return;
+    }
+    if (evaluatorTeam === targetTeam) {
+      showToast('어뷰징 방지: 같은 팀원 간에는 평점을 남길 수 없습니다. 오직 경기 상대편 유저에게만 매너 평점이 가능합니다.', 'warning');
       return;
     }
 
     const res = PartnerService.recordReviewRatingPoints(
       targetUser.userId,
       reviewRating,
-      reviewComment || '게임 후기 및 매너 평점 등록',
+      reviewComment || '상대팀 게임 후기 및 매너 평점 등록',
       user.partnerId,
-      user.businessName || 'HITIN 파트너사'
+      user.businessName || 'HITIN 파트너사',
+      {
+        userId: evaluator.userId,
+        userName: evaluator.userName,
+        userNickname: evaluator.userNickname,
+        team: evaluatorTeam
+      },
+      targetTeam,
+      selectedSlotTitle
     );
 
     if (res.success) {
@@ -210,6 +296,8 @@ export const UserPointsView: React.FC = () => {
         const found = updatedSummaries.find(u => u.userId === targetUser.userId);
         if (found) setSelectedUserForDetail(found);
       }
+    } else {
+      showToast(res.message, 'warning');
     }
   };
 
@@ -944,6 +1032,27 @@ export const UserPointsView: React.FC = () => {
                         {/* Description & Review Info */}
                         <td style={{ padding: '12px 8px' }}>
                           <div style={{ color: '#ddd' }}>{tx.description}</div>
+                          {tx.evaluatorName && tx.evaluatorTeam && (
+                            <div style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              marginTop: '4px',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              backgroundColor: 'rgba(234, 179, 8, 0.08)',
+                              border: '1px solid rgba(234, 179, 8, 0.25)',
+                              fontSize: '11px'
+                            }}>
+                              <span style={{ color: tx.evaluatorTeam === 'red' ? '#ef4444' : '#3b82f6', fontWeight: 700 }}>
+                                {tx.evaluatorTeam === 'red' ? '🔴 레드' : '🔵 블루'} {tx.evaluatorName}
+                              </span>
+                              <span style={{ color: 'var(--text-muted)' }}>⚔️ VS ⚔️</span>
+                              <span style={{ color: tx.targetTeam === 'red' ? '#ef4444' : '#3b82f6', fontWeight: 700 }}>
+                                {tx.targetTeam === 'red' ? '🔴 레드' : '🔵 블루'} {tx.userName}
+                              </span>
+                            </div>
+                          )}
                           {tx.reviewRating !== undefined && tx.reviewRating !== null && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
                               <span style={{
@@ -1254,26 +1363,45 @@ export const UserPointsView: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 3: Game Review & Manner Rating Modal */}
+      {/* MODAL 3: Game Review & Manner Rating Modal (Anti-Abuse Opposing Team Only) */}
       {isReviewModalOpen && (
         <div className="modal-overlay" onClick={() => setIsReviewModalOpen(false)}>
           <div 
             className="modal-content" 
-            style={{ maxWidth: '500px' }}
+            style={{ maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}
             onClick={e => e.stopPropagation()}
           >
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Star size={20} color="#eab308" />
-                <h2 style={{ fontSize: '18px', fontWeight: '700', margin: 0 }}>게임 후기 & 매너 평점 적립 / 차감</h2>
+                <div>
+                  <h2 style={{ fontSize: '17px', fontWeight: '700', margin: 0 }}>게임 후기 & 매너 평점 등록</h2>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>상대팀 플레이어 전용 상호 매너 평가 시스템</div>
+                </div>
               </div>
-              <button className="btn-icon" onClick={() => setIsReviewModalOpen(false)}>
-                <X size={18} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '3px 8px',
+                  borderRadius: '12px',
+                  backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                  color: '#3b82f6',
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  <ShieldCheck size={12} /> 어뷰징 방지 적용
+                </span>
+                <button className="btn-icon" onClick={() => setIsReviewModalOpen(false)}>
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             <div style={{ padding: '20px' }}>
-              {/* Point Notice Banner */}
+              {/* Anti-Abuse & Point Notice Banner */}
               <div style={{
                 padding: '14px 16px',
                 backgroundColor: 'rgba(234, 179, 8, 0.08)',
@@ -1284,55 +1412,332 @@ export const UserPointsView: React.FC = () => {
                 lineHeight: '1.6'
               }}>
                 <div style={{ fontWeight: '700', color: '#eab308', marginBottom: '6px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <Star size={14} fill="#eab308" />
-                  <span>게임 후기 & 매너 평점 포인트 적립/차감 안내</span>
+                  <ShieldCheck size={15} color="#eab308" />
+                  <span>어뷰징(담합/자체평점) 방지 매칭 원칙</span>
                 </div>
-                <div style={{ color: 'var(--txt)', marginBottom: '6px' }}>
-                  평가 별점(<strong>-5점 ~ +5점</strong>) 부여에 따라 포인트가 차등 지급 또는 차감됩니다:
+                <div style={{ color: 'var(--txt)', marginBottom: '8px' }}>
+                  🛡️ 당일 플레이한 게임에서 <strong>상대편(Opposing Team)</strong>으로 편성된 유저에게만 매너 평점을 남길 수 있습니다.<br />
+                  (※ 본인 자신 평가 및 같은 아군 팀원 간 친목/담합 평점 부여는 원천 차단됩니다.)
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4px', fontSize: '11.5px' }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr',
+                  gap: '4px',
+                  fontSize: '11.5px',
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                  padding: '8px 10px',
+                  borderRadius: '6px'
+                }}>
                   <div style={{ color: '#ef4444' }}>
-                    🔴 <strong>-5점 ~ -1점 (비매너/불량):</strong> -50P ~ -10P 차감
-                    <div style={{ fontSize: '10.5px', color: 'var(--mut)', marginTop: '1px' }}>
-                      (-5점: -50P / -4점: -40P / -3점: -30P / -2점: -20P / -1점: -10P)
-                    </div>
+                    🔴 <strong>-5점 ~ -1점 (비매너/불량):</strong> -50P ~ -10P 차감 (-5점: -50P / -4점: -40P / -3점: -30P / -2점: -20P / -1점: -10P)
                   </div>
                   <div style={{ color: 'var(--mut)' }}>
                     ⚪ <strong>0점 (보통 평가):</strong> 0 P (변동 없음)
                   </div>
                   <div style={{ color: '#22c55e' }}>
-                    🟢 <strong>+1점 ~ +5점 (우수 매너/시설 호평):</strong> +1P ~ +5P 지급
-                    <div style={{ fontSize: '10.5px', color: 'var(--mut)', marginTop: '1px' }}>
-                      (+1점: +1P / +2점: +2P / +3점: +3P / +4점: +4P / +5점: +5P)
-                    </div>
+                    🟢 <strong>+1점 ~ +5점 (우수 매너/시설 호평):</strong> +1P ~ +5P 지급 (+1점: +1P / +2점: +2P / +3점: +3P / +4점: +4P / +5점: +5P)
                   </div>
                 </div>
               </div>
 
-              {/* User Selection */}
+              {/* Match Session Selector */}
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
-                  작성 회원 선택
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
+                  🎯 당일 플레이 매치 세션
                 </label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={selectedSlotTitle}
+                  onChange={e => setSelectedSlotTitle(e.target.value)}
+                  placeholder="예: [CQB 주말 정기전] 10:00 ~ 13:00"
+                  style={{ width: '100%', fontSize: '13px' }}
+                />
+              </div>
+
+              {/* Step 1: Evaluator Selection */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--txt)', margin: 0 }}>
+                    1️⃣ 평가 작성 회원 (내 플레이어)
+                  </label>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    color: evaluatorTeam === 'red' ? '#ef4444' : '#3b82f6',
+                    padding: '1px 6px',
+                    borderRadius: '4px',
+                    backgroundColor: evaluatorTeam === 'red' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                    border: `1px solid ${evaluatorTeam === 'red' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
+                  }}>
+                    {evaluatorTeam === 'red' ? '🔴 레드팀 소속' : '🔵 블루팀 소속'}
+                  </span>
+                </div>
                 <select 
                   className="input-field"
-                  value={selectedUserId}
-                  onChange={e => setSelectedUserId(e.target.value)}
-                  style={{ width: '100%' }}
+                  value={evaluator?.userId || ''}
+                  onChange={e => {
+                    const newId = e.target.value;
+                    setEvaluatorUserId(newId);
+                    const evT = userTeamMap[newId] || (newId === 'usr_02' || newId === 'usr_04' || newId === 'usr_06' ? 'blue' : 'red');
+                    const oppT = evT === 'red' ? 'blue' : 'red';
+                    const oppC = userSummaries.filter(u => u.userId !== newId && (userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red')) === oppT);
+                    setTargetUserId(oppC[0]?.userId || '');
+                  }}
+                  style={{ width: '100%', fontSize: '13px' }}
                 >
-                  {userSummaries.map(u => (
-                    <option key={u.userId} value={u.userId}>
-                      {u.userName} ({u.userNickname}) - {u.phone}
-                    </option>
-                  ))}
+                  {userSummaries.map(u => {
+                    const t = userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red');
+                    return (
+                      <option key={u.userId} value={u.userId}>
+                        [{t === 'red' ? '🔴 레드팀' : '🔵 블루팀'}] {u.userName} ({u.userNickname}) - {u.phone}
+                      </option>
+                    );
+                  })}
                 </select>
+              </div>
+
+              {/* Step 2: Target Selection (Opposing Team Only) */}
+              <div style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--txt)', margin: 0 }}>
+                    2️⃣ 평가 대상 회원 (⚔️ {opposingTeam === 'red' ? '🔴 레드팀' : '🔵 블루팀'} 상대편만 선택 가능)
+                  </label>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    color: opposingTeam === 'red' ? '#ef4444' : '#3b82f6',
+                    padding: '1px 6px',
+                    borderRadius: '4px',
+                    backgroundColor: opposingTeam === 'red' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                    border: `1px solid ${opposingTeam === 'red' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
+                  }}>
+                    상대팀 후보 {opposingCandidates.length}명
+                  </span>
+                </div>
+
+                {opposingCandidates.length === 0 ? (
+                  <div style={{
+                    padding: '12px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    color: '#ef4444',
+                    fontSize: '12px',
+                    textAlign: 'center'
+                  }}>
+                    상대팀({opposingTeam === 'red' ? '레드팀' : '블루팀'})에 배정된 인원이 없습니다. 아래 '팀 편성 조정'을 눌러 팀을 재배치해주세요.
+                  </div>
+                ) : (
+                  <select 
+                    className="input-field"
+                    value={effectiveTargetId}
+                    onChange={e => setTargetUserId(e.target.value)}
+                    style={{ width: '100%', fontSize: '13px', borderColor: 'var(--primary)' }}
+                  >
+                    {opposingCandidates.map(u => {
+                      const t = userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red');
+                      return (
+                        <option key={u.userId} value={u.userId}>
+                          [{t === 'red' ? '🔴 상대 레드팀' : '🔵 상대 블루팀'}] {u.userName} ({u.userNickname}) - {u.phone}
+                        </option>
+                      );
+                    })}
+                  </select>
+                )}
+              </div>
+
+              {/* Matchup Battle Card */}
+              {evaluator && targetUser && (
+                <div style={{
+                  padding: '12px 16px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--line)',
+                  borderRadius: '10px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    {/* Evaluator Card */}
+                    <div style={{
+                      flex: 1,
+                      padding: '10px',
+                      borderRadius: '8px',
+                      backgroundColor: evaluatorTeam === 'red' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)',
+                      border: `1px solid ${evaluatorTeam === 'red' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+                      textAlign: 'center'
+                    }}>
+                      <div style={{
+                        fontSize: '10.5px',
+                        fontWeight: '700',
+                        color: evaluatorTeam === 'red' ? '#ef4444' : '#3b82f6',
+                        marginBottom: '4px'
+                      }}>
+                        {evaluatorTeam === 'red' ? '🔴 내 팀 (레드)' : '🔵 내 팀 (블루)'}
+                      </div>
+                      <div style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                        {evaluator.userName}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        ({evaluator.userNickname})
+                      </div>
+                    </div>
+
+                    {/* VS Icon */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '2px'
+                    }}>
+                      <div style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#eab308'
+                      }}>
+                        <Swords size={14} />
+                      </div>
+                      <span style={{ fontSize: '10px', fontWeight: '800', color: '#eab308' }}>VS</span>
+                    </div>
+
+                    {/* Target Card */}
+                    <div style={{
+                      flex: 1,
+                      padding: '10px',
+                      borderRadius: '8px',
+                      backgroundColor: targetTeam === 'red' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)',
+                      border: `1px solid ${targetTeam === 'red' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+                      textAlign: 'center'
+                    }}>
+                      <div style={{
+                        fontSize: '10.5px',
+                        fontWeight: '700',
+                        color: targetTeam === 'red' ? '#ef4444' : '#3b82f6',
+                        marginBottom: '4px'
+                      }}>
+                        {targetTeam === 'red' ? '🔴 상대편 대상 (레드)' : '🔵 상대편 대상 (블루)'}
+                      </div>
+                      <div style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                        {targetUser.userName}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        ({targetUser.userNickname})
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    fontSize: '11px',
+                    color: '#22c55e',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    backgroundColor: 'rgba(34, 197, 94, 0.08)',
+                    padding: '4px 8px',
+                    borderRadius: '4px'
+                  }}>
+                    <Check size={12} /> 상대편 유저 매칭 검증 완료 (어뷰징 차단 통과)
+                  </div>
+                </div>
+              )}
+
+              {/* Team Roster Quick Adjuster Collapsible */}
+              <div style={{ marginBottom: '16px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsTeamManagerOpen(!isTeamManagerOpen)}
+                  style={{
+                    background: 'none',
+                    border: '1px dashed var(--line)',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '11.5px',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Users size={13} />
+                    당일 플레이어 팀 편성 변경/확인 ({userSummaries.length}명)
+                  </span>
+                  <span>{isTeamManagerOpen ? '▲ 접기' : '▼ 팀 변경 도구 열기'}</span>
+                </button>
+
+                {isTeamManagerOpen && (
+                  <div style={{
+                    marginTop: '8px',
+                    padding: '10px',
+                    backgroundColor: 'rgba(0,0,0,0.25)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--line)'
+                  }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                      💡 버튼을 클릭하여 각 플레이어의 당일 팀을 즉시 🔴 레드팀 ⇄ 🔵 블루팀으로 전환할 수 있습니다.
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
+                      {userSummaries.map(u => {
+                        const t = userTeamMap[u.userId] || (u.userId === 'usr_02' || u.userId === 'usr_04' || u.userId === 'usr_06' ? 'blue' : 'red');
+                        return (
+                          <div 
+                            key={u.userId}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '5px 8px',
+                              borderRadius: '6px',
+                              backgroundColor: 'rgba(255,255,255,0.03)',
+                              border: '1px solid var(--line)',
+                              fontSize: '11px'
+                            }}
+                          >
+                            <span style={{ fontWeight: 600, color: '#fff' }}>{u.userName}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleTogglePlayerTeam(u.userId)}
+                              style={{
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                                border: 'none',
+                                fontSize: '10.5px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                backgroundColor: t === 'red' ? '#ef4444' : '#3b82f6',
+                                color: '#fff'
+                              }}
+                            >
+                              {t === 'red' ? '🔴 레드팀' : '🔵 블루팀'}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* -5 ~ +5 Rating Selector */}
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--txt)', margin: 0 }}>
-                    매너 & 경기 평점 선택 (-5 ~ +5점)
+                  <label style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--txt)', margin: 0 }}>
+                    3️⃣ 상대팀 매너 & 경기 평점 선택 (-5 ~ +5점)
                   </label>
                   <span style={{
                     fontSize: '12px',
@@ -1398,16 +1803,16 @@ export const UserPointsView: React.FC = () => {
 
               {/* Review Comment */}
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
-                  게임 후기 및 매너 코멘트
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '600', marginBottom: '6px', color: 'var(--txt)' }}>
+                  4️⃣ 상대팀에 대한 게임 후기 및 매너 코멘트
                 </label>
                 <textarea
                   className="input-field"
                   rows={3}
                   value={reviewComment}
                   onChange={e => setReviewComment(e.target.value)}
-                  placeholder="게임 진행 매너와 필드 시설에 대한 평가를 입력하세요..."
-                  style={{ width: '100%', resize: 'none' }}
+                  placeholder="상대팀으로서 힛콜 및 교전 매너에 대한 평가를 입력하세요..."
+                  style={{ width: '100%', resize: 'none', fontSize: '13px' }}
                 />
               </div>
 
@@ -1430,10 +1835,10 @@ export const UserPointsView: React.FC = () => {
                   }}>
                     <div>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                        {isDeduct ? '차감 예정 포인트 (비매너 감점)' : isZero ? '반영 포인트' : '지급 예정 포인트 (매너 가점)'}
+                        {isDeduct ? '상대팀 차감 예정 포인트 (비매너 감점)' : isZero ? '반영 포인트' : '상대팀 지급 예정 포인트 (매너 가점)'}
                       </div>
                       <div style={{ fontSize: '11px', color: isDeduct ? '#ef4444' : isZero ? '#94a3b8' : '#22c55e', marginTop: '2px', fontWeight: 600 }}>
-                        평점 {reviewRating > 0 ? `+${reviewRating}` : reviewRating}점 기준
+                        {targetUser ? `대상: [${targetTeam === 'red' ? '🔴 레드팀' : '🔵 블루팀'}] ${targetUser.userName} (${targetUser.userNickname})` : '대상을 선택해주세요'}
                       </div>
                     </div>
                     <span style={{
@@ -1454,18 +1859,21 @@ export const UserPointsView: React.FC = () => {
                 <button 
                   className="btn btn-primary"
                   onClick={handleExecuteReviewGrant}
+                  disabled={!evaluator || !targetUser || opposingCandidates.length === 0}
                   style={{
                     backgroundColor: reviewRating < 0 ? '#ef4444' : reviewRating === 0 ? '#64748b' : '#eab308',
                     color: reviewRating === 0 ? '#fff' : reviewRating < 0 ? '#fff' : '#000',
                     border: 'none',
-                    fontWeight: '700'
+                    fontWeight: '700',
+                    opacity: (!evaluator || !targetUser || opposingCandidates.length === 0) ? 0.5 : 1,
+                    cursor: (!evaluator || !targetUser || opposingCandidates.length === 0) ? 'not-allowed' : 'pointer'
                   }}
                 >
                   {reviewRating < 0 
-                    ? `후기 등록 및 ${Math.abs(reviewRating * 10)}P 차감`
+                    ? `후기 등록 및 상대편 ${Math.abs(reviewRating * 10)}P 차감`
                     : reviewRating === 0
                     ? '후기 등록 (0P)'
-                    : `후기 등록 및 +${reviewRating}P 적립`}
+                    : `후기 등록 및 상대편 +${reviewRating}P 적립`}
                 </button>
               </div>
             </div>

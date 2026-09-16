@@ -652,21 +652,51 @@ export class PartnerService {
   }
 
   static recordReviewRatingPoints(
-    userId: string,
+    targetUserId: string,
     rating: number,
     comment: string,
     partnerId: string,
     partnerName: string,
+    evaluator?: {
+      userId: string;
+      userName: string;
+      userNickname: string;
+      team: 'red' | 'blue';
+    },
+    targetTeam?: 'red' | 'blue',
     slotTitle?: string
-  ): { success: boolean; pointsAwarded: number; message: string; transaction: UserPointTransaction } {
+  ): { success: boolean; pointsAwarded: number; message: string; transaction?: UserPointTransaction } {
+    // 1. Anti-Abuse Self-Review Check
+    if (evaluator && evaluator.userId === targetUserId) {
+      return {
+        success: false,
+        pointsAwarded: 0,
+        message: '어뷰징 방지: 본인 자신에게는 매너 평점을 남길 수 없습니다.'
+      };
+    }
+
+    // 2. Anti-Abuse Same-Team Check (Must be opposite team only)
+    if (evaluator && targetTeam && evaluator.team === targetTeam) {
+      const teamName = evaluator.team === 'red' ? '레드팀' : '블루팀';
+      return {
+        success: false,
+        pointsAwarded: 0,
+        message: `어뷰징 방지: 같은 ${teamName} 팀원 간에는 평점을 남길 수 없습니다. 오직 경기 상대편 유저에게만 매너 평점이 가능합니다.`
+      };
+    }
+
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const allTxs = this.getUserPointTransactions();
     const summaries = this.getUserPointSummaries();
-    const userSummary = summaries.find(s => s.userId === userId) || initialUserPointSummaries[0];
+    const userSummary = summaries.find(s => s.userId === targetUserId) || initialUserPointSummaries[0];
 
     const cleanRating = Math.max(-5, Math.min(5, Math.round(rating)));
     const pointsToAward = this.calculateReviewPoints(cleanRating);
     const isDeduct = pointsToAward < 0;
+
+    const desc = evaluator
+      ? `[상대팀 매너평가] ${evaluator.team === 'red' ? '🔴 레드팀' : '🔵 블루팀'} ${evaluator.userName} ➔ ${targetTeam === 'red' ? '🔴 레드팀' : '🔵 블루팀'} ${userSummary.userName} (${cleanRating > 0 ? '+' : ''}${cleanRating}점: ${pointsToAward > 0 ? '+' : ''}${pointsToAward} P)`
+      : `게임 후기 및 매너 평가 (${cleanRating > 0 ? '+' : ''}${cleanRating}점: ${pointsToAward > 0 ? '+' : ''}${pointsToAward} P)`;
 
     const newTx: UserPointTransaction = {
       id: `tx_pt_${Date.now()}`,
@@ -677,35 +707,51 @@ export class PartnerService {
       type: isDeduct ? 'use' : 'earn',
       amount: pointsToAward,
       reason: 'review_rating',
-      description: `게임 후기 및 매너 평가 (${cleanRating > 0 ? '+' : ''}${cleanRating}점: ${pointsToAward > 0 ? '+' : ''}${pointsToAward} P)`,
+      description: desc,
       partnerId,
       partnerName,
       partnerType: 'field',
       reviewRating: cleanRating,
       reviewComment: comment,
       targetSlotTitle: slotTitle,
+      evaluatorUserId: evaluator?.userId,
+      evaluatorName: evaluator?.userName,
+      evaluatorNickname: evaluator?.userNickname,
+      evaluatorTeam: evaluator?.team,
+      targetTeam,
       createdAt: nowStr
     };
 
     setStorage(STORAGE_KEYS.POINT_TRANSACTIONS, [newTx, ...allTxs]);
 
-    // Update Summary
-    const sIdx = summaries.findIndex(s => s.userId === userId);
+    // Update Target User Summary
+    const sIdx = summaries.findIndex(s => s.userId === targetUserId);
     if (sIdx !== -1) {
       summaries[sIdx] = {
         ...summaries[sIdx],
         totalPoints: Math.max(0, summaries[sIdx].totalPoints + pointsToAward),
-        reviewsWrittenCount: summaries[sIdx].reviewsWrittenCount + 1,
         recentTransactions: [newTx, ...summaries[sIdx].recentTransactions.slice(0, 5)]
       };
-      setStorage(STORAGE_KEYS.USER_POINTS, summaries);
     }
 
+    // Update Evaluator User Summary (Increment reviews written count)
+    if (evaluator) {
+      const evalIdx = summaries.findIndex(s => s.userId === evaluator.userId);
+      if (evalIdx !== -1) {
+        summaries[evalIdx] = {
+          ...summaries[evalIdx],
+          reviewsWrittenCount: summaries[evalIdx].reviewsWrittenCount + 1
+        };
+      }
+    }
+
+    setStorage(STORAGE_KEYS.USER_POINTS, summaries);
+
     const message = pointsToAward < 0
-      ? `게임 후기 및 매너 평점(${cleanRating}점) 반영 완료 (${Math.abs(pointsToAward)} P 차감)`
+      ? `상대편 매너 평점(${cleanRating}점) 반영 완료 (${Math.abs(pointsToAward)} P 차감)`
       : pointsToAward === 0
-      ? `게임 후기 및 매너 평점(0점) 등록 완료 (0 P)`
-      : `게임 후기 및 매너 평점(+${cleanRating}점) 적립 완료 (+${pointsToAward} P)`;
+      ? `상대편 매너 평점(0점) 등록 완료 (0 P)`
+      : `상대편 매너 평점(+${cleanRating}점) 적립 완료 (+${pointsToAward} P)`;
 
     return {
       success: true,
