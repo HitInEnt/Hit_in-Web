@@ -78,7 +78,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: 'hq_clients',
-    label: '입점 파트너사 (CRM)',
+    label: '가맹 파트너 심사/관리',
     icon: Users2,
     badge: 'HQ',
     allowedRoles: ['hq_admin']
@@ -261,7 +261,7 @@ export const Sidebar: React.FC = () => {
                 }}
               >
                 <ShieldAlert size={13} />
-                본사CRM
+                본사 총괄
               </button>
             )}
           </div>

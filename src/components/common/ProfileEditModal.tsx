@@ -667,7 +667,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                 {[
                   { role: 'field_owner' as PartnerRole, label: '필드 사장님', sub: '경기장/예약', icon: Layers, color: 'var(--acc)' },
                   { role: 'shop_owner' as PartnerRole, label: '건샵 사장님', sub: '렌탈/재고', icon: ShoppingBag, color: '#38bdf8' },
-                  { role: 'hq_admin' as PartnerRole, label: '본사 CRM', sub: '플랫폼관제', icon: ShieldCheck, color: 'var(--lime-chip)' }
+                  { role: 'hq_admin' as PartnerRole, label: '본사 총괄', sub: '플랫폼관제', icon: ShieldCheck, color: 'var(--lime-chip)' }
                 ].map(item => {
                   const isChecked = selectedRoles.includes(item.role);
                   const IconComp = item.icon;
@@ -730,7 +730,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
             }}>
               <span style={{ color: 'var(--mut)' }}>현재 운영 권한</span>
               <span className={`badge ${role === 'field_owner' ? 'badge-orange' : role === 'shop_owner' ? 'badge-cyan' : 'badge-lime'}`}>
-                {role === 'field_owner' ? '경기장 필드 사장님' : role === 'shop_owner' ? '건샵/렌탈 사장님' : '본사 운영 CRM'}
+                {role === 'field_owner' ? '경기장 필드 사장님' : role === 'shop_owner' ? '건샵/렌탈 사장님' : '본사 총괄 관리자'}
               </span>
             </div>
 

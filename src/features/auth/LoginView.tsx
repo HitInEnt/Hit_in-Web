@@ -88,12 +88,12 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     badgeBg: 'rgba(199, 249, 78, 0.2)',
     badgeColor: 'var(--lime-chip)',
     title: '본사 총괄 관리자',
-    subTitle: 'HIT IN 운영센터 / CRM',
+    subTitle: 'HIT IN 본사 총괄 운영센터',
     desc: '전국 가맹사 심사 승인, 매출 정산 및 플랫폼 관제',
     icon: ShieldCheck,
-    defaultBiz: 'HIT IN 본사 운영센터',
-    defaultName: '본사 총괄 관리자',
-    defaultEmail: 'admin@hit-in.app',
+    defaultBiz: 'HitInEnt',
+    defaultName: 'HitInEnt 본사 총괄 관리자',
+    defaultEmail: 'hitinent@gmail.com',
     features: ['가맹사 심사 및 승인', '전체 매출 & 정산 대사', '통합 시스템 정책 관제']
   }
 ];
@@ -130,7 +130,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
 
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
   const [isGoogleGuideOpen, setIsGoogleGuideOpen] = useState<boolean>(false);
-  const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('jes0508@gmail.com');
+  const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('hitinent@gmail.com');
   const [googleDirectName, setGoogleDirectName] = useState<string>('');
   const [showDirectSignupForm, setShowDirectSignupForm] = useState<boolean>(false);
 
@@ -166,7 +166,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
     const names = roles.map(r => {
       if (r === 'field_owner') return '🏟️ 경기장 필드';
       if (r === 'shop_owner') return '🔫 건샵/렌탈';
-      return '🛡️ 본사CRM';
+      return '🛡️ 본사 총괄 관리자';
     });
     return names.join(' + ');
   };
@@ -806,7 +806,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                           {cat.title}
                         </div>
                         <div style={{ fontSize: '9.5px', color: isSelected ? cat.badgeColor : 'var(--dim)', marginTop: '2px', fontWeight: 600 }}>
-                          {cat.role === 'field_owner' ? '경기장/아레나' : cat.role === 'shop_owner' ? '건샵/용품점' : '본사 CRM'}
+                          {cat.role === 'field_owner' ? '경기장/아레나' : cat.role === 'shop_owner' ? '건샵/용품점' : '본사 총괄'}
                         </div>
                       </div>
                     </div>
@@ -1192,7 +1192,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   }}
                 >
                   <ShieldCheck size={14} />
-                  본사 CRM
+                  본사 총괄
                 </button>
               </div>
             </div>
@@ -1623,7 +1623,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                       style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }}
                       value={googleDirectEmail}
                       onChange={e => setGoogleDirectEmail(e.target.value)}
-                      placeholder="jes0508@gmail.com"
+                      placeholder="hitinent@gmail.com"
                     />
                   </div>
                   <div>
@@ -1634,7 +1634,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                       style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }}
                       value={googleDirectName}
                       onChange={e => setGoogleDirectName(e.target.value)}
-                      placeholder={signupName || 'jes0508'}
+                      placeholder={signupName || 'HitInEnt 본사 관리자'}
                     />
                   </div>
                 </div>
@@ -1646,7 +1646,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                     const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
                     const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
                     const meta = getRoleMetadata(effectiveRole);
-                    const userEmail = googleDirectEmail.trim() || 'jes0508@gmail.com';
+                    const userEmail = googleDirectEmail.trim() || 'hitinent@gmail.com';
                     const userName = googleDirectName.trim() || (authMode === 'signup' && signupName ? signupName : `${userEmail.split('@')[0]} (Google)`);
 
                     login({

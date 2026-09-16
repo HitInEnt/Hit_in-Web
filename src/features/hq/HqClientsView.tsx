@@ -219,8 +219,8 @@ export const HqClientsView: React.FC = () => {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-lime" style={{ fontWeight: 800 }}>HQ SUPER ADMIN CRM</span>
-            <span style={{ fontSize: '13px', color: 'var(--mut)' }}>전국 제휴 가맹 업체 회원 및 계약 종합 관리</span>
+            <span className="badge badge-lime" style={{ fontWeight: 800 }}>HQ SUPER ADMIN</span>
+            <span style={{ fontSize: '13px', color: 'var(--mut)' }}>전국 제휴 가맹 파트너 심사 및 통합 관리</span>
           </div>
           <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--txt)', marginTop: '4px' }}>
             제휴 파트너사(필드 / 건샵) 회원 정보 및 계약 관리

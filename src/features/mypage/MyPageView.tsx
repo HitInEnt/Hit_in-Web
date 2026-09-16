@@ -365,7 +365,7 @@ export const MyPageView: React.FC = () => {
                 {[
                   { role: 'field_owner' as PartnerRole, label: '🏟️ 경기장/필드', sub: '타임슬롯 & QR' },
                   { role: 'shop_owner' as PartnerRole, label: '🔫 건샵/용품', sub: '렌탈 & 재고' },
-                  ...((role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin'))) ? [{ role: 'hq_admin' as PartnerRole, label: '👑 본사 관리', sub: 'CRM & 플랫폼' }] : [])
+                  ...((role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin'))) ? [{ role: 'hq_admin' as PartnerRole, label: '👑 본사 관리', sub: '본사 총괄 & 플랫폼' }] : [])
                 ].map(item => {
                   const isChecked = selectedRoles.includes(item.role);
                   return (

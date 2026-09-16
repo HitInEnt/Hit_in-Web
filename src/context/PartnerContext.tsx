@@ -138,41 +138,47 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [role]);
 
   const login = useCallback((payload: LoginPayload) => {
+    const isMasterHqEmail = Boolean(payload.email && payload.email.toLowerCase() === 'hitinent@gmail.com');
+    const assignedRole: PartnerRole = isMasterHqEmail ? 'hq_admin' : payload.role;
+
     setIsAuthenticated(true);
-    setRoleState(payload.role);
+    setRoleState(assignedRole);
     localStorage.setItem('hitin_partner_auth', 'true');
-    localStorage.setItem('hitin_partner_role', payload.role);
+    localStorage.setItem('hitin_partner_role', assignedRole);
 
     // 1. Look up any previously edited profile for this email or role
     let existingProfile: PartnerUser | null = null;
     if (payload.email) {
-      const byEmail = localStorage.getItem(`hitin_custom_user_email_${payload.email}`);
+      const byEmail = localStorage.getItem(`hitin_custom_user_email_${payload.email.toLowerCase()}`);
       if (byEmail) {
         try { existingProfile = JSON.parse(byEmail); } catch {}
       }
     }
     if (!existingProfile) {
-      const byRole = localStorage.getItem(`hitin_custom_user_${payload.role}`);
+      const byRole = localStorage.getItem(`hitin_custom_user_${assignedRole}`);
       if (byRole) {
         try { existingProfile = JSON.parse(byRole); } catch {}
       }
     }
 
-    const defaultForRole = initialPartnerUsers.find(u => u.role === payload.role) || initialPartnerUsers[0];
-    const userEmail = payload.email || existingProfile?.email || defaultForRole.email;
-    const approvalStatus = existingProfile?.status || PartnerService.checkUserApproval(userEmail, payload.role);
+    const defaultForRole = initialPartnerUsers.find(u => u.role === assignedRole) || initialPartnerUsers[0];
+    const userEmail = payload.email ? payload.email.trim() : (existingProfile?.email || defaultForRole.email);
+    const isMasterAdmin = userEmail.toLowerCase() === 'hitinent@gmail.com';
+    const approvalStatus = isMasterAdmin ? 'active' : (existingProfile?.status || PartnerService.checkUserApproval(userEmail, assignedRole));
 
-    const effectiveRoles = payload.roles && payload.roles.length > 0 
-      ? payload.roles 
-      : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [payload.role]);
+    const effectiveRoles = isMasterAdmin
+      ? ['hq_admin' as PartnerRole, 'field_owner' as PartnerRole, 'shop_owner' as PartnerRole]
+      : (payload.roles && payload.roles.length > 0 
+          ? payload.roles 
+          : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [assignedRole]));
 
     const customUser: PartnerUser = {
-      id: existingProfile?.id || `usr_${payload.role}_${Date.now()}`,
-      name: payload.name || existingProfile?.name || defaultForRole.name,
+      id: existingProfile?.id || (isMasterAdmin ? 'usr_hq_master' : `usr_${assignedRole}_${Date.now()}`),
+      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 총괄 관리자') : (payload.name || existingProfile?.name || defaultForRole.name),
       email: userEmail,
-      role: payload.role,
+      role: assignedRole,
       roles: effectiveRoles,
-      businessName: payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || defaultForRole.businessName),
+      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || defaultForRole.businessName)),
       businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || defaultForRole.businessNumber),
       phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || defaultForRole.phone),
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
@@ -180,9 +186,9 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       status: approvalStatus
     };
 
-    localStorage.setItem(`hitin_custom_user_${payload.role}`, JSON.stringify(customUser));
+    localStorage.setItem(`hitin_custom_user_${assignedRole}`, JSON.stringify(customUser));
     if (customUser.email) {
-      localStorage.setItem(`hitin_custom_user_email_${customUser.email}`, JSON.stringify(customUser));
+      localStorage.setItem(`hitin_custom_user_email_${customUser.email.toLowerCase()}`, JSON.stringify(customUser));
     }
     localStorage.setItem('hitin_custom_user', JSON.stringify(customUser));
     setUser(customUser);

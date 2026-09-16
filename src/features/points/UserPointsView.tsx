@@ -372,7 +372,7 @@ export const UserPointsView: React.FC = () => {
               color: '#000',
               letterSpacing: '0.5px'
             }}>
-              {role === 'shop_owner' ? '건샵 파트너 채널' : role === 'field_owner' ? '필드 파트너 채널' : 'HQ CRM'}
+              {role === 'shop_owner' ? '건샵 파트너 채널' : role === 'field_owner' ? '필드 파트너 채널' : 'HQ 본사 총괄'}
             </span>
           </div>
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.5' }}>

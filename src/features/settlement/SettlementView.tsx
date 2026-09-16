@@ -134,62 +134,78 @@ export const SettlementView: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {settlements.map(record => {
-                const isPaid = record.payoutStatus === 'paid';
-                return (
-                  <tr key={record.id}>
-                    <td>
-                      <span style={{ fontWeight: 700, color: 'var(--txt)' }}>{record.period}</span>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '13px' }}>{record.partnerName}</span>
-                    </td>
-                    <td>
-                      <span className="mono-font">{record.bookingCount}건</span>
-                    </td>
-                    <td>
-                      <span className="mono-font" style={{ fontWeight: 700 }}>
-                        {record.grossSales.toLocaleString()}원
+              {settlements.length === 0 ? (
+                <tr>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--mut)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <ReceiptText size={32} style={{ opacity: 0.4, color: 'var(--acc)' }} />
+                      <span style={{ fontWeight: 700, color: 'var(--txt)', fontSize: '14px' }}>
+                        아직 발생한 정산 및 매출 내역이 없습니다.
                       </span>
-                    </td>
-                    <td>
-                      <span className="mono-font" style={{ color: 'var(--danger)', fontSize: '12px' }}>
-                        -{(record.platformFeeAmount).toLocaleString()}원 ({(record.platformFeeRate * 100).toFixed(0)}%)
+                      <span style={{ fontSize: '12px', color: 'var(--mut)' }}>
+                        실제 고객 결제 및 예약이 완료되면 매주 금요일 정산 대사 명세서가 자동으로 집계되어 생성됩니다.
                       </span>
-                    </td>
-                    <td>
-                      <span className="mono-font" style={{ fontWeight: 800, color: 'var(--green)', fontSize: '14px' }}>
-                        {record.netPayout.toLocaleString()}원
-                      </span>
-                    </td>
-                    <td>
-                      {isPaid ? (
-                        <span className="badge badge-success">
-                          <CheckCircle2 size={11} /> 입금완료
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                settlements.map(record => {
+                  const isPaid = record.payoutStatus === 'paid';
+                  return (
+                    <tr key={record.id}>
+                      <td>
+                        <span style={{ fontWeight: 700, color: 'var(--txt)' }}>{record.period}</span>
+                      </td>
+                      <td>
+                        <span style={{ fontSize: '13px' }}>{record.partnerName}</span>
+                      </td>
+                      <td>
+                        <span className="mono-font">{record.bookingCount}건</span>
+                      </td>
+                      <td>
+                        <span className="mono-font" style={{ fontWeight: 700 }}>
+                          {record.grossSales.toLocaleString()}원
                         </span>
-                      ) : (
-                        <span className="badge badge-warning">
-                          <Clock size={11} /> 지급예정
+                      </td>
+                      <td>
+                        <span className="mono-font" style={{ color: 'var(--danger)', fontSize: '12px' }}>
+                          -{(record.platformFeeAmount).toLocaleString()}원 ({(record.platformFeeRate * 100).toFixed(0)}%)
                         </span>
-                      )}
-                    </td>
-                    <td>
-                      <span className="mono-font" style={{ fontSize: '12px', color: 'var(--mut)' }}>
-                        {record.payoutDate}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '4px 8px', fontSize: '11px' }}
-                        onClick={() => handleDownloadInvoice(record)}
-                      >
-                        <Download size={12} /> PDF
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td>
+                        <span className="mono-font" style={{ fontWeight: 800, color: 'var(--green)', fontSize: '14px' }}>
+                          {record.netPayout.toLocaleString()}원
+                        </span>
+                      </td>
+                      <td>
+                        {isPaid ? (
+                          <span className="badge badge-success">
+                            <CheckCircle2 size={11} /> 입금완료
+                          </span>
+                        ) : (
+                          <span className="badge badge-warning">
+                            <Clock size={11} /> 지급예정
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <span className="mono-font" style={{ fontSize: '12px', color: 'var(--mut)' }}>
+                          {record.payoutDate}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '4px 8px', fontSize: '11px' }}
+                          onClick={() => handleDownloadInvoice(record)}
+                        >
+                          <Download size={12} /> PDF
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

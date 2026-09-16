@@ -36,31 +36,6 @@ interface DashboardViewProps {
   onInspectPlayer: (userId: string) => void;
 }
 
-const HOURLY_TRAFFIC_DATA = [
-  { time: '09:00', players: 12, capacity: 60 },
-  { time: '10:00', players: 38, capacity: 60 },
-  { time: '11:00', players: 40, capacity: 60 },
-  { time: '12:00', players: 36, capacity: 60 },
-  { time: '13:00', players: 20, capacity: 60 },
-  { time: '14:00', players: 50, capacity: 60 },
-  { time: '15:00', players: 50, capacity: 60 },
-  { time: '16:00', players: 48, capacity: 60 },
-  { time: '17:00', players: 45, capacity: 60 },
-  { time: '18:00', players: 22, capacity: 60 },
-  { time: '19:00', players: 18, capacity: 60 },
-  { time: '20:00', players: 28, capacity: 60 }
-];
-
-const WEEKLY_REVENUE_DATA = [
-  { day: '월 (09.03)', sales: 980000 },
-  { day: '화 (09.04)', sales: 1240000 },
-  { day: '수 (09.05)', sales: 1850000 },
-  { day: '목 (09.06)', sales: 1420000 },
-  { day: '금 (09.07)', sales: 3200000 },
-  { day: '토 (09.08)', sales: 6800000 },
-  { day: '일 (09.09)', sales: 7450000 }
-];
-
 export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenQuickCheckIn,
   onOpenAddSlot,
@@ -74,12 +49,61 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const products = useMemo(() => PartnerService.getProducts(role === 'shop_owner' ? user.partnerId : undefined), [user.partnerId, role]);
   const clients = useMemo(() => PartnerService.getClients(), []);
 
-  // Compute stats
+  // Compute stats dynamically from real data
   const totalBookedPlayersToday = bookings.reduce((sum, b) => sum + b.playerCount, 0);
   const checkedInCount = bookings.filter(b => b.checkInStatus === 'checked_in').length;
   const pendingCount = bookings.filter(b => b.checkInStatus === 'pending').length;
   const todayRevenue = bookings.reduce((sum, b) => sum + b.totalAmount, 0);
   const estimatedPayout = Math.round(todayRevenue * 0.92);
+
+  // Dynamic Hourly Traffic
+  const hourlyTrafficData = useMemo(() => {
+    const hours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+    return hours.map(h => {
+      const hPrefix = h.split(':')[0];
+      const count = bookings
+        .filter(b => b.startTime && b.startTime.startsWith(hPrefix))
+        .reduce((sum, b) => sum + b.playerCount, 0);
+      return { time: h, players: count, capacity: 60 };
+    });
+  }, [bookings]);
+
+  // Dynamic Weekly Revenue
+  const weeklyRevenueData = useMemo(() => {
+    const days = [
+      { key: 1, day: '월' },
+      { key: 2, day: '화' },
+      { key: 3, day: '수' },
+      { key: 4, day: '목' },
+      { key: 5, day: '금' },
+      { key: 6, day: '토' },
+      { key: 0, day: '일' }
+    ];
+
+    const dayMap: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    bookings.forEach(b => {
+      if (b.date) {
+        const d = new Date(b.date).getDay();
+        dayMap[d] = (dayMap[d] || 0) + (b.totalAmount || 0);
+      }
+    });
+
+    return days.map(item => ({
+      day: item.day,
+      sales: dayMap[item.key] || 0
+    }));
+  }, [bookings]);
+
+  const weeklyTotalRevenue = useMemo(() => {
+    return weeklyRevenueData.reduce((sum, d) => sum + d.sales, 0);
+  }, [weeklyRevenueData]);
+
+  const todayDateStr = new Date().toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short'
+  });
 
   return (
     <div className="page-scrollable">
@@ -96,7 +120,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span className="badge badge-lime">정상 영업 중</span>
             <span style={{ fontSize: '13px', color: 'var(--mut)' }}>
-              2026년 9월 9일 (수) 실시간 운영 현황
+              {todayDateStr} 실시간 운영 현황
             </span>
           </div>
           <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--txt)', marginTop: '6px' }}>
@@ -117,7 +141,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </button>
             <button className="btn btn-lime" onClick={() => setActiveTab('hq_clients')}>
               <Sparkles size={16} />
-              입점 심사 대기 ({clients.filter(c => c.status === 'pending_approval').length}건)
+              가맹 심사 대기 ({clients.filter(c => c.status === 'pending_approval').length}건)
             </button>
           </div>
         )}
@@ -137,9 +161,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </span>
             <span style={{ fontSize: '13px', color: 'var(--mut)' }}>/ 120명 수용</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', fontSize: '12px', color: 'var(--green)' }}>
-            <TrendingUp size={14} />
-            <span>지난주 대비 +18.4% 점유율 상승</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', fontSize: '12px', color: 'var(--mut)' }}>
+            <TrendingUp size={14} color="var(--acc)" />
+            <span>실시간 예약 집계 중</span>
           </div>
         </div>
 
@@ -192,12 +216,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '10px' }}>
             <span className="mono-font" style={{ fontSize: '28px', fontWeight: 900, color: 'var(--lime-text)' }}>
-              4.92
+              5.0
             </span>
             <span style={{ fontSize: '13px', color: 'var(--mut)' }}>/ 5.0 (클린 필드 1등급)</span>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--mut)', marginTop: '8px' }}>
-            현장 노쇼율: <strong style={{ color: 'var(--green)' }}>0.8% (극소)</strong>
+            현장 노쇼율: <strong style={{ color: 'var(--green)' }}>0건 (정상)</strong>
           </div>
         </div>
       </div>
@@ -212,7 +236,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 시간대별 실시간 플레이어 수용 및 점유율
               </h3>
               <div style={{ fontSize: '12px', color: 'var(--mut)' }}>
-                09:00 ~ 21:00 타임슬롯별 게임 참가자 트래픽 추이
+                {totalBookedPlayersToday === 0 
+                  ? '실제 게임 예약이 발생하면 시간대별 참가자 트래픽이 실시간 집계됩니다.'
+                  : '09:00 ~ 21:00 타임슬롯별 게임 참가자 트래픽 추이'}
               </div>
             </div>
             <span className="badge badge-outline">실시간 업데이트</span>
@@ -220,7 +246,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div style={{ height: '240px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={HOURLY_TRAFFIC_DATA}>
+              <AreaChart data={hourlyTrafficData}>
                 <defs>
                   <linearGradient id="playerGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--acc)" stopOpacity={0.4}/>
@@ -252,7 +278,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 주간 일별 매출 추이
               </h3>
               <div style={{ fontSize: '12px', color: 'var(--mut)' }}>
-                이번 주 누적 매출: 22,940,000원
+                이번 주 누적 매출: {weeklyTotalRevenue.toLocaleString()}원
               </div>
             </div>
             <button 
@@ -266,9 +292,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div style={{ height: '240px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={WEEKLY_REVENUE_DATA}>
+              <BarChart data={weeklyRevenueData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
-                <XAxis dataKey="day" stroke="var(--dim)" fontSize={10} tickFormatter={v => v.slice(0, 1)} />
+                <XAxis dataKey="day" stroke="var(--dim)" fontSize={10} />
                 <YAxis stroke="var(--dim)" fontSize={10} tickFormatter={v => `${(v / 10000).toFixed(0)}만`} />
                 <Tooltip 
                   formatter={(v: any) => [`${Number(v).toLocaleString()}원`, '매출']}
@@ -305,82 +331,110 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
-          {slots.slice(0, 3).map(slot => {
-            const ratio = Math.round((slot.currentPlayers / slot.maxPlayers) * 100);
-            const isFull = slot.status === 'full' || ratio >= 100;
-            const isInProgress = slot.status === 'in_progress';
-
-            return (
-              <div 
-                key={slot.id}
-                style={{
-                  background: 'var(--panel)',
-                  border: '1px solid var(--line)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  borderLeft: isInProgress ? '4px solid var(--green)' : isFull ? '4px solid var(--danger)' : '4px solid var(--acc)'
-                }}
+        {slots.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '36px 16px',
+            color: 'var(--mut)',
+            border: '1px dashed var(--line)',
+            borderRadius: 'var(--radius-lg)',
+            background: 'var(--panel)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <CalendarCheck2 size={32} style={{ opacity: 0.5, color: 'var(--acc)' }} />
+            <p style={{ fontWeight: 700, color: 'var(--txt)', fontSize: '14px', margin: 0 }}>등록된 게임 타임슬롯이 없습니다.</p>
+            <p style={{ fontSize: '12.5px', margin: 0, color: 'var(--mut)' }}>새로운 게임 일정 및 타임슬롯을 등록하여 플레이어 예약을 시작해보세요.</p>
+            {(role === 'field_owner' || role === 'hq_admin') && (
+              <button 
+                className="btn btn-primary btn-sm" 
+                style={{ marginTop: '8px' }} 
+                onClick={onOpenAddSlot}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <span className="badge badge-outline" style={{ fontSize: '10px', marginBottom: '4px' }}>
-                      {slot.gameType}
-                    </span>
-                    <h4 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--txt)' }}>
-                      {slot.title}
-                    </h4>
-                  </div>
-                  <span className={`badge ${isInProgress ? 'badge-success' : isFull ? 'badge-danger' : 'badge-orange'}`} style={{ fontSize: '11px' }}>
-                    {isInProgress ? '게임 진행중' : isFull ? '예약 마감' : '모집중'}
-                  </span>
-                </div>
+                <PlusCircle size={14} /> 타임슬롯 등록하기
+              </button>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+            {slots.slice(0, 3).map(slot => {
+              const ratio = Math.round((slot.currentPlayers / slot.maxPlayers) * 100);
+              const isFull = slot.status === 'full' || ratio >= 100;
+              const isInProgress = slot.status === 'in_progress';
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--mut)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Clock size={13} />
-                    <span className="mono-font">{slot.startTime} ~ {slot.endTime}</span>
-                  </div>
-                  <div>•</div>
-                  <div>
-                    1인 <span className="mono-font" style={{ fontWeight: 700, color: 'var(--txt)' }}>{slot.pricePerPerson.toLocaleString()}원</span>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--mut)' }}>예약 충원률 ({ratio}%)</span>
-                    <span className="mono-font" style={{ fontWeight: 700, color: isFull ? 'var(--danger)' : 'var(--txt)' }}>
-                      {slot.currentPlayers} / {slot.maxPlayers}명
-                    </span>
-                  </div>
-                  <div style={{ height: '6px', background: 'var(--card2)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
-                    <div 
-                      style={{ 
-                        width: `${Math.min(100, ratio)}%`, 
-                        height: '100%', 
-                        backgroundColor: isFull ? 'var(--danger)' : 'var(--acc)' 
-                      }} 
-                    />
-                  </div>
-                </div>
-
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setActiveTab('checkin')}
-                  style={{ width: '100%', marginTop: '4px' }}
+              return (
+                <div 
+                  key={slot.id}
+                  style={{
+                    background: 'var(--panel)',
+                    border: '1px solid var(--line)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    borderLeft: isInProgress ? '4px solid var(--green)' : isFull ? '4px solid var(--danger)' : '4px solid var(--acc)'
+                  }}
                 >
-                  <QrCode size={14} />
-                  이 슬롯 체크인 데스크 열기
-                </button>
-              </div>
-            );
-          })}
-        </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <span className="badge badge-outline" style={{ fontSize: '10px', marginBottom: '4px' }}>
+                        {slot.gameType}
+                      </span>
+                      <h4 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--txt)' }}>
+                        {slot.title}
+                      </h4>
+                    </div>
+                    <span className={`badge ${isInProgress ? 'badge-success' : isFull ? 'badge-danger' : 'badge-orange'}`} style={{ fontSize: '11px' }}>
+                      {isInProgress ? '게임 진행중' : isFull ? '예약 마감' : '모집중'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--mut)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Clock size={13} />
+                      <span className="mono-font">{slot.startTime} ~ {slot.endTime}</span>
+                    </div>
+                    <div>•</div>
+                    <div>
+                      1인 <span className="mono-font" style={{ fontWeight: 700, color: 'var(--txt)' }}>{slot.pricePerPerson.toLocaleString()}원</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+                      <span style={{ color: 'var(--mut)' }}>예약 충원률 ({ratio}%)</span>
+                      <span className="mono-font" style={{ fontWeight: 700, color: isFull ? 'var(--danger)' : 'var(--txt)' }}>
+                        {slot.currentPlayers} / {slot.maxPlayers}명
+                      </span>
+                    </div>
+                    <div style={{ height: '6px', background: 'var(--card2)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' }}>
+                      <div 
+                        style={{ 
+                          width: `${Math.min(100, ratio)}%`, 
+                          height: '100%', 
+                          backgroundColor: isFull ? 'var(--danger)' : 'var(--acc)' 
+                        }} 
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setActiveTab('checkin')}
+                    style={{ width: '100%', marginTop: '4px' }}
+                  >
+                    <QrCode size={14} />
+                    이 슬롯 체크인 데스크 열기
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

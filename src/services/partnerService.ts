@@ -32,15 +32,15 @@ const API_BASE_URL =
   'https://api.hitin.kr/api/v1';
 
 const STORAGE_KEYS = {
-  SLOTS: 'hitin_partner_slots_v4',
-  BOOKINGS: 'hitin_partner_bookings_v4',
-  PROFILES: 'hitin_partner_profiles_v4',
-  PRODUCTS: 'hitin_partner_products_v4',
-  SETTLEMENTS: 'hitin_partner_settlements_v4',
-  CLIENTS: 'hitin_partner_clients_v4',
-  FIELDS: 'hitin_partner_fields_v4',
-  USER_POINTS: 'hitin_user_points_v4',
-  POINT_TRANSACTIONS: 'hitin_point_transactions_v4'
+  SLOTS: 'hitin_partner_slots_v5',
+  BOOKINGS: 'hitin_partner_bookings_v5',
+  PROFILES: 'hitin_partner_profiles_v5',
+  PRODUCTS: 'hitin_partner_products_v5',
+  SETTLEMENTS: 'hitin_partner_settlements_v5',
+  CLIENTS: 'hitin_partner_clients_v5',
+  FIELDS: 'hitin_partner_fields_v5',
+  USER_POINTS: 'hitin_user_points_v5',
+  POINT_TRANSACTIONS: 'hitin_point_transactions_v5'
 };
 
 
@@ -320,7 +320,7 @@ export class PartnerService {
     return settlements.filter(s => s.partnerId === partnerId);
   }
 
-  // --- Client Partners (HQ CRM) ---
+  // --- Client Partners (HQ Partner Management) ---
   static getClients(): ClientPartner[] {
     return getStorage<ClientPartner[]>(STORAGE_KEYS.CLIENTS, initialClientPartners);
   }
@@ -366,28 +366,24 @@ export class PartnerService {
   }
 
   static getClientByEmail(email: string): ClientPartner | undefined {
+    if (!email) return undefined;
     const clients = this.getClients();
-    return clients.find(c => c.email.toLowerCase() === email.toLowerCase());
+    return clients.find(c => c.email && c.email.toLowerCase() === email.toLowerCase());
   }
 
-  static checkUserApproval(email: string, role: PartnerRole): 'active' | 'pending_approval' | 'suspended' {
-    // 1. HQ Admin account is always active
-    if (role === 'hq_admin') {
+  static checkUserApproval(email: string, role?: PartnerRole): 'active' | 'pending_approval' | 'suspended' {
+    // 1. HQ Super Admin master email is always active
+    if (email && email.toLowerCase() === 'hitinent@gmail.com') {
       return 'active';
     }
 
-    // 2. Built-in default test accounts
-    if (email === 'field@partner.hitin.kr' || email === 'shop@partner.hitin.kr' || email === 'admin@hit-in.app') {
-      return 'active';
-    }
-
-    // 3. Check client record
+    // 2. Check client record
     const client = this.getClientByEmail(email);
     if (client) {
       return client.status;
     }
 
-    // 4. Default for new signups is pending_approval
+    // 3. Default for all other new registrations is pending_approval
     return 'pending_approval';
   }
 
