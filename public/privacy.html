@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>개인정보처리방침 | HIT IN 파트너 센터 (Privacy Policy)</title>
-  <meta name="description" content="HIT IN 파트너 센터(partner.hitin.kr)의 개인정보처리방침입니다. Google 소셜 로그인 시 수집하는 데이터, 수집 목적, 데이터 공유 여부, 데이터 삭제 요청 방법을 명시합니다.">
+  <meta name="description" content="핫식스피플엔터테인먼트(HIT IN)의 개인정보처리방침입니다. Google OAuth 소셜 로그인 시 수집하는 데이터, 수집 목적, 데이터 공유 여부, 데이터 삭제 요청 방법을 명시합니다.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
       font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--txt);
-      line-height: 1.7;
+      line-height: 1.75;
       padding: 0;
       margin: 0;
       -webkit-font-smoothing: antialiased;
@@ -48,7 +48,7 @@
       padding: 16px 24px;
     }
     .header-inner {
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -75,394 +75,497 @@
       font-weight: 800;
       letter-spacing: -0.3px;
     }
-    .back-btn {
+    .header-nav {
+      display: flex;
+      gap: 10px;
+    }
+    .nav-link {
       background: var(--card);
       border: 1px solid var(--card-border);
       color: var(--txt);
       text-decoration: none;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       transition: all 0.2s;
     }
-    .back-btn:hover {
+    .nav-link:hover {
       background: var(--line);
       border-color: var(--acc);
       color: var(--acc);
     }
     .container {
-      max-width: 900px;
+      max-width: 920px;
       margin: 40px auto 80px;
       padding: 0 24px;
     }
     .title-banner {
-      background: linear-gradient(135deg, rgba(255, 90, 31, 0.1) 0%, rgba(66, 133, 244, 0.1) 100%);
+      background: linear-gradient(135deg, rgba(255, 90, 31, 0.12) 0%, rgba(66, 133, 244, 0.12) 100%);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 32px;
+      border-left: 4px solid var(--acc);
+      padding: 28px;
+      border-radius: 12px;
       margin-bottom: 32px;
     }
     .title-banner h1 {
       font-size: 26px;
       font-weight: 800;
-      margin-bottom: 8px;
       color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin-bottom: 8px;
     }
     .title-banner p {
       color: var(--txt-muted);
-      font-size: 14px;
+      font-size: 14.5px;
+      margin-top: 4px;
     }
-    .meta-info {
+    .summary-box {
+      background: rgba(66, 133, 244, 0.08);
+      border: 1px solid rgba(66, 133, 244, 0.25);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 36px;
+    }
+    .summary-box h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #60A5FA;
+      margin-bottom: 14px;
       display: flex;
-      gap: 16px;
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--txt-dim);
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
     }
-    .key-points-grid {
+    .summary-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: 12px;
     }
-    .key-point-card {
+    .summary-item {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    .summary-item strong {
+      display: block;
+      font-size: 12.5px;
+      color: var(--txt);
+      margin-bottom: 4px;
+    }
+    .summary-item span {
+      font-size: 12px;
+      color: var(--txt-muted);
+    }
+    .content-card {
       background: var(--card);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 20px;
-      border-left: 4px solid var(--acc);
-    }
-    .key-point-card.blue {
-      border-left-color: #4285F4;
-    }
-    .key-point-card.green {
-      border-left-color: #10B981;
-    }
-    .key-point-card.purple {
-      border-left-color: #8B5CF6;
-    }
-    .key-point-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .key-point-desc {
-      font-size: 12.5px;
-      color: var(--txt-muted);
-      line-height: 1.5;
-    }
-    .content-box {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 36px;
-    }
-    .section {
-      margin-bottom: 36px;
-    }
-    .section:last-child {
-      margin-bottom: 0;
+      padding: 32px;
+      margin-bottom: 24px;
     }
     .section-title {
       font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 14px;
+      font-weight: 800;
+      color: var(--txt);
+      margin: 28px 0 12px 0;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .section-title .num {
-      background: var(--acc);
-      color: #fff;
-      font-size: 12px;
-      width: 22px;
-      height: 22px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-weight: 800;
+    .section-title:first-of-type {
+      margin-top: 0;
     }
-    p {
-      margin-bottom: 12px;
+    .sub-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin: 16px 0 8px 0;
+    }
+    p, li {
       font-size: 14px;
       color: var(--txt-muted);
+      margin-bottom: 8px;
     }
     ul, ol {
-      margin-left: 20px;
-      margin-bottom: 14px;
-      font-size: 14px;
-      color: var(--txt-muted);
+      padding-left: 20px;
+      margin-bottom: 16px;
     }
     li {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     strong {
       color: var(--txt);
-      font-weight: 600;
     }
-    .highlight-box {
-      background: rgba(255, 90, 31, 0.08);
-      border: 1px solid rgba(255, 90, 31, 0.3);
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin: 16px 0;
-      font-size: 13.5px;
-      color: var(--txt);
-    }
-    .highlight-box.google {
-      background: rgba(66, 133, 244, 0.08);
-      border-color: rgba(66, 133, 244, 0.3);
-    }
-    .table-wrapper {
-      overflow-x: auto;
-      margin: 16px 0;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .highlight-badge {
+      background: rgba(255, 90, 31, 0.15);
+      color: var(--acc);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
       font-size: 13px;
-      text-align: left;
-    }
-    th, td {
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-    }
-    th {
-      background: rgba(255, 255, 255, 0.04);
-      color: #fff;
-      font-weight: 600;
-    }
-    td {
-      color: var(--txt-muted);
     }
     .contact-card {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .contact-cell {
+      background: var(--bg);
       border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 18px;
-      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+    .contact-cell .label {
+      font-size: 11.5px;
+      color: var(--txt-dim);
+      margin-bottom: 2px;
+    }
+    .contact-cell .val {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--txt);
     }
     .footer {
       text-align: center;
-      padding: 30px 24px;
-      font-size: 12px;
-      color: var(--txt-dim);
+      padding: 40px 24px;
       border-top: 1px solid var(--card-border);
+      color: var(--txt-dim);
+      font-size: 12px;
     }
-    @media (max-width: 640px) {
-      .container { padding: 0 16px; margin-top: 20px; }
-      .content-box { padding: 24px 18px; }
-      .title-banner { padding: 24px 18px; }
-      .title-banner h1 { font-size: 20px; }
+    .footer a {
+      color: var(--txt-muted);
+      text-decoration: underline;
+    }
+    code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #FBBF24;
+      font-size: 13px;
+    }
+    .note-callout {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 13px;
+      color: #FCD34D;
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header class="header">
     <div class="header-inner">
       <a href="/" class="logo-area">
         <span class="logo-badge">HIT IN</span>
         <span class="logo-title">파트너 센터</span>
       </a>
-      <a href="/" class="back-btn">← 홈으로 이동</a>
+      <div class="header-nav">
+        <a href="/terms.html" class="nav-link">서비스 이용약관 ↗</a>
+        <a href="/" class="nav-link">파트너 포털 로그인</a>
+      </div>
     </div>
   </header>
 
+  <!-- Container -->
   <main class="container">
+    
+    <!-- Title Banner -->
     <div class="title-banner">
-      <h1>개인정보처리방침 <span style="font-size: 14px; font-weight: 500; color: var(--txt-dim);">(Privacy Policy)</span></h1>
-      <p>HIT IN 파트너 센터(https://partner.hitin.kr)는 정보주체의 자유와 권리 보호를 위해 「개인정보 보호법」 및 관계 법령이 정한 바를 준수하며, 이용자의 개인정보를 안전하게 보호하고 관련 고충을 신속하게 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
-      <div class="meta-info">
-        <span>• 적용 대상: HIT IN 파트너 센터 웹/앱 이용자 및 회원</span>
-        <span>• 최종 수정일: 2025년 3월 1일</span>
-        <span>• 시행일자: 2025년 3월 1일</span>
+      <h1>HIT IN 개인정보처리방침</h1>
+      <p>핫식스피플엔터테인먼트(이하 “회사”)는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
+      <p style="font-size: 13px; color: var(--txt-dim); margin-top: 6px;">
+        본 개인정보처리방침은 HIT IN 서비스 및 <code>https://partner.hitin.kr</code>에서 제공되는 관련 서비스에 적용됩니다.
+      </p>
+    </div>
+
+    <!-- Google OAuth 4 Essential Review Summary -->
+    <div class="summary-box">
+      <h2>🛡️ Google OAuth 2.0 사용자 데이터 정책 필수 요약 고지</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <strong>1. 수집하는 데이터</strong>
+          <span>Google 계정 이메일, 이름, 프로필 사진, 고유 식별자 (비밀번호 미수집)</span>
+        </div>
+        <div class="summary-item">
+          <strong>2. 수집 및 이용 목적</strong>
+          <span>파트너 회원 식별, 로그인 세션 유지, 예약/체크인 및 정산 서비스 제공</span>
+        </div>
+        <div class="summary-item">
+          <strong>3. 데이터 제3자 공유 여부</strong>
+          <span>제3자 미공유 (Google API Limited Use 정책 철저 준수)</span>
+        </div>
+        <div class="summary-item">
+          <strong>4. 데이터 삭제 요청 방법</strong>
+          <span>이메일(hitinent@gmail.com) 요청 또는 앱 내 탈퇴 메뉴를 통해 즉시 파기</span>
+        </div>
       </div>
     </div>
 
-    <!-- 4가지 필수 요약 카드 -->
-    <div class="key-points-grid">
-      <div class="key-point-card blue">
-        <div class="key-point-title">1. 수집하는 데이터</div>
-        <div class="key-point-desc">Google OAuth 로그인 시 이메일, 프로필 이름, 프로필 사진 URL, 고유 계정 ID를 수집합니다.</div>
+    <!-- Full Content -->
+    <div class="content-card">
+      
+      <!-- 제1조 -->
+      <h2 class="section-title">제1조 개인정보의 처리 목적</h2>
+      <p>회사는 다음 목적을 위하여 개인정보를 처리합니다. 수집한 개인정보는 아래 목적 이외의 용도로 이용하지 않으며, 이용 목적이 변경되는 경우 관련 법령에 따라 별도의 동의를 받는 등 필요한 조치를 취합니다.</p>
+      
+      <h3 class="sub-title">1. 회원 가입 및 로그인</h3>
+      <ul>
+        <li>회원 식별 및 본인 확인</li>
+        <li>Google 등 소셜 로그인 제공</li>
+        <li>중복 가입 방지</li>
+        <li>회원 계정 관리</li>
+        <li>부정 이용 방지</li>
+      </ul>
+
+      <h3 class="sub-title">2. HIT IN 서비스 제공</h3>
+      <ul>
+        <li>제휴업체 및 파트너 서비스 제공</li>
+        <li>예약 및 이용 내역 관리</li>
+        <li>서비스 이용 기록 관리</li>
+        <li>회원 문의 및 고객지원</li>
+        <li>공지사항 및 서비스 관련 안내</li>
+      </ul>
+
+      <h3 class="sub-title">3. 서비스 운영 및 보안</h3>
+      <ul>
+        <li>비정상적인 접근 및 부정 이용 방지</li>
+        <li>서비스 장애 분석 및 보안 강화</li>
+        <li>법령 및 이용약관 위반 행위 대응</li>
+      </ul>
+
+      <!-- 제2조 -->
+      <h2 class="section-title">제2조 수집하는 개인정보 항목 및 수집 방법</h2>
+      <p>회사는 서비스 제공을 위하여 필요한 범위 내에서 개인정보를 수집합니다.</p>
+
+      <h3 class="sub-title">1. Google 로그인을 통해 수집하는 정보</h3>
+      <p>이용자가 <strong>“Google로 로그인”</strong> 기능을 이용하는 경우 Google OAuth 인증을 통해 다음 정보를 제공받을 수 있습니다.</p>
+      <ul>
+        <li>Google 계정 이메일 주소</li>
+        <li>이름</li>
+        <li>프로필 사진</li>
+        <li>Google 계정 사용자 식별정보</li>
+        <li>로그인 인증에 필요한 OAuth 인증정보</li>
+      </ul>
+      <p>Google OAuth 인증정보는 Google 로그인 및 사용자 정보 확인을 위한 목적으로만 사용됩니다.<br>
+      <span class="highlight-badge">회사는 Google 계정의 비밀번호를 수집하거나 저장하지 않습니다.</span></p>
+
+      <h3 class="sub-title">2. 서비스 이용 과정에서 생성될 수 있는 정보</h3>
+      <p>서비스 이용 과정에서 다음 정보가 자동 또는 수동으로 생성·수집될 수 있습니다.</p>
+      <ul>
+        <li>로그인 기록</li>
+        <li>서비스 이용 기록</li>
+        <li>접속 일시</li>
+        <li>IP 주소</li>
+        <li>브라우저 및 기기 정보</li>
+        <li>오류 및 보안 관련 기록</li>
+      </ul>
+
+      <h3 class="sub-title">3. 수집 방법</h3>
+      <p>개인정보는 다음과 같은 방법으로 수집될 수 있습니다.</p>
+      <ul>
+        <li>회원가입 및 서비스 이용 과정에서 이용자가 직접 입력</li>
+        <li>Google OAuth 로그인 과정에서 이용자가 정보 제공에 동의한 경우</li>
+        <li>서비스 이용 과정에서 자동 생성</li>
+        <li>고객센터 또는 문의 과정에서 이용자가 직접 제공</li>
+      </ul>
+
+      <!-- 제3조 -->
+      <h2 class="section-title">제3조 Google 사용자 데이터의 이용</h2>
+      <p>회사는 Google 로그인으로 제공받은 사용자 데이터를 다음 목적으로만 이용합니다.</p>
+      <ul>
+        <li><strong>Google 이메일 주소:</strong> 회원 식별, 로그인 계정 확인, 중복 가입 방지, 서비스 계정과 Google 계정 연결</li>
+        <li><strong>이름:</strong> 회원 식별, 서비스 내 사용자 정보 표시</li>
+        <li><strong>프로필 사진:</strong> 회원 프로필 표시 등 서비스 이용 편의 제공</li>
+        <li><strong>Google 사용자 식별정보:</strong> 동일 Google 계정 여부 확인, 계정 연결 및 로그인 유지</li>
+      </ul>
+      <p>회사는 Google 사용자 데이터를 본 개인정보처리방침에 명시된 목적을 벗어나 사용하지 않습니다.<br>
+      Google은 공개 OAuth 앱의 개인정보처리방침에서 Google 사용자 데이터에 대한 접근, 사용, 저장 및 공유 방식을 명확하게 공개하도록 요구하고 있으며, HIT IN은 이를 철저히 준수합니다.</p>
+
+      <!-- 제4조 -->
+      <h2 class="section-title">제4조 Google 사용자 데이터의 저장 및 보관</h2>
+      <p>회사는 Google 로그인을 통해 제공받은 개인정보 중 서비스 운영에 필요한 정보만 저장합니다.</p>
+      <p>저장될 수 있는 정보는 다음과 같습니다.</p>
+      <ul>
+        <li>이메일 주소</li>
+        <li>이름</li>
+        <li>프로필 정보</li>
+        <li>Google 계정과 HIT IN 계정을 연결하기 위한 식별정보</li>
+      </ul>
+      <p>Google 계정 비밀번호는 저장하지 않습니다.<br>
+      OAuth Access Token 등 인증정보는 Google API 인증 및 로그인 처리 목적으로만 사용하며, 서비스 구현상 장기간 보관하지 않는 경우에는 인증 처리 후 폐기합니다. 향후 인증정보의 저장 방식이 변경되는 경우 회사는 해당 내용을 개인정보처리방침에 반영합니다.</p>
+
+      <!-- 제5조 -->
+      <h2 class="section-title">제5조 개인정보의 처리 및 보유기간</h2>
+      <p>회사는 개인정보의 처리 목적이 달성되면 해당 개인정보를 지체 없이 파기합니다.</p>
+      <p>일반적인 개인정보 보유기간은 다음과 같습니다.</p>
+      <ul>
+        <li><strong>회원정보:</strong> 회원 탈퇴 시까지</li>
+        <li><strong>Google 계정 연동정보:</strong> 회원 탈퇴 또는 Google 계정 연동 해제 시까지</li>
+        <li><strong>고객 문의 기록:</strong> 관련 업무 처리 완료 후 필요한 기간</li>
+        <li><strong>법령에 따라 보관이 필요한 정보:</strong> 해당 법령에서 정한 기간 (전자상거래 등에서의 소비자보호에 관한 법률 등)</li>
+      </ul>
+      <p>다만 관계 법령에 따라 일정 기간 보존할 의무가 있는 경우 해당 기간 동안 안전하게 보관합니다.</p>
+
+      <!-- 제6조 -->
+      <h2 class="section-title">제6조 개인정보의 파기 절차 및 방법</h2>
+      <p>회사는 개인정보 보유기간이 경과하거나 개인정보 처리 목적이 달성된 경우 해당 개인정보를 지체 없이 파기합니다.</p>
+      
+      <h3 class="sub-title">1. 파기 절차</h3>
+      <p>이용자가 회원 탈퇴, 계정 삭제 또는 개인정보 삭제를 요청하면 회사는 관련 법령상 보관 의무가 있는 정보를 제외하고 삭제 절차를 진행합니다.</p>
+
+      <h3 class="sub-title">2. 파기 방법</h3>
+      <ul>
+        <li><strong>전자적 파일:</strong> 복구 또는 재생이 어렵도록 안전한 방법으로 영구 삭제</li>
+        <li><strong>데이터베이스 개인정보:</strong> 해당 데이터 삭제 또는 안전한 방식으로 파기</li>
+        <li><strong>출력물 등이 존재하는 경우:</strong> 파쇄 또는 소각</li>
+      </ul>
+
+      <!-- 제7조 -->
+      <h2 class="section-title">제7조 Google 데이터 및 계정 삭제 요청</h2>
+      <p>이용자는 언제든지 Google 계정 연동 또는 Google 로그인을 통해 수집된 개인정보의 삭제를 요청할 수 있습니다.</p>
+      
+      <div style="background: var(--bg); border: 1px solid var(--line); padding: 16px 20px; border-radius: 8px; margin: 12px 0;">
+        <p style="margin: 0; font-size: 14px; color: var(--txt);">
+          📧 <strong>삭제 요청 전용 이메일:</strong> <code style="font-size: 14px; color: var(--acc);">hitinent@gmail.com</code>
+        </p>
       </div>
-      <div class="key-point-card green">
-        <div class="key-point-title">2. 수집 목적</div>
-        <div class="key-point-desc">파트너 회원 식별, 로그인 세션 유지, 예약/체크인/정산 관제 및 중요 공지 전달에만 사용합니다.</div>
+
+      <p>삭제 요청 시 이용자는 다음과 같은 내용을 함께 전달할 수 있습니다.</p>
+      <ul>
+        <li>HIT IN 가입 이메일</li>
+        <li>Google 연동 이메일</li>
+        <li>삭제 요청 내용</li>
+      </ul>
+      <p>회사는 본인 여부를 확인한 후 관련 법령상 보관 의무가 없는 Google 연동 개인정보를 즉시 삭제합니다.<br>
+      Google 계정의 HIT IN 서비스 접근 권한은 이용자가 자신의 <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" style="color: #60A5FA; text-decoration: underline;">Google 계정 보안 설정(서드 파티 앱 및 서비스)</a>에서도 직접 해제할 수 있습니다.</p>
+
+      <!-- 제8조 -->
+      <h2 class="section-title">제8조 개인정보의 제3자 제공</h2>
+      <p>회사는 원칙적으로 이용자의 개인정보를 외부 제3자에게 제공하지 않습니다.</p>
+      <p>다만 다음의 경우에는 예외로 합니다.</p>
+      <ul>
+        <li>이용자가 사전에 동의한 경우</li>
+        <li>관계 법령에 따라 개인정보 제공 의무가 있는 경우</li>
+        <li>수사기관 등이 적법한 절차에 따라 요청한 경우</li>
+      </ul>
+      <p>회사가 향후 개인정보를 제3자에게 제공하는 경우 제공받는 자, 제공 목적, 제공 항목 및 보유기간 등을 이용자에게 안내하고 필요한 동의를 받습니다.</p>
+
+      <!-- 제9조 -->
+      <h2 class="section-title">제9조 개인정보 처리업무의 위탁</h2>
+      <p>회사는 원활한 서비스 제공과 시스템 운영을 위하여 다음과 같이 개인정보 처리업무를 위탁하고 있습니다.</p>
+      <ul>
+        <li><strong>클라우드 인프라 및 서버 호스팅:</strong> 스마일서브 (iwinV) - 서비스 제공 시스템 운영 및 데이터 보관</li>
+        <li><strong>소셜 로그인 및 인증:</strong> Google LLC (Google OAuth 2.0), (주)카카오 (Kakao Login)</li>
+      </ul>
+      <p>회사는 관련 법령에 따라 위탁계약 체결 시 개인정보 보호 관련 사항을 명확히 규정하고 수탁자가 안전하게 처리하도록 감독합니다. 서비스 운영환경 또는 위탁업체가 변경되는 경우 본 개인정보처리방침을 통해 공개합니다.</p>
+
+      <!-- 제10조 -->
+      <h2 class="section-title">제10조 정보주체의 권리·의무 및 행사방법</h2>
+      <p>이용자는 회사에 대하여 언제든지 자신의 개인정보에 대해 다음 권리를 행사할 수 있습니다.</p>
+      <ul>
+        <li>개인정보 열람 요구</li>
+        <li>개인정보 정정 요구</li>
+        <li>개인정보 삭제 요구</li>
+        <li>개인정보 처리정지 요구</li>
+        <li>회원 탈퇴</li>
+        <li>Google 계정 연동 해제</li>
+      </ul>
+      <p>이용자는 서비스 내 제공되는 기능 또는 회사 이메일(<code>hitinent@gmail.com</code>)을 통해 위 권리를 행사할 수 있으며, 회사는 관련 법령에서 정한 절차에 따라 지체 없이 처리합니다.</p>
+
+      <!-- 제11조 -->
+      <h2 class="section-title">제11조 개인정보의 안전성 확보조치</h2>
+      <p>회사는 개인정보의 분실, 도난, 유출, 위조, 변조 또는 훼손을 방지하기 위하여 필요한 기술적·관리적 보호조치를 시행합니다.</p>
+      <ul>
+        <li>개인정보 접근권한 관리 및 최소화</li>
+        <li>비밀번호 및 중요 식별정보의 암호화 저장</li>
+        <li>개인정보 처리시스템 접근 통제 및 방화벽 운영</li>
+        <li>보안 업데이트 및 취약점 상시 점검</li>
+        <li>접속 기록의 안전한 보관 및 위변조 방지</li>
+        <li>HTTPS (SSL/TLS) 표준 암호화 통신 적용</li>
+      </ul>
+
+      <!-- 제12조 -->
+      <h2 class="section-title">제12조 자동으로 수집되는 정보</h2>
+      <p>회사는 서비스 안정성 및 보안 확보를 위하여 다음과 같은 정보가 자동으로 생성·수집될 수 있습니다.</p>
+      <ul>
+        <li>IP 주소</li>
+        <li>접속 일시</li>
+        <li>서비스 이용 기록</li>
+        <li>브라우저 정보</li>
+        <li>기기 정보</li>
+        <li>오류 기록</li>
+      </ul>
+      <p>회사가 향후 쿠키 또는 분석 도구를 사용하는 경우 그 목적과 이용자가 수집을 거부할 수 있는 방법을 본 개인정보처리방침에 추가합니다.</p>
+
+      <!-- 제13조 -->
+      <h2 class="section-title">제13조 개인정보 보호책임자 및 개인정보 관련 문의</h2>
+      <p>회사는 이용자의 개인정보를 보호하고 개인정보와 관련된 문의 및 불만을 처리하기 위하여 개인정보 보호업무 담당자를 지정합니다.</p>
+      
+      <div class="contact-card">
+        <div class="contact-grid">
+          <div class="contact-cell">
+            <div class="label">개인정보처리자 (회사명)</div>
+            <div class="val">핫식스피플엔터테인먼트 (HitInEnt)</div>
+          </div>
+          <div class="contact-cell">
+            <div class="label">서비스명</div>
+            <div class="val">HIT IN (파트너 센터)</div>
+          </div>
+          <div class="contact-cell">
+            <div class="label">개인정보 보호책임자 / 담당부서</div>
+            <div class="val">Hitin파트너관리부</div>
+          </div>
+          <div class="contact-cell">
+            <div class="label">대표 및 삭제요청 이메일</div>
+            <div class="val"><a href="mailto:hitinent@gmail.com" style="color: var(--acc); text-decoration: none;">hitinent@gmail.com</a></div>
+          </div>
+        </div>
       </div>
-      <div class="key-point-card">
-        <div class="key-point-title">3. 데이터 공유 여부</div>
-        <div class="key-point-desc">수집된 개인정보는 제3자에게 판매하거나 무단으로 공유하지 않으며 철저히 보호됩니다.</div>
+      <p style="margin-top: 12px; font-size: 13px;">이용자는 개인정보 보호와 관련한 문의, 불만처리, 개인정보 열람·삭제 및 Google 데이터 삭제 요청 등을 위 이메일을 통해 문의할 수 있습니다.</p>
+
+      <!-- 제14조 -->
+      <h2 class="section-title">제14조 권익침해 구제방법</h2>
+      <p>이용자는 개인정보 침해에 대한 상담이나 신고가 필요한 경우 아래 기관에 문의할 수 있습니다.</p>
+      <ul>
+        <li><strong>개인정보침해신고센터:</strong> (국번없이) 118 (<a href="https://privacy.kisa.or.kr" target="_blank" rel="noopener noreferrer" style="color: #60A5FA;">privacy.kisa.or.kr</a>)</li>
+        <li><strong>개인정보분쟁조정위원회:</strong> 1833-6972 (<a href="https://www.kopico.go.kr" target="_blank" rel="noopener noreferrer" style="color: #60A5FA;">www.kopico.go.kr</a>)</li>
+        <li><strong>대검찰청 사이버수사과:</strong> (국번없이) 1301 (<a href="https://www.spo.go.kr" target="_blank" rel="noopener noreferrer" style="color: #60A5FA;">www.spo.go.kr</a>)</li>
+        <li><strong>경찰청 사이버수사국:</strong> (국번없이) 182 (<a href="https://ecrm.police.go.kr" target="_blank" rel="noopener noreferrer" style="color: #60A5FA;">ecrm.police.go.kr</a>)</li>
+      </ul>
+
+      <!-- 제15조 -->
+      <h2 class="section-title">제15조 개인정보처리방침의 변경</h2>
+      <p>본 개인정보처리방침의 내용이 변경되는 경우 회사는 서비스 내 공지 또는 웹사이트를 통해 변경사항을 안내합니다.</p>
+      
+      <div style="margin-top: 16px; padding: 12px 16px; background: var(--bg); border: 1px solid var(--line); borderRadius: 8px; font-size: 13px;">
+        <p style="margin: 0;">• <strong>공고일자:</strong> 2026년 9월 16일</p>
+        <p style="margin: 4px 0 0 0;">• <strong>시행일자:</strong> 2026년 9월 16일</p>
       </div>
-      <div class="key-point-card purple">
-        <div class="key-point-title">4. 데이터 삭제 요청</div>
-        <div class="key-point-desc">이메일(privacy@hit-in.app) 또는 앱 내 프로필 탈퇴 메뉴를 통해 언제든지 즉시 삭제를 요청할 수 있습니다.</div>
-      </div>
-    </div>
-
-    <div class="content-box">
-
-      <!-- 제1조: 수집하는 데이터 항목 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">1</span> 수집하는 개인정보의 항목 (Data Collected)</h2>
-        <p>HIT IN 파트너 센터는 원활한 서비스 제공 및 본인 인증을 위해 최소한의 필수 개인정보만을 수집합니다.</p>
-
-        <div class="highlight-box google">
-          <strong>🔍 Google 소셜 로그인(OAuth 2.0) 시 수집하는 정보:</strong>
-          <ul style="margin-top: 8px; margin-bottom: 0;">
-            <li><strong>Google 계정 이메일 주소 (Email Address)</strong>: 계정 식별 및 알림 발송용</li>
-            <li><strong>프로필 이름 및 닉네임 (Name / Profile Name)</strong>: 파트너 담당자 표기용</li>
-            <li><strong>프로필 사진 URL (Profile Picture)</strong>: 서비스 내 프로필 아바타 표시용</li>
-            <li><strong>Google 사용자 고유 식별자 (Google User ID / Sub)</strong>: 안전한 OAuth 인증 및 세션 연동용</li>
-          </ul>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>구분</th>
-                <th>수집 항목</th>
-                <th>수집 방법</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>소셜 로그인 (Google / Kakao)</strong></td>
-                <td>이메일 주소, 이름(닉네임), 프로필 이미지 URL, 소셜 고유 식별자</td>
-                <td>사용자 동의 후 OAuth API를 통한 자동 수집</td>
-              </tr>
-              <tr>
-                <td><strong>파트너 자체 회원가입</strong></td>
-                <td>사업자등록번호, 상호명(사업장명), 대표자 성명, 휴대전화번호, 이메일, 비밀번호(단방향 암호화)</td>
-                <td>회원가입 화면에서 사용자가 직접 입력</td>
-              </tr>
-              <tr>
-                <td><strong>서비스 이용 과정</strong></td>
-                <td>접속 IP 주소, 쿠키(Cookie), 접속 로그, 서비스 이용 기록, 기기 정보</td>
-                <td>웹사이트 접속 및 이용 시 자동 생성 및 수집</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- 제2조: 개인정보의 수집 및 이용 목적 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">2</span> 개인정보의 수집 및 이용 목적 (Purpose of Collection)</h2>
-        <p>회사는 수집한 개인정보를 다음의 목적으로만 활용하며, 목적 이외의 용도로는 사용되지 않습니다.</p>
-        <ul>
-          <li><strong>회원 식별 및 계정 관리</strong>: 파트너 회원 가입 의사 확인, 회원제 서비스 제공에 따른 본인 식별·인증, 중복 가입 방지, 부정 이용 방지</li>
-          <li><strong>서비스 로그인 상태 유지 및 보안</strong>: 안전한 OAuth 세션 토큰 관리 및 비인가 접속 차단</li>
-          <li><strong>HIT IN 파트너 솔루션 제공</strong>: 아레나/필드 타임슬롯 게임 예약 관리, 실시간 QR 현장 체크인 관제, 건샵 장비/렌탈 재고 관리, 매출 정산 및 대사 업무 수행</li>
-          <li><strong>고객 지원 및 고지사항 전달</strong>: 서비스 관련 중요 공지, 정책 변경 고지, 문의 사항 처리 및 분쟁 조정을 위한 기록 보존</li>
-        </ul>
-      </section>
-
-      <!-- 제3조: 개인정보의 제3자 제공 및 공유 여부 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">3</span> 개인정보의 제3자 제공 및 데이터 공유 (Data Sharing)</h2>
-        <p>회사는 원칙적으로 이용자의 개인정보를 외부에 제공하거나 제3자와 공유하지 않습니다.</p>
-        <div class="highlight-box">
-          <strong>🔒 제3자 미제공 및 불공유 원칙:</strong><br />
-          HIT IN 파트너 센터는 이용자의 사전 동의 없이 개인정보를 제3자에게 판매, 대여, 제공 또는 공유하지 않습니다.
-        </div>
-        <p>단, 다음의 경우에는 예외로 합니다:</p>
-        <ol>
-          <li>이용자가 사전에 제3자 제공에 직접 동의한 경우</li>
-          <li>법령의 규정에 의거하거나, 수사 목적으로 법령에 정해진 절차와 방법에 따라 수사기관의 요구가 있는 경우</li>
-        </ol>
-        <div class="highlight-box google">
-          <strong>📋 Google API 서비스 사용자 데이터 정책 준수 (Limited Use Requirements):</strong><br />
-          HIT IN 파트너 센터는 Google API로부터 수집한 사용자 데이터를 <strong>Google API Services User Data Policy</strong>(제한적 사용 요건 포함)에 따라 엄격하게 처리합니다. 수집된 Google 사용자 정보는 서비스 기능 제공 목적 외의 외부 광고 타겟팅, 제3자 데이터 브로커 전송, 또는 AI/머신러닝 모델 학습에 일체 사용되지 않습니다.
-        </div>
-      </section>
-
-      <!-- 제4조: 데이터 삭제 요청 및 이용자 권리 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">4</span> 개인정보의 파기 및 데이터 삭제 요청 방법 (Data Deletion Request)</h2>
-        <p>이용자는 언제든지 자신의 개인정보를 조회, 수정하거나 계정 삭제(회원 탈퇴) 및 수집된 데이터의 영구 파기를 요청할 수 있습니다.</p>
-
-        <div class="contact-card">
-          <strong style="color: #fff; font-size: 15px; display: block; margin-bottom: 8px;">📌 데이터 삭제 및 회원 탈퇴 요청 방법:</strong>
-          
-          <p style="margin-bottom: 6px;"><strong>방법 1. 이메일을 통한 데이터 삭제 요청 (가장 빠름)</strong></p>
-          <ul style="margin-bottom: 12px;">
-            <li>개인정보 보호책임자 이메일: <strong>privacy@hit-in.app</strong> 또는 <strong>jes0508@gmail.com</strong></li>
-            <li>메일 제목: <code>[데이터 삭제 요청] 가입 이메일 / 계정명</code></li>
-            <li>요청 접수 시 담당자가 본인 확인 후 <strong>3영업일 이내</strong>에 Google OAuth 연동 데이터 및 모든 회원 식별 정보를 데이터베이스에서 영구 복구 불가능한 방법으로 파기합니다.</li>
-          </ul>
-
-          <p style="margin-bottom: 6px;"><strong>방법 2. 파트너 센터 앱 내 직접 탈퇴</strong></p>
-          <ul style="margin-bottom: 12px;">
-            <li>로그인 후 좌측 하단 [프로필 사진] 클릭 &gt; [내 정보 수정] &gt; [회원 탈퇴 및 데이터 삭제] 클릭 시 즉시 처리</li>
-          </ul>
-
-          <p style="margin-bottom: 6px;"><strong>방법 3. Google 계정 관리에서 직접 앱 권한 해제</strong></p>
-          <ul style="margin-bottom: 0;">
-            <li><a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" style="color: #60A5FA; text-decoration: underline;">Google 계정 보안 권한 관리 (myaccount.google.com/permissions)</a>에 접속하여 HIT IN 파트너 센터에 부여된 접근 권한을 즉시 취소할 수 있습니다.</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- 제5조: 개인정보의 보유 및 이용 기간 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">5</span> 개인정보의 보유 및 이용 기간</h2>
-        <p>회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.</p>
-        <ul>
-          <li><strong>계약 또는 청약철회 등에 관한 기록</strong>: 5년 (전자상거래 등에서의 소비자보호에 관한 법률)</li>
-          <li><strong>대금결제 및 재화 등의 공급에 관한 기록</strong>: 5년 (전자상거래 등에서의 소비자보호에 관한 법률)</li>
-          <li><strong>소비자의 불만 또는 분쟁처리에 관한 기록</strong>: 3년 (전자상거래 등에서의 소비자보호에 관한 법률)</li>
-          <li><strong>웹사이트 접속 로그 기록</strong>: 3개월 (통신비밀보호법)</li>
-        </ul>
-      </section>
-
-      <!-- 제6조: 개인정보의 안전성 확보 조치 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">6</span> 개인정보의 안전성 확보 조치</h2>
-        <p>회사는 이용자의 개인정보를 취급함에 있어 분실, 도난, 유출, 변조 또는 훼손되지 않도록 다음과 같은 기술적·관리적 대책을 강구하고 있습니다.</p>
-        <ul>
-          <li><strong>데이터 암호화</strong>: 주요 개인정보 및 비밀번호는 암호화되어 저장 및 관리되며, 중요한 데이터는 전송 시 SSL/TLS 암호화 통신을 사용합니다.</li>
-          <li><strong>해킹 등에 대비한 대책</strong>: 최신 보안 패치 적용, 방화벽 운영 및 침입 탐지 시스템을 통해 보안을 유지하고 있습니다.</li>
-          <li><strong>접근 권한 제한</strong>: 개인정보를 처리하는 담당자를 최소한으로 제한하고 주기적인 보안 교육을 실시합니다.</li>
-        </ul>
-      </section>
-
-      <!-- 제7조: 개인정보 보호책임자 및 담당 부서 -->
-      <section class="section">
-        <h2 class="section-title"><span class="num">7</span> 개인정보 보호책임자 및 연락처</h2>
-        <p>회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 정보주체의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
-
-        <div class="contact-card">
-          <ul style="list-style: none; margin-left: 0; margin-bottom: 0;">
-            <li>• <strong>서비스명</strong>: HIT IN 파트너 센터 (partner.hitin.kr)</li>
-            <li>• <strong>운영사</strong>: HIT IN (HitInEnt)</li>
-            <li>• <strong>개인정보 보호책임자</strong>: 정은수</li>
-            <li>• <strong>문의 및 접수 이메일</strong>: <a href="mailto:privacy@hit-in.app" style="color: #60A5FA;">privacy@hit-in.app</a> / <a href="mailto:jes0508@gmail.com" style="color: #60A5FA;">jes0508@gmail.com</a></li>
-            <li>• <strong>공식 웹사이트</strong>: <a href="https://partner.hitin.kr" target="_blank" style="color: #60A5FA;">https://partner.hitin.kr</a></li>
-          </ul>
-        </div>
-      </section>
 
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="footer">
-    <p>© 2025 HIT IN Corp. All rights reserved. | <a href="/terms.html" style="color: var(--txt-muted); text-decoration: underline;">이용약관</a> | <a href="/privacy.html" style="color: var(--txt-muted); text-decoration: underline;">개인정보처리방침</a></p>
+    <p>© 2026 핫식스피플엔터테인먼트 (HitInEnt). All rights reserved.</p>
+    <p style="margin-top: 6px;">
+      <a href="/terms.html">서비스 이용약관</a> • <a href="/privacy.html" style="color: var(--acc); font-weight: 700;">개인정보처리방침</a> • 대표 웹사이트: <a href="https://partner.hitin.kr">partner.hitin.kr</a>
+    </p>
   </footer>
 
 </body>
