@@ -42,14 +42,14 @@ const NAV_ITEMS: NavItem[] = [
     label: '타임슬롯 & 예약 관리',
     icon: CalendarClock,
     badge: 'LIVE',
-    allowedRoles: ['field_owner', 'hq_admin']
+    allowedRoles: ['field_owner', 'shop_owner', 'hq_admin']
   },
   {
     id: 'checkin',
     label: '실시간 현장입장',
     icon: QrCode,
     badge: 'LIVE',
-    allowedRoles: ['field_owner']
+    allowedRoles: ['field_owner', 'shop_owner', 'hq_admin']
   },
   {
     id: 'user_points',
@@ -68,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
     id: 'field_manage',
     label: '필드 시설 및 규정',
     icon: Building2,
-    allowedRoles: ['field_owner']
+    allowedRoles: ['field_owner', 'hq_admin']
   },
   {
     id: 'settlement',
@@ -215,7 +215,7 @@ export const Sidebar: React.FC = () => {
                 }}
               >
                 <Layers size={13} />
-                필드사장
+                필드관리
               </button>
             )}
             {(isHqUser || effectiveRoles.includes('shop_owner')) && (
@@ -238,7 +238,7 @@ export const Sidebar: React.FC = () => {
                 }}
               >
                 <ShoppingBag size={13} />
-                건샵사장
+                건샵관리
               </button>
             )}
             {isHqUser && (
@@ -261,7 +261,7 @@ export const Sidebar: React.FC = () => {
                 }}
               >
                 <ShieldAlert size={13} />
-                본사 총괄
+                본사관리
               </button>
             )}
           </div>

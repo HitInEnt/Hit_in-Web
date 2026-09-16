@@ -37,7 +37,7 @@ export const initialPartnerUsers: PartnerUser[] = [
   },
   {
     id: 'usr_hq_default',
-    name: 'HitInEnt 본사 총괄 관리자',
+    name: 'HitInEnt 본사 관리자',
     email: 'hitinent@gmail.com',
     role: 'hq_admin',
     businessName: 'HitInEnt',

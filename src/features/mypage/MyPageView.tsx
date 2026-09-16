@@ -144,11 +144,11 @@ export const MyPageView: React.FC = () => {
   const getRoleTheme = (r: PartnerRole) => {
     switch (r) {
       case 'field_owner':
-        return { label: '경기장 필드 사장님', badge: 'badge-orange', color: 'var(--acc)', bg: 'rgba(255, 90, 31, 0.12)' };
+        return { label: '필드관리', badge: 'badge-orange', color: 'var(--acc)', bg: 'rgba(255, 90, 31, 0.12)' };
       case 'shop_owner':
-        return { label: '건샵/렌탈 사장님', badge: 'badge-cyan', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' };
+        return { label: '건샵관리', badge: 'badge-cyan', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' };
       case 'hq_admin':
-        return { label: '본사 총괄 관리자', badge: 'badge-lime', color: 'var(--lime-chip)', bg: 'rgba(199, 249, 78, 0.15)' };
+        return { label: '본사관리', badge: 'badge-lime', color: 'var(--lime-chip)', bg: 'rgba(199, 249, 78, 0.15)' };
     }
   };
 
@@ -363,9 +363,9 @@ export const MyPageView: React.FC = () => {
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: `repeat(${role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin')) ? 3 : 2}, 1fr)`, gap: '8px' }}>
                 {[
-                  { role: 'field_owner' as PartnerRole, label: '🏟️ 경기장/필드', sub: '타임슬롯 & QR' },
-                  { role: 'shop_owner' as PartnerRole, label: '🔫 건샵/용품', sub: '렌탈 & 재고' },
-                  ...((role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin'))) ? [{ role: 'hq_admin' as PartnerRole, label: '👑 본사 관리', sub: '본사 총괄 & 플랫폼' }] : [])
+                  { role: 'field_owner' as PartnerRole, label: '🏟️ 필드관리', sub: '타임슬롯 & QR' },
+                  { role: 'shop_owner' as PartnerRole, label: '🔫 건샵관리', sub: '렌탈 & 예약' },
+                  ...((role === 'hq_admin' || (user.roles && user.roles.includes('hq_admin'))) ? [{ role: 'hq_admin' as PartnerRole, label: '👑 본사관리', sub: '플랫폼 & 심사' }] : [])
                 ].map(item => {
                   const isChecked = selectedRoles.includes(item.role);
                   return (

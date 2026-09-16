@@ -178,7 +178,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const customUser: PartnerUser = {
       id: existingProfile?.id || (isMasterAdmin ? 'usr_hq_master' : `usr_${assignedRole}_${Date.now()}`),
-      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 총괄 관리자') : (payload.name || existingProfile?.name || defaultForRole.name),
+      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 관리자') : (payload.name || existingProfile?.name || defaultForRole.name),
       email: userEmail,
       role: assignedRole,
       roles: effectiveRoles,

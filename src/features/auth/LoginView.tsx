@@ -59,12 +59,12 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     badge: 'ARENA / FIELD',
     badgeBg: 'rgba(255, 90, 31, 0.15)',
     badgeColor: 'var(--acc)',
-    title: '필드 사장님',
+    title: '필드관리',
     subTitle: '경기장 & 아레나 운영',
     desc: '타임슬롯 게임 예약, 실시간 QR 체크인 및 관제',
     icon: Layers,
     defaultBiz: 'HIT IN 파트너 아레나',
-    defaultName: '필드 대표자',
+    defaultName: '필드 관리자',
     defaultEmail: 'field@partner.hitin.kr',
     features: ['타임슬롯/정기전 등록', '실시간 QR 체크인', '현장 결제 & 대관 관리']
   },
@@ -73,26 +73,26 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     badge: 'GUNSHOP & GEAR',
     badgeBg: 'rgba(56, 189, 248, 0.15)',
     badgeColor: '#38bdf8',
-    title: '건샵 사장님',
+    title: '건샵관리',
     subTitle: '밀리터리 용품 & 건샵 / 렌탈',
-    desc: '에어소프트 용품/장비 재고 관리, 렌탈 장비 현황',
+    desc: '에어소프트 용품/장비 재고 관리, 렌탈 장비 현황, 예약 관리',
     icon: ShoppingBag,
     defaultBiz: 'HIT IN 제휴 건샵',
-    defaultName: '건샵 대표자',
+    defaultName: '건샵 관리자',
     defaultEmail: 'shop@partner.hitin.kr',
-    features: ['용품/장비 재고 관리', '렌탈 패키지 현황', '정비/튜닝 의뢰 접수']
+    features: ['용품/장비 재고 관리', '렌탈 패키지 현황', '예약 & 체크인 시스템']
   },
   {
     role: 'hq_admin',
     badge: 'HQ PLATFORM',
     badgeBg: 'rgba(199, 249, 78, 0.2)',
     badgeColor: 'var(--lime-chip)',
-    title: '본사 총괄 관리자',
-    subTitle: 'HIT IN 본사 총괄 운영센터',
+    title: '본사관리',
+    subTitle: 'HitInEnt 본사 운영센터',
     desc: '전국 가맹사 심사 승인, 매출 정산 및 플랫폼 관제',
     icon: ShieldCheck,
     defaultBiz: 'HitInEnt',
-    defaultName: 'HitInEnt 본사 총괄 관리자',
+    defaultName: 'HitInEnt 본사 관리자',
     defaultEmail: 'hitinent@gmail.com',
     features: ['가맹사 심사 및 승인', '전체 매출 & 정산 대사', '통합 시스템 정책 관제']
   }
@@ -155,18 +155,18 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
 
   const getSelectedRolesLabel = (roles: PartnerRole[]) => {
     const names = roles.map(r => {
-      if (r === 'field_owner') return '필드 사장님';
-      if (r === 'shop_owner') return '건샵 사장님';
-      return '본사 총괄 관리자';
+      if (r === 'field_owner') return '필드관리';
+      if (r === 'shop_owner') return '건샵관리';
+      return '본사관리';
     });
     return names.join(' + ');
   };
 
   const getSelectedRolesShortLabel = (roles: PartnerRole[]) => {
     const names = roles.map(r => {
-      if (r === 'field_owner') return '🏟️ 경기장 필드';
-      if (r === 'shop_owner') return '🔫 건샵/렌탈';
-      return '🛡️ 본사 총괄 관리자';
+      if (r === 'field_owner') return '🏟️ 필드관리';
+      if (r === 'shop_owner') return '🔫 건샵관리';
+      return '👑 본사관리';
     });
     return names.join(' + ');
   };
@@ -806,7 +806,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                           {cat.title}
                         </div>
                         <div style={{ fontSize: '9.5px', color: isSelected ? cat.badgeColor : 'var(--dim)', marginTop: '2px', fontWeight: 600 }}>
-                          {cat.role === 'field_owner' ? '경기장/아레나' : cat.role === 'shop_owner' ? '건샵/용품점' : '본사 총괄'}
+                          {cat.role === 'field_owner' ? '경기장/아레나' : cat.role === 'shop_owner' ? '건샵/용품점' : '본사 플랫폼'}
                         </div>
                       </div>
                     </div>
@@ -1148,7 +1148,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   }}
                 >
                   <Layers size={14} />
-                  필드 사장님
+                  필드관리
                 </button>
                 <button
                   type="button"
@@ -1170,7 +1170,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   }}
                 >
                   <ShoppingBag size={14} />
-                  건샵 사장님
+                  건샵관리
                 </button>
                 <button
                   type="button"
@@ -1192,7 +1192,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                   }}
                 >
                   <ShieldCheck size={14} />
-                  본사 총괄
+                  본사관리
                 </button>
               </div>
             </div>

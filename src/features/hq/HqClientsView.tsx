@@ -373,7 +373,7 @@ export const HqClientsView: React.FC = () => {
                                 color: r === 'field_owner' ? 'var(--acc)' : r === 'shop_owner' ? '#38bdf8' : 'var(--lime-chip)',
                                 border: `1px solid ${r === 'field_owner' ? 'rgba(255, 90, 31, 0.3)' : r === 'shop_owner' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(199, 249, 78, 0.3)'}`
                               }}>
-                                {r === 'field_owner' ? '🏟️ 필드사장' : r === 'shop_owner' ? '🔫 건샵사장' : '👑 본사'}
+                                {r === 'field_owner' ? '🏟️ 필드관리' : r === 'shop_owner' ? '🔫 건샵관리' : '👑 본사관리'}
                               </span>
                             ))
                           ) : (
@@ -383,7 +383,7 @@ export const HqClientsView: React.FC = () => {
                               color: c.type === 'field' ? 'var(--acc)' : '#38bdf8',
                               border: `1px solid ${c.type === 'field' ? 'rgba(255, 90, 31, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`
                             }}>
-                              {c.type === 'field' ? '🏟️ 필드사장' : c.type === 'shop' ? '🔫 건샵사장' : '👑 본사'}
+                              {c.type === 'field' ? '🏟️ 필드관리' : c.type === 'shop' ? '🔫 건샵관리' : '👑 본사관리'}
                             </span>
                           )}
                         </div>
@@ -552,9 +552,9 @@ export const HqClientsView: React.FC = () => {
                     value={formType}
                     onChange={e => setFormType(e.target.value as any)}
                   >
-                    <option value="field">🏟️ 필드 사장님</option>
-                    <option value="shop">🔫 건샵 사장님</option>
-                    <option value="hq">👑 본사 총괄</option>
+                    <option value="field">🏟️ 필드관리</option>
+                    <option value="shop">🔫 건샵관리</option>
+                    <option value="hq">👑 본사관리</option>
                   </select>
                 </div>
               </div>
@@ -745,8 +745,8 @@ export const HqClientsView: React.FC = () => {
                     value={formType}
                     onChange={e => setFormType(e.target.value as any)}
                   >
-                    <option value="field">🏟️ 필드 사장님</option>
-                    <option value="shop">🔫 건샵 사장님</option>
+                    <option value="field">🏟️ 필드관리</option>
+                    <option value="shop">🔫 건샵관리</option>
                   </select>
                 </div>
               </div>

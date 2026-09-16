@@ -30,7 +30,7 @@ interface CheckInDeskViewProps {
 }
 
 export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlayer }) => {
-  const { user, showToast, triggerRefresh, refreshKey } = usePartner();
+  const { user, role, showToast, triggerRefresh, refreshKey } = usePartner();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBooking, setSelectedBooking] = useState<BookingItem | null>(null);
@@ -56,14 +56,16 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
     };
   }, [triggerRefresh]);
 
+  const effectivePartnerId = role === 'hq_admin' ? undefined : user.partnerId;
+
   // Load Bookings & Slots
   const bookings = useMemo(() => {
-    return PartnerService.getBookings(user.partnerId);
-  }, [user.partnerId, refreshKey]);
+    return PartnerService.getBookings(effectivePartnerId);
+  }, [effectivePartnerId, refreshKey]);
 
   const slots = useMemo(() => {
-    return PartnerService.getSlots(user.partnerId);
-  }, [user.partnerId, refreshKey]);
+    return PartnerService.getSlots(effectivePartnerId);
+  }, [effectivePartnerId, refreshKey]);
 
   // Slot Filtering
   const slotFilteredBookings = useMemo(() => {

@@ -513,7 +513,24 @@ export class PartnerService {
   static updateField(id: string, updates: Partial<FieldInfo>): FieldInfo | null {
     const fields = this.getFields();
     const idx = fields.findIndex(f => f.id === id);
-    if (idx === -1) return null;
+    if (idx === -1) {
+      const created: FieldInfo = {
+        id,
+        name: updates.name || 'HIT IN 제휴 경기장',
+        address: updates.address || '',
+        tel: updates.tel || '',
+        capacity: updates.capacity || 60,
+        surfaceType: updates.surfaceType || 'CQB',
+        maxFps: updates.maxFps || 350,
+        rules: updates.rules || [],
+        amenities: updates.amenities || [],
+        coverImage: updates.coverImage || '',
+        operatingHours: updates.operatingHours || {},
+        ...updates
+      };
+      setStorage(STORAGE_KEYS.FIELDS, [created, ...fields]);
+      return created;
+    }
     fields[idx] = { ...fields[idx], ...updates };
     setStorage(STORAGE_KEYS.FIELDS, fields);
 

@@ -136,7 +136,7 @@ export const PlayerMannerModal: React.FC<PlayerMannerModalProps> = ({ userId, on
           {/* Internal Field Notes */}
           <div className="form-group">
             <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>구장 사장님 전용 관리 메모 (비공개)</span>
+              <span>파트너 관리자 전용 메모 (비공개)</span>
               <Edit3 size={13} />
             </label>
             <textarea

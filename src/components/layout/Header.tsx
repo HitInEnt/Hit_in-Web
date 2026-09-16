@@ -111,17 +111,17 @@ export const Header: React.FC<HeaderProps> = ({
             </h1>
             {((user.roles && user.roles.includes('field_owner')) || role === 'field_owner') && (
               <span className={`badge ${role === 'field_owner' ? 'badge-orange' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
-                🏟️ 필드
+                🏟️ 필드관리
               </span>
             )}
             {((user.roles && user.roles.includes('shop_owner')) || role === 'shop_owner') && (
               <span className={`badge ${role === 'shop_owner' ? 'badge-cyan' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
-                🔫 건샵
+                🔫 건샵관리
               </span>
             )}
             {((user.roles && user.roles.includes('hq_admin')) || role === 'hq_admin') && (
               <span className={`badge ${role === 'hq_admin' ? 'badge-lime' : 'badge-outline'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
-                👑 본사
+                👑 본사관리
               </span>
             )}
           </div>

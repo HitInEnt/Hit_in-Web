@@ -34,7 +34,8 @@ export const FieldManageView: React.FC = () => {
 
   useEffect(() => {
     const fields = PartnerService.getFields();
-    const f = fields.find(item => item.id === user.partnerId) || fields[0];
+    const targetId = user.partnerId || 'fld_01';
+    const f = fields.find(item => item.id === targetId) || fields[0];
     if (f) {
       setField(f);
       setName(f.name);
@@ -46,6 +47,33 @@ export const FieldManageView: React.FC = () => {
       setRules(f.rules || []);
       setAmenities(f.amenities || []);
       setCoverImage(f.coverImage);
+    } else {
+      const defaultField: FieldInfo = {
+        id: targetId,
+        name: user.businessName || 'HIT IN 제휴 경기장',
+        address: '경기도 용인시 처인구 모현읍',
+        tel: user.phone || '010-0000-0000',
+        capacity: 60,
+        surfaceType: '복합 실내/외 CQB 아레나',
+        maxFps: 350,
+        rules: ['보안경(고글) 필수 착용', '0.2g BB탄 기준 350 FPS 준수', '안전구역 내 탄창 분리'],
+        amenities: ['주차 가능', '샤워실/탈의실', '탄속 측정기 구비', '냉난방 완비'],
+        coverImage: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800',
+        operatingHours: {
+          weekday: '10:00 - 20:00',
+          weekend: '09:00 - 22:00'
+        }
+      };
+      setField(defaultField);
+      setName(defaultField.name);
+      setAddress(defaultField.address);
+      setTel(defaultField.tel);
+      setCapacity(defaultField.capacity);
+      setSurfaceType(defaultField.surfaceType);
+      setMaxFps(defaultField.maxFps);
+      setRules(defaultField.rules);
+      setAmenities(defaultField.amenities);
+      setCoverImage(defaultField.coverImage);
     }
   }, [user.partnerId, user.businessName, refreshKey]);
 
@@ -333,7 +361,7 @@ export const FieldManageView: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {field.linkedShopNames.map((sName, i) => (
+                {(field.linkedShopNames && field.linkedShopNames.length > 0 ? field.linkedShopNames : ['HIT IN 제휴 밀리터리 기어샵', '커스텀 아머리 건샵']).map((sName, i) => (
                   <div
                     key={i}
                     style={{

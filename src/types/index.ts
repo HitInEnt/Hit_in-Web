@@ -93,7 +93,7 @@ export interface PlayerMannerProfile {
 export interface FieldInfo {
   id: string;
   name: string;
-  region: string;
+  region?: string;
   address: string;
   tel: string;
   coverImage: string;
@@ -102,8 +102,12 @@ export interface FieldInfo {
   maxFps: number; // 0.2g BB탄 기준 FPS 제한 (예: 350 FPS)
   rules: string[];
   amenities: string[];
-  isOpenToday: boolean;
-  linkedShopNames: string[];
+  isOpenToday?: boolean;
+  linkedShopNames?: string[];
+  operatingHours?: {
+    weekday?: string;
+    weekend?: string;
+  };
 }
 
 export type ProductCategory = 'aeg' | 'gbbr' | 'sniper' | 'gear' | 'ammo_gas' | 'protection';

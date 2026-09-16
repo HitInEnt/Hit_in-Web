@@ -41,7 +41,7 @@ export const BookingsView: React.FC<BookingsViewProps> = ({
   onOpenManualBooking,
   onInspectPlayer
 }) => {
-  const { user, showToast, triggerRefresh, refreshKey } = usePartner();
+  const { user, role, showToast, triggerRefresh, refreshKey } = usePartner();
 
   // Current calendar year & month view (default: September 2026)
   const [currentYear, setCurrentYear] = useState<number>(2026);
@@ -51,13 +51,15 @@ export const BookingsView: React.FC<BookingsViewProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const effectivePartnerId = role === 'hq_admin' ? undefined : user.partnerId;
+
   const slots = useMemo(() => {
-    return PartnerService.getSlots(user.partnerId);
-  }, [user.partnerId, refreshKey]);
+    return PartnerService.getSlots(effectivePartnerId);
+  }, [effectivePartnerId, refreshKey]);
 
   const bookings = useMemo(() => {
-    return PartnerService.getBookings(user.partnerId);
-  }, [user.partnerId, refreshKey]);
+    return PartnerService.getBookings(effectivePartnerId);
+  }, [effectivePartnerId, refreshKey]);
 
   // Slots for the currently selected date
   const selectedDateSlots = useMemo(() => {
