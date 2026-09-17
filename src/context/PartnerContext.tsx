@@ -203,7 +203,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ? payload.roles 
           : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [assignedRole]));
 
-    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN ¸ÞÀÎ °ü¸®ÀÚ' : 'HitInEnt º»»ç °ü¸®ÀÚ';
+    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½' : 'HitInEnt ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½';
     const customUser: PartnerUser = {
       id: existingProfile?.id || (isMasterAdmin ? (userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'usr_hq_jes' : 'usr_hq_master') : `usr_${assignedRole}_${Date.now()}`),
       name: payload.name || existingProfile?.name || (isMasterAdmin ? defaultMasterName : ''),
@@ -266,9 +266,9 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // 2. Update field info in local storage and API
       if (nextUser.partnerId) {
         PartnerService.updateField(nextUser.partnerId, { 
-          name: nextUser.businessName || 'HIT IN Á¦ÈÞ °æ±âÀå',
+          name: nextUser.businessName || 'HIT IN ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½',
           tel: nextUser.phone || '',
-          address: '°æ±â/¼öµµ±Ç'
+          address: 'ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½'
         });
       }
 
