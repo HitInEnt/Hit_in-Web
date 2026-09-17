@@ -74,7 +74,9 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
     try {
       const parsed = JSON.parse(generalStored);
       if (parsed && (parsed.name !== undefined || parsed.businessName !== undefined || parsed.email)) {
-        return { ...defaultUser, ...parsed, role: r };
+        const isMaster = isMasterAdminEmail(parsed.email);
+        const resolvedStatus = isMaster ? 'active' : PartnerService.checkUserApproval(parsed.email, r);
+        return { ...defaultUser, ...parsed, role: r, status: resolvedStatus };
       }
     } catch {}
   }
@@ -86,7 +88,9 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
       try {
         const parsed = JSON.parse(emailStored);
         if (parsed.email && parsed.email.toLowerCase() === specificEmail.toLowerCase()) {
-          return { ...defaultUser, ...parsed, role: r };
+          const isMaster = isMasterAdminEmail(parsed.email);
+          const resolvedStatus = isMaster ? 'active' : PartnerService.checkUserApproval(parsed.email, r);
+          return { ...defaultUser, ...parsed, role: r, status: resolvedStatus };
         }
       } catch {}
     }
@@ -97,11 +101,16 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
   if (roleSpecific) {
     try {
       const parsed = JSON.parse(roleSpecific);
-      return { ...defaultUser, ...parsed, role: r };
+      const isMaster = isMasterAdminEmail(parsed.email);
+      const resolvedStatus = isMaster ? 'active' : PartnerService.checkUserApproval(parsed.email, r);
+      return { ...defaultUser, ...parsed, role: r, status: resolvedStatus };
     } catch {}
   }
 
-  return defaultUser;
+  return {
+    ...defaultUser,
+    status: isMasterAdminEmail(defaultUser.email) ? 'active' : 'pending_approval'
+  };
 };
 
 export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -195,7 +204,17 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const defaultForRole = initialPartnerUsers.find(u => u.role === assignedRole) || initialPartnerUsers[0];
     const userEmail = payload.email ? payload.email.trim() : (existingProfile?.email || defaultForRole.email);
     const isMasterAdmin = isMasterAdminEmail(userEmail);
-    const approvalStatus = isMasterAdmin ? 'active' : (existingProfile?.status || PartnerService.checkUserApproval(userEmail, assignedRole));
+    let approvalStatus: 'active' | 'pending_approval' | 'suspended' = 'pending_approval';
+    if (isMasterAdmin) {
+      approvalStatus = 'active';
+    } else {
+      const client = PartnerService.getClientByEmail(userEmail);
+      if (client && client.status === 'active') {
+        approvalStatus = 'active';
+      } else {
+        approvalStatus = 'pending_approval';
+      }
+    }
 
     const effectiveRoles = isMasterAdmin
       ? ['hq_admin' as PartnerRole, 'field_owner' as PartnerRole, 'shop_owner' as PartnerRole]
@@ -203,7 +222,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ? payload.roles 
           : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [assignedRole]));
 
-    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN ���� ������' : 'HitInEnt ���� ������';
+    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN 메인 관리자' : 'HitInEnt 본사 관리자';
     const customUser: PartnerUser = {
       id: existingProfile?.id || (isMasterAdmin ? (userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'usr_hq_jes' : 'usr_hq_master') : `usr_${assignedRole}_${Date.now()}`),
       name: payload.name || existingProfile?.name || (isMasterAdmin ? defaultMasterName : ''),
