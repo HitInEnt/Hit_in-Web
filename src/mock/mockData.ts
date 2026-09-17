@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   FieldInfo, 
   TimeSlot, 
   BookingItem, 
@@ -15,10 +15,10 @@ import {
 export const initialPartnerUsers: PartnerUser[] = [
   {
     id: 'usr_field_default',
-    name: '필드 관리자',
+    name: '',
     email: 'field@partner.hitin.kr',
     role: 'field_owner',
-    businessName: 'HIT IN 제휴 경기장',
+    businessName: '',
     businessNumber: '',
     phone: '',
     partnerId: 'fld_01',
@@ -26,10 +26,10 @@ export const initialPartnerUsers: PartnerUser[] = [
   },
   {
     id: 'usr_shop_default',
-    name: '건샵 관리자',
+    name: '',
     email: 'shop@partner.hitin.kr',
     role: 'shop_owner',
-    businessName: 'HIT IN 제휴 건샵',
+    businessName: '',
     businessNumber: '',
     phone: '',
     partnerId: 'shp_01',

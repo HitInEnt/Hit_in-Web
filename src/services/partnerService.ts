@@ -1,4 +1,4 @@
-import { 
+﻿import { 
   TimeSlot, 
   BookingItem, 
   PlayerMannerProfile, 
@@ -488,7 +488,7 @@ export class PartnerService {
         name: user.businessName || `${user.name} 파트너`,
         type,
         roles: effectiveRoles,
-        representative: user.name,
+        representative: user.name || '미등록',
         phone: user.phone || '',
         email: user.email,
         businessNumber: user.businessNumber || '',

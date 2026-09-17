@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { PartnerRole, PartnerUser } from '../types';
 import { initialPartnerUsers } from '../mock/mockData';
 import { PartnerService } from '../services/partnerService';
@@ -178,13 +178,13 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const customUser: PartnerUser = {
       id: existingProfile?.id || (isMasterAdmin ? 'usr_hq_master' : `usr_${assignedRole}_${Date.now()}`),
-      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 관리자') : (payload.name || existingProfile?.name || defaultForRole.name),
+      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 관리자') : (payload.name !== undefined ? payload.name : (existingProfile?.name || '')),
       email: userEmail,
       role: assignedRole,
       roles: effectiveRoles,
-      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || defaultForRole.businessName)),
-      businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || defaultForRole.businessNumber),
-      phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || defaultForRole.phone),
+      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || '')),
+      businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || ''),
+      phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || ''),
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
       avatarUrl: payload.avatarUrl || existingProfile?.avatarUrl || defaultForRole.avatarUrl,
       status: approvalStatus

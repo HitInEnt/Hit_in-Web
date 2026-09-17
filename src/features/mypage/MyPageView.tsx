@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { 
   User, 
   Building2, 
@@ -25,6 +25,7 @@ import {
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
 import { CUTE_CHARACTER_AVATARS, PRESET_AVATARS } from '../../components/common/ProfileEditModal';
+import { formatPhoneNumber, formatBusinessNumber } from '../../utils/formatters';
 
 export const MyPageView: React.FC = () => {
   const { role, user, updateProfile, setRole, showToast, logout } = usePartner();
@@ -155,7 +156,7 @@ export const MyPageView: React.FC = () => {
   const currentTheme = getRoleTheme(role);
 
   return (
-    <div className="view-container animate-fade-in" style={{ paddingBottom: '80px' }}>
+    <div className="page-scrollable animate-fade-in" style={{ paddingBottom: '80px' }}>
       {/* Hidden File Input */}
       <input
         type="file"
@@ -219,7 +220,7 @@ export const MyPageView: React.FC = () => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--txt)' }}>
-                {businessName}
+                {businessName || '사업장명을 등록해주세요'}
               </h2>
               <span className={`badge ${currentTheme.badge}`} style={{ fontSize: '11px', padding: '3px 8px' }}>
                 {currentTheme.label}
@@ -236,7 +237,7 @@ export const MyPageView: React.FC = () => {
               )}
             </div>
             <div style={{ fontSize: '12.5px', color: 'var(--mut)', marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <span>대표자: <strong>{name}</strong></span>
+              <span>대표자: <strong>{name || '미등록'}</strong></span>
               <span>계정 이메일: <strong>{email}</strong></span>
               <span>파트너 ID: <code style={{ color: 'var(--acc)' }}>{user.partnerId}</code></span>
             </div>
@@ -324,7 +325,7 @@ export const MyPageView: React.FC = () => {
                     className="form-input"
                     style={{ width: '100%', paddingLeft: '32px' }}
                     value={phone}
-                    onChange={e => setPhone(e.target.value)}
+                    onChange={e => setPhone(formatPhoneNumber(e.target.value))}
                     placeholder="010-0000-0000"
                   />
                 </div>
@@ -339,7 +340,7 @@ export const MyPageView: React.FC = () => {
                     className="form-input"
                     style={{ width: '100%', paddingLeft: '32px' }}
                     value={businessNumber}
-                    onChange={e => setBusinessNumber(e.target.value)}
+                    onChange={e => setBusinessNumber(formatBusinessNumber(e.target.value))}
                     placeholder="000-00-00000"
                   />
                 </div>

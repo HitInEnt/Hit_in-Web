@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { 
   Users2, 
   Building2, 
@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerService } from '../../services/partnerService';
+import { formatPhoneNumber, formatBusinessNumber } from '../../utils/formatters';
 import { ClientPartner, ClientStatus } from '../../types';
 
 export const HqClientsView: React.FC = () => {
@@ -578,7 +579,7 @@ export const HqClientsView: React.FC = () => {
                     type="tel"
                     className="form-input"
                     value={formPhone}
-                    onChange={e => setFormPhone(e.target.value)}
+                    onChange={e => setFormPhone(formatPhoneNumber(e.target.value))}
                     placeholder="010-0000-0000"
                   />
                 </div>
@@ -603,7 +604,7 @@ export const HqClientsView: React.FC = () => {
                     type="text"
                     className="form-input"
                     value={formBusinessNumber}
-                    onChange={e => setFormBusinessNumber(e.target.value)}
+                    onChange={e => setFormBusinessNumber(formatBusinessNumber(e.target.value))}
                     placeholder="123-45-67890"
                   />
                 </div>
@@ -771,7 +772,7 @@ export const HqClientsView: React.FC = () => {
                     type="tel"
                     className="form-input"
                     value={formPhone}
-                    onChange={e => setFormPhone(e.target.value)}
+                    onChange={e => setFormPhone(formatPhoneNumber(e.target.value))}
                     placeholder="010-0000-0000"
                   />
                 </div>
@@ -796,7 +797,7 @@ export const HqClientsView: React.FC = () => {
                     type="text"
                     className="form-input"
                     value={formBusinessNumber}
-                    onChange={e => setFormBusinessNumber(e.target.value)}
+                    onChange={e => setFormBusinessNumber(formatBusinessNumber(e.target.value))}
                     placeholder="123-45-67890"
                   />
                 </div>

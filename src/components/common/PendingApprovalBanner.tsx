@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   ShieldAlert, 
   Clock, 
@@ -51,8 +51,9 @@ export const PendingApprovalBanner: React.FC = () => {
       background: 'linear-gradient(135deg, rgba(255, 149, 0, 0.12) 0%, rgba(19, 27, 46, 0.95) 100%)',
       border: '1px solid rgba(255, 149, 0, 0.35)',
       borderRadius: 'var(--radius-lg)',
-      padding: '24px 28px',
-      marginBottom: '24px',
+      padding: '20px 24px',
+      margin: '16px var(--space-xxl) 0 var(--space-xxl)',
+      flexShrink: 0,
       boxShadow: 'var(--shadow-md)',
       position: 'relative',
       overflow: 'hidden'
@@ -117,11 +118,11 @@ export const PendingApprovalBanner: React.FC = () => {
             }}>
               <div>
                 <span style={{ color: 'var(--dim)' }}>상호명: </span>
-                <strong style={{ color: 'var(--txt)' }}>{user.businessName}</strong>
+                <strong style={{ color: 'var(--txt)' }}>{user.businessName || '미등록 (정보 수정 가능)'}</strong>
               </div>
               <div>
                 <span style={{ color: 'var(--dim)' }}>대표자: </span>
-                <strong style={{ color: 'var(--txt)' }}>{user.name}</strong>
+                <strong style={{ color: 'var(--txt)' }}>{user.name || '미등록'}</strong>
               </div>
               <div>
                 <span style={{ color: 'var(--dim)' }}>신청 계정: </span>

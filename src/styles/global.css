@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 @import './tokens.css';
 
 /* CSS Reset & Base */
@@ -108,7 +108,7 @@ html, body, #root {
   background: radial-gradient(circle at 80% 20%, var(--hero-line) 0%, transparent 70%);
 }
 
-.page-scrollable {
+.page-scrollable, .view-container {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-xxl);
@@ -523,7 +523,7 @@ html, body, #root {
     padding: 0 var(--space-lg);
   }
 
-  .page-scrollable {
+  .page-scrollable, .view-container {
     padding: var(--space-lg);
     gap: var(--space-lg);
   }
@@ -549,7 +549,7 @@ html, body, #root {
     padding-bottom: 60px;
   }
 
-  .page-scrollable {
+  .page-scrollable, .view-container {
     padding: 12px;
     gap: 12px;
   }

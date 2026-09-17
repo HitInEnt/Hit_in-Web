@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Sparkles, 
   ShieldCheck, 
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
+import { formatPhoneNumber, formatBusinessNumber } from '../../utils/formatters';
 
 // Google Brand Icon
 const GoogleIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
@@ -868,7 +869,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                     style={{ width: '100%', fontSize: '11.5px', padding: '7px 10px' }}
                     placeholder="예: 123-45-67890"
                     value={signupBusinessNumber}
-                    onChange={e => setSignupBusinessNumber(e.target.value)}
+                    onChange={e => setSignupBusinessNumber(formatBusinessNumber(e.target.value))}
                     required
                   />
                 </div>
@@ -903,7 +904,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                     style={{ width: '100%', fontSize: '11.5px', padding: '7px 10px' }}
                     placeholder="예: 010-1234-5678"
                     value={signupPhone}
-                    onChange={e => setSignupPhone(e.target.value)}
+                    onChange={e => setSignupPhone(formatPhoneNumber(e.target.value))}
                     required
                   />
                 </div>
@@ -1653,9 +1654,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                       email: userEmail,
                       role: effectiveRole,
                       roles: effectiveRoles,
-                      businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName.trim() : meta.businessName,
-                      businessNumber: authMode === 'signup' && signupBusinessNumber ? signupBusinessNumber.trim() : (meta as any).businessNumber,
-                      phone: authMode === 'signup' && signupPhone ? signupPhone.trim() : (meta as any).phone,
+                      businessName: authMode === 'signup' && signupBusinessName ? signupBusinessName.trim() : '',
+                      businessNumber: authMode === 'signup' && signupBusinessNumber ? signupBusinessNumber.trim() : '',
+                      phone: authMode === 'signup' && signupPhone ? signupPhone.trim() : '',
                       name: userName,
                       partnerId: meta.partnerId,
                       avatarUrl: 'https://lh3.googleusercontent.com/a/default-user',

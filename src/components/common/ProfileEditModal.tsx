@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   User, 
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
+import { formatPhoneNumber, formatBusinessNumber } from '../../utils/formatters';
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -241,11 +242,15 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 9999,
-      padding: '20px'
+      padding: '20px',
+      overflowY: 'auto'
     }}>
       <div style={{
         width: '100%',
         maxWidth: '560px',
+        maxHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: 'var(--card)',
         borderRadius: 'var(--radius-xl)',
         border: '1px solid var(--line)',
@@ -631,7 +636,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                     className="form-input"
                     style={{ width: '100%', paddingLeft: '38px' }}
                     value={phone}
-                    onChange={e => setPhone(e.target.value)}
+                    onChange={e => setPhone(formatPhoneNumber(e.target.value))}
                     placeholder="010-0000-0000"
                   />
                 </div>
@@ -647,7 +652,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                   className="form-input"
                   style={{ width: '100%', paddingLeft: '38px' }}
                   value={businessNumber}
-                  onChange={e => setBusinessNumber(e.target.value)}
+                  onChange={e => setBusinessNumber(formatBusinessNumber(e.target.value))}
                   placeholder="124-86-90123"
                 />
               </div>

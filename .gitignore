@@ -1,4 +1,4 @@
-# Node dependencies
+﻿# Node dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -43,3 +43,9 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+
+# Sub-projects / nested repos
+server/
+partner/
+app/
