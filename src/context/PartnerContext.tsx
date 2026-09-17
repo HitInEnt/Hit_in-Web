@@ -1,8 +1,7 @@
-﻿import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { PartnerRole, PartnerUser } from '../types';
 import { initialPartnerUsers } from '../mock/mockData';
 import { PartnerService } from '../services/partnerService';
-
 
 export type NavTab = 
   | 'dashboard' 
@@ -14,7 +13,6 @@ export type NavTab =
   | 'settlement' 
   | 'hq_clients'
   | 'mypage';
-
 
 interface ToastNotification {
   id: string;
@@ -70,28 +68,28 @@ export const isMasterAdminEmail = (email?: string): boolean => {
 const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => {
   const defaultUser = initialPartnerUsers.find(u => u.role === r) || initialPartnerUsers[0];
 
-  // 1. Check if email-specific saved profile exists
+  // 1. Check general active custom user FIRST
+  const generalStored = localStorage.getItem('hitin_custom_user');
+  if (generalStored) {
+    try {
+      const parsed = JSON.parse(generalStored);
+      if (parsed && (parsed.name !== undefined || parsed.businessName !== undefined || parsed.email)) {
+        return { ...defaultUser, ...parsed, role: r };
+      }
+    } catch {}
+  }
+
+  // 2. Check if email-specific saved profile exists
   if (specificEmail) {
     const emailStored = localStorage.getItem(`hitin_custom_user_email_${specificEmail.toLowerCase()}`);
     if (emailStored) {
       try {
         const parsed = JSON.parse(emailStored);
         if (parsed.email && parsed.email.toLowerCase() === specificEmail.toLowerCase()) {
-          return { ...parsed, role: r };
+          return { ...defaultUser, ...parsed, role: r };
         }
       } catch {}
     }
-  }
-
-  // 2. Check general active custom user
-  const generalStored = localStorage.getItem('hitin_custom_user');
-  if (generalStored) {
-    try {
-      const parsed = JSON.parse(generalStored);
-      if (parsed.role === r || (parsed.roles && parsed.roles.includes(r))) {
-        return { ...parsed, role: r };
-      }
-    } catch {}
   }
 
   // 3. Check role-specific custom user
@@ -99,7 +97,7 @@ const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => 
   if (roleSpecific) {
     try {
       const parsed = JSON.parse(roleSpecific);
-      return { ...parsed, role: r };
+      return { ...defaultUser, ...parsed, role: r };
     } catch {}
   }
 
@@ -147,9 +145,32 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('hitin_partner_role', role);
   }, [role]);
 
+  // Synchronize and fetch latest server profile on launch
+  useEffect(() => {
+    if (isAuthenticated && user && user.email) {
+      PartnerService.fetchUserProfile(user.email).then(serverProfile => {
+        if (serverProfile) {
+          setUser(prev => {
+            const merged: PartnerUser = {
+              ...prev,
+              name: serverProfile.name || prev.name,
+              phone: serverProfile.phone || prev.phone,
+              businessName: serverProfile.businessName || prev.businessName,
+              businessNumber: serverProfile.businessNumber || prev.businessNumber,
+              avatarUrl: serverProfile.avatarUrl || prev.avatarUrl,
+              status: serverProfile.status || prev.status
+            };
+            localStorage.setItem('hitin_custom_user', JSON.stringify(merged));
+            return merged;
+          });
+        }
+      }).catch(() => {});
+    }
+  }, [isAuthenticated, user?.email]);
+
   const login = useCallback((payload: LoginPayload) => {
-    const isMasterHqEmail = Boolean(payload.email && payload.email.toLowerCase() === 'hitinent@gmail.com');
-    const assignedRole: PartnerRole = isMasterHqEmail ? 'hq_admin' : payload.role;
+    const isMasterHq = isMasterAdminEmail(payload.email);
+    const assignedRole: PartnerRole = isMasterHq ? 'hq_admin' : payload.role;
 
     setIsAuthenticated(true);
     setRoleState(assignedRole);
@@ -173,7 +194,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const defaultForRole = initialPartnerUsers.find(u => u.role === assignedRole) || initialPartnerUsers[0];
     const userEmail = payload.email ? payload.email.trim() : (existingProfile?.email || defaultForRole.email);
-    const isMasterAdmin = userEmail.toLowerCase() === 'hitinent@gmail.com';
+    const isMasterAdmin = isMasterAdminEmail(userEmail);
     const approvalStatus = isMasterAdmin ? 'active' : (existingProfile?.status || PartnerService.checkUserApproval(userEmail, assignedRole));
 
     const effectiveRoles = isMasterAdmin
@@ -182,13 +203,14 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ? payload.roles 
           : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [assignedRole]));
 
+    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN 메인 관리자' : 'HitInEnt 본사 관리자';
     const customUser: PartnerUser = {
-      id: existingProfile?.id || (isMasterAdmin ? 'usr_hq_master' : `usr_${assignedRole}_${Date.now()}`),
-      name: isMasterAdmin ? (payload.name || 'HitInEnt 본사 관리자') : (payload.name !== undefined ? payload.name : (existingProfile?.name || '')),
+      id: existingProfile?.id || (isMasterAdmin ? (userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'usr_hq_jes' : 'usr_hq_master') : `usr_${assignedRole}_${Date.now()}`),
+      name: isMasterAdmin ? (payload.name || defaultMasterName) : (payload.name !== undefined ? payload.name : (existingProfile?.name || '')),
       email: userEmail,
       role: assignedRole,
       roles: effectiveRoles,
-      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || '')),
+      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt HQ') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || '')),
       businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || ''),
       phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || ''),
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
@@ -227,7 +249,8 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         roles: sanitizedRoles.length > 0 ? sanitizedRoles : [updated.role || prev.role],
         status: updated.status || prev.status || 'pending_approval'
       };
-      // Persist across all relevant keys so edits remain permanent
+
+      // 1. Persist across all relevant localStorage keys
       localStorage.setItem(`hitin_custom_user_${nextUser.role}`, JSON.stringify(nextUser));
       if (nextUser.roles && nextUser.roles.length > 0) {
         nextUser.roles.forEach(r => {
@@ -240,12 +263,26 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       localStorage.setItem(`hitin_custom_user_id_${nextUser.id}`, JSON.stringify(nextUser));
       localStorage.setItem('hitin_custom_user', JSON.stringify(nextUser));
 
-      // Update field info if business name changed
-      if (updated.businessName && nextUser.partnerId) {
-        PartnerService.updateField(nextUser.partnerId, { name: updated.businessName });
+      // 2. Update field info in local storage and API
+      if (nextUser.partnerId) {
+        PartnerService.updateField(nextUser.partnerId, { 
+          name: nextUser.businessName || 'HIT IN 제휴 경기장',
+          tel: nextUser.phone || '',
+          address: '경기/수도권'
+        });
       }
 
+      // 3. Sync to Client record in local storage and API
       PartnerService.syncUserToClient(nextUser);
+
+      // 4. Realtime Server Synchronization
+      PartnerService.syncUserProfile(nextUser).then(res => {
+        if (res.ok) {
+          console.log('[API] Partner profile synced to server in real time:', res.message);
+        }
+      }).catch(err => {
+        console.warn('[API] Realtime server profile sync warning:', err);
+      });
 
       return nextUser;
     });
