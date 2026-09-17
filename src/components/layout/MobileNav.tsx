@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { 
   LayoutDashboard, 
   CalendarClock, 
@@ -9,7 +9,9 @@ import {
 import { usePartner, NavTab } from '../../context/PartnerContext';
 
 export const MobileNav: React.FC = () => {
-  const { activeTab, setActiveTab, toggleMobileMenu, isMobileMenuOpen } = usePartner();
+  const { user, activeTab, setActiveTab, toggleMobileMenu, isMobileMenuOpen, showToast } = usePartner();
+
+  const isPending = user.status === 'pending_approval';
 
   const navButtons: { id: NavTab; label: string; icon: React.ElementType; badge?: string }[] = [
     {
@@ -41,18 +43,28 @@ export const MobileNav: React.FC = () => {
       {navButtons.map(item => {
         const Icon = item.icon;
         const isActive = activeTab === item.id;
+        const isLocked = isPending && item.id !== 'mypage';
 
         return (
           <button
             key={item.id}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {
+              if (isLocked) {
+                showToast('⏳ 본사(HIT IN HQ) 승인 대기 중입니다. 가맹 승인 완료 후 이용 가능합니다.', 'warning');
+              }
+              setActiveTab(item.id);
+            }}
             className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
             aria-label={item.label}
           >
             <div className="mobile-nav-icon-wrapper">
               <Icon size={20} />
-              {item.badge && (
-                <span className="mobile-nav-badge">{item.badge}</span>
+              {isLocked ? (
+                <span className="mobile-nav-badge" style={{ background: '#ff9500', fontSize: '7.5px' }}>🔒</span>
+              ) : (
+                item.badge && (
+                  <span className="mobile-nav-badge">{item.badge}</span>
+                )
               )}
             </div>
             <span className="mobile-nav-label">{item.label}</span>

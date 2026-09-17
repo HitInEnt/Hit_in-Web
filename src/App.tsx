@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { PartnerProvider, usePartner } from './context/PartnerContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
@@ -217,7 +217,7 @@ const PartnerAppInner: React.FC = () => {
         />
 
         {/* Pending Approval Banner for awaiting partners */}
-        {user.status === 'pending_approval' && activeTab !== 'mypage' && (
+        {user.status === 'pending_approval' && (
           <PendingApprovalBanner />
         )}
 

@@ -203,7 +203,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setUser(customUser);
     PartnerService.syncUserToClient(customUser);
 
-    setActiveTabState('dashboard');
+    setActiveTabState(approvalStatus === 'pending_approval' ? 'mypage' : 'dashboard');
     setRefreshKey(prev => prev + 1);
   }, []);
 
