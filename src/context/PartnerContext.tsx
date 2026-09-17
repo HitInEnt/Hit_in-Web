@@ -1,4 +1,4 @@
-ï»¿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { PartnerRole, PartnerUser } from '../types';
 import { initialPartnerUsers } from '../mock/mockData';
 import { PartnerService } from '../services/partnerService';
@@ -203,14 +203,14 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ? payload.roles 
           : (existingProfile?.roles && existingProfile.roles.length > 0 ? existingProfile.roles : [assignedRole]));
 
-    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN ë©”ì¸ ê´€ë¦¬ì' : 'HitInEnt ë³¸ì‚¬ ê´€ë¦¬ì';
+    const defaultMasterName = userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'HIT IN ¸ŞÀÎ °ü¸®ÀÚ' : 'HitInEnt º»»ç °ü¸®ÀÚ';
     const customUser: PartnerUser = {
       id: existingProfile?.id || (isMasterAdmin ? (userEmail.toLowerCase() === 'jes0508@gmail.com' ? 'usr_hq_jes' : 'usr_hq_master') : `usr_${assignedRole}_${Date.now()}`),
-      name: isMasterAdmin ? (payload.name || defaultMasterName) : (payload.name !== undefined ? payload.name : (existingProfile?.name || '')),
+      name: payload.name || existingProfile?.name || (isMasterAdmin ? defaultMasterName : ''),
       email: userEmail,
       role: assignedRole,
       roles: effectiveRoles,
-      businessName: isMasterAdmin ? (payload.businessName || 'HitInEnt HQ') : (payload.businessName !== undefined ? payload.businessName : (existingProfile?.businessName || '')),
+      businessName: payload.businessName || existingProfile?.businessName || (isMasterAdmin ? 'HitInEnt HQ' : ''),
       businessNumber: payload.businessNumber !== undefined ? payload.businessNumber : (existingProfile?.businessNumber || ''),
       phone: payload.phone !== undefined ? payload.phone : (existingProfile?.phone || ''),
       partnerId: payload.partnerId || existingProfile?.partnerId || defaultForRole.partnerId,
@@ -266,9 +266,9 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // 2. Update field info in local storage and API
       if (nextUser.partnerId) {
         PartnerService.updateField(nextUser.partnerId, { 
-          name: nextUser.businessName || 'HIT IN ì œíœ´ ê²½ê¸°ì¥',
+          name: nextUser.businessName || 'HIT IN Á¦ÈŞ °æ±âÀå',
           tel: nextUser.phone || '',
-          address: 'ê²½ê¸°/ìˆ˜ë„ê¶Œ'
+          address: '°æ±â/¼öµµ±Ç'
         });
       }
 
