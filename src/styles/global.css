@@ -688,18 +688,21 @@ html, body, #root {
    ========================================================================== */
 .auth-wrapper {
   width: 100%;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--bg);
   color: var(--txt);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 24px 16px;
+  padding: 32px 16px 64px 16px;
   box-sizing: border-box;
 }
 
@@ -713,6 +716,7 @@ html, body, #root {
   flex-direction: column;
   z-index: 10;
   margin: auto;
+  flex-shrink: 0;
   animation: fadeIn 0.25s ease-out;
   transition: max-width 0.2s ease, padding 0.2s ease;
   box-sizing: border-box;
@@ -744,8 +748,9 @@ html, body, #root {
 
 @media (max-width: 640px) {
   .auth-wrapper {
-    padding: 12px 10px;
-    align-items: flex-start;
+    padding: 16px 10px 64px 10px;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .auth-card {
@@ -778,8 +783,8 @@ html, body, #root {
 
 @media (max-height: 760px) {
   .auth-wrapper {
-    padding: 10px 12px;
-    align-items: center;
+    padding: 16px 12px 64px 12px;
+    justify-content: flex-start;
   }
   .auth-card-login, .auth-card-signup {
     padding: 14px 18px !important;
