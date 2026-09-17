@@ -26,12 +26,12 @@ export const PendingApprovalBanner: React.FC = () => {
       const currentStatus = PartnerService.checkUserApproval(user.email, role);
       if (currentStatus === 'active') {
         updateProfile({ status: 'active' });
-        showToast('🎉 축하합니다! 본사(HQ)의 가맹 입점 승인이 완료되어 모든 관리 기능이 활성화되었습니다!', 'success');
+        showToast('🎉 축하합니다! 메인 관리자(jes0508@gmail.com)의 가맹 입점 승인이 완료되어 모든 관리 기능이 활성화되었습니다!', 'success');
         triggerRefresh();
       } else if (currentStatus === 'suspended') {
-        showToast('현재 계정이 본사에 의해 보류/정지 상태입니다. 고객지원팀에 문의해주세요.', 'warning');
+        showToast('현재 계정이 본사에 의해 보류/정지 상태입니다. 메인 관리자(jes0508@gmail.com)에게 문의해주세요.', 'warning');
       } else {
-        showToast('현재 본사 관리자의 심사가 진행 중입니다. 승인 완료 시 즉시 반영됩니다.', 'info');
+        showToast('현재 메인 관리자(jes0508@gmail.com)의 심사가 진행 중입니다. 승인 완료 시 즉시 반영됩니다.', 'info');
       }
       setIsChecking(false);
     }, 600);
@@ -96,11 +96,11 @@ export const PendingApprovalBanner: React.FC = () => {
             </div>
 
             <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--txt)', margin: '8px 0 6px 0' }}>
-              본사(HIT IN HQ) 관리자의 가맹 입점 승인을 기다리는 중입니다
+              메인 관리자(jes0508@gmail.com)의 가맹 입점 승인을 기다리는 중입니다
             </h3>
 
             <p style={{ fontSize: '13px', color: 'var(--mut)', lineHeight: 1.6, margin: 0 }}>
-              새로 가입하신 파트너 정보가 본사 관리자에게 전달되었습니다.<br />
+              새로 가입하신 파트너 정보가 메인 관리자에게 전달되었습니다.<br />
               본사 승인이 완료되면 <strong>경기장 타임슬롯 오픈, QR 현장체크인, 건샵 장비 렌탈 및 매출 정산</strong> 등 모든 운영 기능이 자동으로 활성화됩니다.
             </p>
 
@@ -175,7 +175,7 @@ export const PendingApprovalBanner: React.FC = () => {
           </button>
 
           <div style={{ fontSize: '11px', color: 'var(--dim)', textAlign: 'center', marginTop: '2px' }}>
-            입점 승인 문의: <a href="mailto:hitinent@gmail.com" style={{ color: 'var(--acc)', fontWeight: 600 }}>hitinent@gmail.com</a>
+            입점 승인 문의: <a href="mailto:jes0508@gmail.com" style={{ color: 'var(--acc)', fontWeight: 600 }}>jes0508@gmail.com</a>
           </div>
         </div>
       </div>

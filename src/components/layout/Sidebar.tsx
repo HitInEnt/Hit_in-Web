@@ -17,7 +17,8 @@ import {
   UserCog,
   Edit3,
   Coins,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 import { usePartner, NavTab } from '../../context/PartnerContext';
 import { PartnerRole } from '../../types';
@@ -100,11 +101,19 @@ export const Sidebar: React.FC = () => {
     ? ['field_owner', 'shop_owner', 'hq_admin']
     : (user?.roles && user.roles.length > 0 ? user.roles.filter(r => r !== 'hq_admin') : [role === 'hq_admin' ? 'field_owner' : role]);
 
+  const isPending = user?.status === 'pending_approval';
   const filteredNav = NAV_ITEMS.filter(item => item.allowedRoles.some(r => effectiveRoles.includes(r)));
 
   const handleLogout = () => {
     logout();
     showToast('안전하게 로그아웃되었습니다.', 'info');
+  };
+
+  const handleNavClick = (itemId: NavTab) => {
+    if (isPending && itemId !== 'mypage') {
+      showToast('⏳ 메인 관리자(jes0508@gmail.com)의 가맹 승인 대기 중입니다.', 'warning');
+    }
+    setActiveTab(itemId);
   };
 
   return (
@@ -180,9 +189,13 @@ export const Sidebar: React.FC = () => {
             alignItems: 'center'
           }}>
             <span>현재 관리자 권한 모드</span>
-            {user.status === 'pending_approval' && (
-              <span className="badge badge-orange" style={{ fontSize: '9.5px', padding: '1px 5px' }}>
-                심사대기
+            {isPending ? (
+              <span className="badge badge-orange" style={{ fontSize: '9.5px', padding: '1px 6px', fontWeight: 800 }}>
+                ⏳ 심사대기
+              </span>
+            ) : (
+              <span className="badge badge-lime" style={{ fontSize: '9.5px', padding: '1px 6px', fontWeight: 800 }}>
+                ✓ 정상승인
               </span>
             )}
           </div>
@@ -289,10 +302,12 @@ export const Sidebar: React.FC = () => {
           {filteredNav.map(item => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+            const isItemLocked = isPending && item.id !== 'mypage';
+
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleNavClick(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -301,25 +316,35 @@ export const Sidebar: React.FC = () => {
                   borderRadius: 'var(--radius-md)',
                   border: 'none',
                   background: isActive ? 'var(--card2)' : 'transparent',
-                  color: isActive ? 'var(--txt)' : 'var(--mut)',
+                  color: isActive ? 'var(--txt)' : (isItemLocked ? 'var(--dim)' : 'var(--mut)'),
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all 0.15s ease',
                   outline: 'none',
                   fontWeight: isActive ? 600 : 500,
-                  boxShadow: isActive ? 'inset 3px 0 0 var(--acc)' : 'none'
+                  boxShadow: isActive ? 'inset 3px 0 0 var(--acc)' : 'none',
+                  opacity: isItemLocked && !isActive ? 0.75 : 1
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Icon size={18} color={isActive ? 'var(--acc)' : 'var(--mut)'} />
+                  <Icon size={18} color={isActive ? 'var(--acc)' : (isItemLocked ? 'var(--dim)' : 'var(--mut)')} />
                   <span style={{ fontSize: '13.5px' }}>{item.label}</span>
                 </div>
-                {item.badge && (
+                {isItemLocked ? (
+                  <span className="badge badge-orange" style={{ fontSize: '9px', padding: '2px 5px', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                    <Lock size={9} />
+                    <span>대기</span>
+                  </span>
+                ) : item.id === 'mypage' && isPending ? (
+                  <span className="badge badge-lime" style={{ fontSize: '9.5px', padding: '2px 6px' }}>
+                    정보수정
+                  </span>
+                ) : item.badge ? (
                   <span className={`badge ${item.badge === 'LIVE' ? 'badge-orange' : item.badge === 'HQ' ? 'badge-lime' : 'badge-outline'}`}
                     style={{ fontSize: '10px', padding: '2px 6px' }}>
                     {item.badge}
                   </span>
-                )}
+                ) : null}
               </button>
             );
           })}
@@ -439,7 +464,7 @@ export const Sidebar: React.FC = () => {
                   height: '38px',
                   borderRadius: 'var(--radius-pill)',
                   objectFit: 'cover',
-                  border: '2px solid var(--acc)',
+                  border: isPending ? '2px solid #ff9500' : '2px solid var(--acc)',
                   flexShrink: 0
                 }}
               />
@@ -450,7 +475,7 @@ export const Sidebar: React.FC = () => {
                 width: '14px',
                 height: '14px',
                 borderRadius: '50%',
-                background: 'var(--acc)',
+                background: isPending ? '#ff9500' : 'var(--acc)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -461,11 +486,11 @@ export const Sidebar: React.FC = () => {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--txt)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user.businessName}
+                {user.businessName || '사업장명 미등록'}
               </div>
               <div style={{ fontSize: '11px', color: 'var(--mut)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--green)', display: 'inline-block' }} />
-                <span>{user.name}</span>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: isPending ? '#ff9500' : 'var(--green)', display: 'inline-block' }} />
+                <span>{user.name || '미등록'}</span>
                 <span style={{ fontSize: '10px', color: 'var(--acc)', marginLeft: '2px' }}>[수정]</span>
               </div>
             </div>
@@ -543,4 +568,3 @@ export const Sidebar: React.FC = () => {
     </>
   );
 };
-

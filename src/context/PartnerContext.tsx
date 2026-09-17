@@ -61,6 +61,12 @@ interface PartnerContextType {
 
 const PartnerContext = createContext<PartnerContextType | null>(null);
 
+export const isMasterAdminEmail = (email?: string): boolean => {
+  if (!email) return false;
+  const l = email.trim().toLowerCase();
+  return l === 'jes0508@gmail.com' || l === 'hitinent@gmail.com';
+};
+
 const getUserForRole = (r: PartnerRole, specificEmail?: string): PartnerUser => {
   const defaultUser = initialPartnerUsers.find(u => u.role === r) || initialPartnerUsers[0];
 

@@ -94,7 +94,7 @@ const PARTNER_CATEGORIES: PartnerCategoryOption[] = [
     icon: ShieldCheck,
     defaultBiz: 'HitInEnt',
     defaultName: 'HitInEnt 본사 관리자',
-    defaultEmail: 'hitinent@gmail.com',
+    defaultEmail: 'jes0508@gmail.com',
     features: ['가맹사 심사 및 승인', '전체 매출 & 정산 대사', '통합 시스템 정책 관제']
   }
 ];
@@ -131,7 +131,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
 
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState<boolean>(false);
   const [isGoogleGuideOpen, setIsGoogleGuideOpen] = useState<boolean>(false);
-  const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('hitinent@gmail.com');
+  const [googleDirectEmail, setGoogleDirectEmail] = useState<string>('jes0508@gmail.com');
   const [googleDirectName, setGoogleDirectName] = useState<string>('');
   const [showDirectSignupForm, setShowDirectSignupForm] = useState<boolean>(false);
 
@@ -1303,7 +1303,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
           gap: '8px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>신규 입점 문의: <strong>hitinent@gmail.com</strong></span>
+            <span>신규 입점 문의: <strong>jes0508@gmail.com</strong></span>
             <button
               type="button"
               onClick={toggleTheme}
@@ -1624,7 +1624,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                       style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }}
                       value={googleDirectEmail}
                       onChange={e => setGoogleDirectEmail(e.target.value)}
-                      placeholder="hitinent@gmail.com"
+                      placeholder="jes0508@gmail.com"
                     />
                   </div>
                   <div>
@@ -1647,7 +1647,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
                     const effectiveRole = authMode === 'signup' ? (signupRoles[0] || 'field_owner') : selectedRole;
                     const effectiveRoles = authMode === 'signup' ? signupRoles : [selectedRole];
                     const meta = getRoleMetadata(effectiveRole);
-                    const userEmail = googleDirectEmail.trim() || 'hitinent@gmail.com';
+                    const userEmail = googleDirectEmail.trim() || 'jes0508@gmail.com';
                     const userName = googleDirectName.trim() || (authMode === 'signup' && signupName ? signupName : `${userEmail.split('@')[0]} (Google)`);
 
                     login({

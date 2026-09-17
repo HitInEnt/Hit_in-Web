@@ -36,6 +36,17 @@ export const initialPartnerUsers: PartnerUser[] = [
     avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=ShopPartner&backgroundColor=b6e3f4'
   },
   {
+    id: 'usr_hq_jes',
+    name: 'HIT IN 메인 관리자',
+    email: 'jes0508@gmail.com',
+    role: 'hq_admin',
+    businessName: 'HitInEnt HQ',
+    businessNumber: '',
+    phone: '',
+    partnerId: 'hq_main',
+    avatarUrl: 'https://api.dicebear.com/7.x/thumbs/svg?seed=MainAdminJES&backgroundColor=ffd5dc'
+  },
+  {
     id: 'usr_hq_default',
     name: 'HitInEnt 본사 관리자',
     email: 'hitinent@gmail.com',

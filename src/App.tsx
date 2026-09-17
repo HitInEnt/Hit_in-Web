@@ -16,11 +16,12 @@ import { HqClientsView } from './features/hq/HqClientsView';
 import { UserPointsView } from './features/points/UserPointsView';
 import { MyPageView } from './features/mypage/MyPageView';
 
-// Auth
+// Auth & Lock Views
 import { LoginView } from './features/auth/LoginView';
 import { PrivacyPolicyView } from './features/legal/PrivacyPolicyView';
 import { TermsOfServiceView } from './features/legal/TermsOfServiceView';
 import { PendingApprovalBanner } from './components/common/PendingApprovalBanner';
+import { PendingApprovalLockView } from './components/common/PendingApprovalLockView';
 
 // Modals
 import { QuickCheckInModal } from './components/common/QuickCheckInModal';
@@ -33,7 +34,9 @@ import { TimeSlot } from './types';
 import { PartnerService } from './services/partnerService';
 
 const PartnerAppInner: React.FC = () => {
-  const { activeTab, role, user, refreshKey, isAuthenticated, isProfileModalOpen, setIsProfileModalOpen } = usePartner();
+  const { activeTab, role, user, refreshKey, isAuthenticated, isProfileModalOpen, setIsProfileModalOpen, showToast } = usePartner();
+
+  const isPending = user?.status === 'pending_approval';
 
   // Route state for non-authenticated pages like Privacy Policy & Terms
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -66,13 +69,37 @@ const PartnerAppInner: React.FC = () => {
   const [bookingSlotsForModal, setBookingSlotsForModal] = useState<TimeSlot[]>([]);
 
   const handleOpenAddSlot = (date?: string) => {
+    if (isPending) {
+      showToast('메인 관리자(jes0508@gmail.com)의 승인 완료 후 타임슬롯을 등록할 수 있습니다.', 'warning');
+      return;
+    }
     setSlotModalDate(date);
     setIsAddSlotOpen(true);
   };
 
   const handleOpenManualBooking = (slots: TimeSlot[]) => {
+    if (isPending) {
+      showToast('메인 관리자(jes0508@gmail.com)의 승인 완료 후 수동 예약을 등록할 수 있습니다.', 'warning');
+      return;
+    }
     setBookingSlotsForModal(slots);
     setIsManualBookingOpen(true);
+  };
+
+  const handleOpenQuickCheckIn = () => {
+    if (isPending) {
+      showToast('메인 관리자(jes0508@gmail.com)의 승인 완료 후 QR 체크인이 가능합니다.', 'warning');
+      return;
+    }
+    setIsQuickCheckInOpen(true);
+  };
+
+  const handleOpenAddProduct = () => {
+    if (isPending) {
+      showToast('메인 관리자(jes0508@gmail.com)의 승인 완료 후 상품을 등록할 수 있습니다.', 'warning');
+      return;
+    }
+    setIsAddProductOpen(true);
   };
 
   const handleInspectPlayer = (userId: string) => {
@@ -122,13 +149,18 @@ const PartnerAppInner: React.FC = () => {
   }
 
   const renderActiveView = () => {
+    // Strict Lock Enforcement: If pending approval, only allow MyPageView for editing profile
+    if (isPending && activeTab !== 'mypage') {
+      return <PendingApprovalLockView />;
+    }
+
     switch (activeTab) {
       case 'dashboard':
         return (
           <DashboardView
-            onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
+            onOpenQuickCheckIn={handleOpenQuickCheckIn}
             onOpenAddSlot={() => handleOpenAddSlot()}
-            onOpenAddProduct={() => setIsAddProductOpen(true)}
+            onOpenAddProduct={handleOpenAddProduct}
             onInspectPlayer={handleInspectPlayer}
           />
         );
@@ -153,7 +185,7 @@ const PartnerAppInner: React.FC = () => {
       case 'shop_inventory':
         return (
           <ShopInventoryView
-            onOpenAddProduct={() => setIsAddProductOpen(true)}
+            onOpenAddProduct={handleOpenAddProduct}
           />
         );
       case 'settlement':
@@ -162,9 +194,9 @@ const PartnerAppInner: React.FC = () => {
         if (role !== 'hq_admin') {
           return (
             <DashboardView
-              onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
+              onOpenQuickCheckIn={handleOpenQuickCheckIn}
               onOpenAddSlot={() => handleOpenAddSlot()}
-              onOpenAddProduct={() => setIsAddProductOpen(true)}
+              onOpenAddProduct={handleOpenAddProduct}
               onInspectPlayer={handleInspectPlayer}
             />
           );
@@ -175,9 +207,9 @@ const PartnerAppInner: React.FC = () => {
       default:
         return (
           <DashboardView
-            onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
+            onOpenQuickCheckIn={handleOpenQuickCheckIn}
             onOpenAddSlot={() => handleOpenAddSlot()}
-            onOpenAddProduct={() => setIsAddProductOpen(true)}
+            onOpenAddProduct={handleOpenAddProduct}
             onInspectPlayer={handleInspectPlayer}
           />
         );
@@ -211,13 +243,13 @@ const PartnerAppInner: React.FC = () => {
       <main className="main-content">
         {/* Header */}
         <Header
-          onOpenQuickCheckIn={() => setIsQuickCheckInOpen(true)}
+          onOpenQuickCheckIn={handleOpenQuickCheckIn}
           onOpenAddSlot={() => handleOpenAddSlot()}
-          onOpenAddProduct={() => setIsAddProductOpen(true)}
+          onOpenAddProduct={handleOpenAddProduct}
         />
 
-        {/* Pending Approval Banner for awaiting partners */}
-        {user.status === 'pending_approval' && (
+        {/* Pending Approval Banner shown on MyPage when awaiting approval */}
+        {isPending && activeTab === 'mypage' && (
           <PendingApprovalBanner />
         )}
 
@@ -232,36 +264,40 @@ const PartnerAppInner: React.FC = () => {
       <ToastContainer />
 
       {/* Modals */}
-      <QuickCheckInModal
-        isOpen={isQuickCheckInOpen}
-        onClose={() => setIsQuickCheckInOpen(false)}
-        onInspectPlayer={handleInspectPlayer}
-      />
+      {!isPending && (
+        <>
+          <QuickCheckInModal
+            isOpen={isQuickCheckInOpen}
+            onClose={() => setIsQuickCheckInOpen(false)}
+            onInspectPlayer={handleInspectPlayer}
+          />
 
-      <CreateSlotModal
-        isOpen={isAddSlotOpen}
-        onClose={() => {
-          setIsAddSlotOpen(false);
-          setSlotModalDate(undefined);
-        }}
-        initialDate={slotModalDate}
-      />
+          <CreateSlotModal
+            isOpen={isAddSlotOpen}
+            onClose={() => {
+              setIsAddSlotOpen(false);
+              setSlotModalDate(undefined);
+            }}
+            initialDate={slotModalDate}
+          />
 
-      <ManualBookingModal
-        isOpen={isManualBookingOpen}
-        onClose={() => setIsManualBookingOpen(false)}
-        slots={bookingSlotsForModal.length > 0 ? bookingSlotsForModal : PartnerService.getSlots(user.partnerId)}
-      />
+          <ManualBookingModal
+            isOpen={isManualBookingOpen}
+            onClose={() => setIsManualBookingOpen(false)}
+            slots={bookingSlotsForModal.length > 0 ? bookingSlotsForModal : PartnerService.getSlots(user.partnerId)}
+          />
 
-      <CreateProductModal
-        isOpen={isAddProductOpen}
-        onClose={() => setIsAddProductOpen(false)}
-      />
+          <CreateProductModal
+            isOpen={isAddProductOpen}
+            onClose={() => setIsAddProductOpen(false)}
+          />
 
-      <PlayerMannerModal
-        userId={inspectedUserId}
-        onClose={() => setInspectedUserId(null)}
-      />
+          <PlayerMannerModal
+            userId={inspectedUserId}
+            onClose={() => setInspectedUserId(null)}
+          />
+        </>
+      )}
 
       <ProfileEditModal
         isOpen={isProfileModalOpen}
