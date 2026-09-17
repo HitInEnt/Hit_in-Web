@@ -208,6 +208,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.setItem('hitin_custom_user', JSON.stringify(customUser));
     setUser(customUser);
     PartnerService.syncUserToClient(customUser);
+    PartnerService.syncUserProfile(customUser).catch(() => {});
 
     setActiveTabState(approvalStatus === 'pending_approval' ? 'mypage' : 'dashboard');
     setRefreshKey(prev => prev + 1);

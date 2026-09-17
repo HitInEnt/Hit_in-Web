@@ -153,7 +153,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
       avatarUrl
     });
 
-    showToast('프로필 및 운영 분야 정보가 성공적으로 변경되었습니다.', 'success');
+    showToast('프로필 및 사업장 정보가 성공적으로 변경되어 서버에 즉시 저장되었습니다.', 'success');
     onClose();
   };
 

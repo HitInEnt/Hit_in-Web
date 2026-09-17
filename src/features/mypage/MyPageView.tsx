@@ -89,7 +89,7 @@ export const MyPageView: React.FC = () => {
         avatarUrl
       });
       setIsSaving(false);
-      showToast('마이페이지 정보가 성공적으로 저장되었습니다.', 'success');
+      showToast('마이페이지 정보가 성공적으로 변경되어 서버에 즉시 저장되었습니다.', 'success');
     }, 300);
   };
 

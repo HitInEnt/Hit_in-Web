@@ -4,7 +4,8 @@
   PlayerMannerProfile, 
   RentalProduct, 
   SettlementRecord, 
-  ClientPartner, 
+  ClientPartner,
+  PartnerUser, 
   ClientStatus,
   PartnerRole,
   FieldInfo,
@@ -369,6 +370,67 @@ export class PartnerService {
     if (!email) return undefined;
     const clients = this.getClients();
     return clients.find(c => c.email && c.email.toLowerCase() === email.toLowerCase());
+  }
+
+  // --- Profile Sync to Server ---
+  static async syncUserProfile(user: Partial<PartnerUser>): Promise<{ ok: boolean; message?: string; user?: any }> {
+    if (!user.email) return { ok: false, message: 'NO_EMAIL' };
+    try {
+      const payload = {
+        email: user.email,
+        name: user.name || '',
+        businessName: user.businessName || '',
+        business_name: user.businessName || '',
+        businessNumber: user.businessNumber || '',
+        business_number: user.businessNumber || '',
+        phone: user.phone || '',
+        avatarUrl: user.avatarUrl || '',
+        avatar_url: user.avatarUrl || '',
+        role: user.role,
+        roles: user.roles,
+        partnerId: user.partnerId,
+        status: user.status
+      };
+
+      const res = await fetch(`${API_BASE_URL}/partner/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return { ok: true, message: data.message, user: data.user };
+      }
+    } catch (e) {
+      console.warn('[API] Sync user profile error:', e);
+    }
+    return { ok: false, message: 'NETWORK_OR_SERVER_ERROR' };
+  }
+
+  static async fetchUserProfile(email?: string): Promise<Partial<PartnerUser> | null> {
+    if (!email) return null;
+    try {
+      const res = await fetch(`${API_BASE_URL}/partner/profile?email=${encodeURIComponent(email)}`, {
+        method: 'GET'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && json.user) {
+          return {
+            name: json.user.name,
+            phone: json.user.phone,
+            avatarUrl: json.user.avatar_url,
+            businessName: json.user.business_name,
+            businessNumber: json.user.business_number,
+            status: json.user.approval_status === 'approved' ? 'active' : json.user.approval_status
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('[API] Fetch user profile error:', e);
+    }
+    return null;
   }
 
   static isMasterAdminEmail(email?: string): boolean {
