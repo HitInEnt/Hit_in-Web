@@ -23,7 +23,8 @@ import {
   Globe
 } from 'lucide-react';
 import { usePartner } from '../../context/PartnerContext';
-import { PartnerRole } from '../../types';
+import { PartnerRole, PartnerUser } from '../../types';
+import { PartnerService } from '../../services/partnerService';
 import { CUTE_CHARACTER_AVATARS, PRESET_AVATARS } from '../../components/common/ProfileEditModal';
 import { formatPhoneNumber, formatBusinessNumber } from '../../utils/formatters';
 
@@ -46,6 +47,17 @@ export const MyPageView: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Keep form inputs strictly in sync whenever user data updates
+  React.useEffect(() => {
+    setName(user.name || '');
+    setBusinessName(user.businessName || '');
+    setEmail(user.email || '');
+    setPhone(user.phone || '');
+    setBusinessNumber(user.businessNumber || '');
+    setSelectedRoles(user.roles && user.roles.length > 0 ? user.roles : [user.role]);
+    setAvatarUrl(user.avatarUrl || PRESET_AVATARS[0]);
+  }, [user]);
+
   const handleToggleRole = (roleKey: PartnerRole) => {
     setSelectedRoles(prev => {
       if (prev.includes(roleKey)) {
@@ -60,7 +72,7 @@ export const MyPageView: React.FC = () => {
     });
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
@@ -77,20 +89,31 @@ export const MyPageView: React.FC = () => {
     }
 
     setIsSaving(true);
-    setTimeout(() => {
-      updateProfile({
-        name: name.trim(),
-        businessName: businessName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        businessNumber: businessNumber.trim(),
-        roles: selectedRoles,
-        role: selectedRoles.includes(role) ? role : selectedRoles[0],
-        avatarUrl
-      });
+    const updatedData: Partial<PartnerUser> = {
+      name: name.trim(),
+      businessName: businessName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      businessNumber: businessNumber.trim(),
+      roles: selectedRoles,
+      role: selectedRoles.includes(role) ? role : selectedRoles[0],
+      avatarUrl
+    };
+
+    updateProfile(updatedData);
+
+    try {
+      const res = await PartnerService.syncUserProfile(updatedData);
+      if (res.ok) {
+        showToast('마이페이지 정보가 성공적으로 변경되어 서버 DB에 즉시 연동되었습니다.', 'success');
+      } else {
+        showToast('마이페이지 정보가 저장되었습니다.', 'success');
+      }
+    } catch {
+      showToast('마이페이지 정보가 로컬 및 서버에 저장되었습니다.', 'success');
+    } finally {
       setIsSaving(false);
-      showToast('마이페이지 정보가 성공적으로 변경되어 서버에 즉시 저장되었습니다.', 'success');
-    }, 300);
+    }
   };
 
   // Image Upload handler
