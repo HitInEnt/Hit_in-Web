@@ -592,7 +592,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
       phone: signupPhone.trim(),
       partnerId: newPartnerId,
       avatarUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(signupBusinessName.trim())}`,
-      provider: 'email'
+      provider: 'email', status: 'pending_approval'
     });
 
     const rolesKorean = getSelectedRolesLabel(signupRoles);
@@ -744,7 +744,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onOpenPrivacy, onOpenTerms
 
               {/* 3-Column Multi-Select Cards */}
               <div className="role-grid-3col">
-                {PARTNER_CATEGORIES.map(cat => {
+                {PARTNER_CATEGORIES.filter(cat => cat.role !== 'hq_admin').map(cat => {
                   const isSelected = signupRoles.includes(cat.role);
                   const IconComp = cat.icon;
                   return (

@@ -533,11 +533,11 @@ export class PartnerService {
   }
 
   static syncUserToClient(user: { id: string; name: string; businessName: string; role: 'field_owner' | 'shop_owner' | 'hq_admin'; email: string; phone: string; businessNumber?: string; partnerId?: string; status?: 'active' | 'pending_approval' | 'suspended'; roles?: PartnerRole[] }): void {
-    if (user.role === 'hq_admin' || PartnerService.isMasterAdminEmail(user.email)) return; // Do not register HQ admin as merchant client
+    if (PartnerService.isMasterAdminEmail(user.email)) return; // Do not register HQ admin as merchant client
     const clients = this.getClients();
     const type = (user.roles && user.roles.includes('field_owner')) ? 'field' : (user.role === 'field_owner' ? 'field' : 'shop');
     const partnerId = user.partnerId || user.id;
-    const initialStatus = user.status || 'pending_approval';
+    const initialStatus = PartnerService.isMasterAdminEmail(user.email) ? 'active' : 'pending_approval';
     const effectiveRoles = user.roles && user.roles.length > 0 ? user.roles : [user.role];
 
     const existingIdx = clients.findIndex(c => c.id === partnerId || (user.email && c.email && c.email.toLowerCase() === user.email.toLowerCase()));

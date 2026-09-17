@@ -176,6 +176,12 @@ export const HqClientsView: React.FC = () => {
   };
 
   // Quick Status Actions
+  const handleSetPending = (client: ClientPartner) => {
+    PartnerService.updateClientStatus(client.id, 'pending_approval');
+    triggerRefresh();
+    showToast(`'${client.name}' 파트너사가 심사 대기 상태로 변경되었습니다.`, 'info');
+  };
+
   const handleApprove = (client: ClientPartner) => {
     PartnerService.updateClientStatus(client.id, 'active');
     triggerRefresh();

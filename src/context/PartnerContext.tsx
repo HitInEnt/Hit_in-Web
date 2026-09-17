@@ -31,6 +31,7 @@ interface LoginPayload {
   partnerId?: string;
   avatarUrl?: string;
   provider?: 'email' | 'google' | 'kakao' | 'pass';
+  status?: 'active' | 'pending_approval' | 'suspended';
 }
 
 interface PartnerContextType {
