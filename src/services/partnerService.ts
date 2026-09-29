@@ -182,7 +182,7 @@ export class PartnerService {
     };
     setStorage(STORAGE_KEYS.BOOKINGS, bookings);
 
-    // If checked-in, automatically award daily QR check-in points (+1,000 P with 1-per-day enforcement)
+    // If checked-in, automatically award daily QR check-in points (+5 P with 1-per-day enforcement)
     if (status === 'checked_in') {
       const b = bookings[idx];
       this.recordQrCheckInPoints(
@@ -650,11 +650,11 @@ export class PartnerService {
       return {
         success: false,
         pointsAwarded: 0,
-        message: '오늘 이미 1회 QR 체크인 포인트(+1,000 P)를 적립받은 사용자입니다.'
+        message: '오늘 이미 1회 QR 체크인 포인트(+5 P)를 적립받은 사용자입니다.'
       };
     }
 
-    const pointsToAward = 1000;
+    const pointsToAward = 5;
     const newTx: UserPointTransaction = {
       id: `tx_pt_${Date.now()}`,
       userId,
@@ -664,7 +664,7 @@ export class PartnerService {
       type: 'earn',
       amount: pointsToAward,
       reason: 'qr_checkin',
-      description: `${partnerName} 현장 QR 체크인 완료 (1일 1회)`,
+      description: `${partnerName} 현장 QR 체크인 완료 (1일 1회 +5P)`,
       partnerId,
       partnerName,
       partnerType,
@@ -710,7 +710,7 @@ export class PartnerService {
     return {
       success: true,
       pointsAwarded: pointsToAward,
-      message: `QR 체크인 성공! ${userName}님에게 1,000 P가 적립되었습니다.`,
+      message: `QR 체크인 성공! ${userName}님에게 5 P가 적립되었습니다.`,
       transaction: newTx
     };
   }

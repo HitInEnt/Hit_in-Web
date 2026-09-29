@@ -116,7 +116,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
         count: newCount
       });
 
-      showToast(`🔔 [${updated.bookerName}]님 QR 등록 완료! 현장 입장 카운팅 (+1,000 P 적립)`, 'success');
+      showToast(`🔔 [${updated.bookerName}]님 QR 등록 완료! 현장 입장 카운팅 (+5 P 적립)`, 'success');
       triggerRefresh();
       
       if (selectedBooking?.id === bookingId) {
@@ -217,7 +217,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
             실시간 현장입장 & 게이트 관제 데스크
           </h1>
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)' }}>
-            각 사용자가 현장에서 QR을 등록하면 입장 인원이 <strong>자동으로 카운팅</strong>되며, <strong>1일 1회 +1,000 P</strong>가 자동 지급됩니다.
+            각 사용자가 현장에서 QR을 등록하면 입장 인원이 <strong>자동으로 카운팅</strong>되며, <strong>1일 1회 +5 P</strong>가 자동 지급됩니다.
           </p>
         </div>
 
@@ -357,10 +357,10 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
             </div>
           </div>
           <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--primary)', marginBottom: '4px' }}>
-            +{(checkedInPlayerCount * 1000).toLocaleString()} <span style={{ fontSize: '14px', fontWeight: '500' }}>P</span>
+            +{(checkedInPlayerCount * 5).toLocaleString()} <span style={{ fontSize: '14px', fontWeight: '500' }}>P</span>
           </div>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-            1인 1일 1회 (+1,000 P) 자동 적립 누적
+            1인 1일 1회 (+5 P) 자동 적립 누적
           </div>
         </div>
       </div>
@@ -384,7 +384,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
               방금 QR 입장 완료: <strong>{lastCheckedInUser.name} ({lastCheckedInUser.nickname})</strong> ({lastCheckedInUser.time})
             </span>
             <span style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(34, 197, 94, 0.3)', color: '#22c55e', fontWeight: '700' }}>
-              +1,000 P 적립
+              +5 P 적립
             </span>
           </div>
           <span style={{ fontSize: '12px', color: '#22c55e', fontWeight: '700' }}>
@@ -561,7 +561,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
                             handleCheckIn(b.id);
                           }}
                         >
-                          <CheckCircle2 size={14} /> 입장 (+1000P)
+                          <CheckCircle2 size={14} /> 입장 (+5P)
                         </button>
                       </div>
                     </div>
@@ -617,7 +617,7 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: '700' }}>
-                        +1,000P 적립
+                        +5P 적립
                       </span>
                       <span className="badge badge-success" style={{ fontSize: '11px' }}>
                         {b.checkInTime || '입장완료'}
@@ -727,12 +727,12 @@ export const CheckInDeskView: React.FC<CheckInDeskViewProps> = ({ onInspectPlaye
                     onClick={() => handleCheckIn(selectedBooking.id)}
                   >
                     <CheckCircle2 size={16} />
-                    입장 확인 및 +1,000P 적립
+                    입장 확인 및 +5P 적립
                   </button>
                 ) : (
                   <button className="btn btn-secondary" style={{ flex: 1 }} disabled>
                     <CheckCircle2 size={16} color="#22c55e" />
-                    {selectedBooking.checkInTime} 입장완료됨 (+1,000P)
+                    {selectedBooking.checkInTime} 입장완료됨 (+5P)
                   </button>
                 )}
 

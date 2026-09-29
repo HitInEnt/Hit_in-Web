@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { 
   Coins, 
   Award, 
@@ -464,7 +464,7 @@ export const UserPointsView: React.FC = () => {
             </span>
           </div>
           <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-            현장 <strong>QR 체크인 (1일 1회 +1,000 P)</strong>과 <strong>게임 후기·매너 평점(-5점 ~ +5점 평가에 따라 -50P ~ +5P 지급/차감)</strong> 적립 현황 및 사용자별 누적 포인트를 실시간으로 조회하고 관리합니다.
+            현장 <strong>QR 체크인 (1일 1회 +5 P)</strong>과 <strong>게임 후기·매너 평점(-5점 ~ +5점 평가에 따라 -50P ~ +5P 지급/차감)</strong> 적립 현황 및 사용자별 누적 포인트를 실시간으로 조회하고 관리합니다.
           </p>
         </div>
 
@@ -520,7 +520,7 @@ export const UserPointsView: React.FC = () => {
             +{stats.todayEarnedPoints.toLocaleString()} <span style={{ fontSize: '14px', fontWeight: '500' }}>P</span>
           </div>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-            QR: {(stats.todayQrCheckIns * 1000).toLocaleString()} P / 후기: {stats.todayReviewPoints.toLocaleString()} P
+            QR: {(stats.todayQrCheckIns * 5).toLocaleString()} P / 후기: {stats.todayReviewPoints.toLocaleString()} P
           </div>
         </div>
 
@@ -545,7 +545,7 @@ export const UserPointsView: React.FC = () => {
             {stats.todayQrCheckIns} <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-muted)' }}>명</span>
           </div>
           <div style={{ fontSize: '11px', color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <CheckCircle2 size={12} /> 1일 1회 (+1,000 P) 적립 적용
+            <CheckCircle2 size={12} /> 1일 1회 (+5 P) 적립 적용
           </div>
         </div>
 
@@ -827,7 +827,7 @@ export const UserPointsView: React.FC = () => {
                               color: '#22c55e',
                               border: '1px solid rgba(34, 197, 94, 0.3)'
                             }}>
-                              <CheckCircle2 size={12} /> 완료 (+1,000 P)
+                              <CheckCircle2 size={12} /> 완료 (+5 P)
                             </span>
                           ) : (
                             <span style={{
@@ -888,7 +888,7 @@ export const UserPointsView: React.FC = () => {
                                 }}
                                 title="1일 1회 QR 체크인 포인트 지급"
                               >
-                                +1,000P
+                                +5P
                               </button>
                             )}
                             <button
@@ -944,7 +944,7 @@ export const UserPointsView: React.FC = () => {
                   gap: '4px'
                 }}
               >
-                <QrCode size={12} /> QR 체크인 (+1,000 P / 1일 1회)
+                <QrCode size={12} /> QR 체크인 (+5 P / 1일 1회)
               </button>
               <button
                 onClick={() => setReasonFilter('review_rating')}
@@ -1237,7 +1237,7 @@ export const UserPointsView: React.FC = () => {
                     style={{ borderColor: 'rgba(34, 197, 94, 0.4)', color: '#22c55e' }}
                   >
                     <QrCode size={14} style={{ marginRight: '4px' }} />
-                    오늘 QR 체크인 (+1,000P)
+                    오늘 QR 체크인 (+5P)
                   </button>
                 )}
                 <button 
@@ -1292,7 +1292,7 @@ export const UserPointsView: React.FC = () => {
                 color: '#22c55e',
                 lineHeight: '1.5'
               }}>
-                📌 <strong>규정 안내:</strong> 필드 및 건샵 현장 QR 체크인 시 사용자당 <strong>1일 1회 한정으로 1,000 P</strong>가 자동 적립됩니다.
+                📌 <strong>규정 안내:</strong> 최초 회원 가입 시 <strong>1,000 P</strong>, 필드 및 건샵 현장 QR 체크인 시 사용자당 <strong>1일 1회 한정으로 5 P</strong>가 자동 적립됩니다.
               </div>
 
               <div style={{ marginBottom: '16px' }}>
@@ -1328,7 +1328,7 @@ export const UserPointsView: React.FC = () => {
                   gap: '6px'
                 }}>
                   <AlertCircle size={15} />
-                  해당 회원은 오늘 이미 1회 체크인 포인트(+1,000P)를 지급받았습니다.
+                  해당 회원은 오늘 이미 1회 체크인 포인트(+5P)를 지급받았습니다.
                 </div>
               )}
 
@@ -1343,7 +1343,7 @@ export const UserPointsView: React.FC = () => {
                 alignItems: 'center'
               }}>
                 <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>적립 예정 포인트</span>
-                <span style={{ fontSize: '18px', fontWeight: '800', color: '#22c55e' }}>+1,000 P</span>
+                <span style={{ fontSize: '18px', fontWeight: '800', color: '#22c55e' }}>+5 P</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
@@ -1355,7 +1355,7 @@ export const UserPointsView: React.FC = () => {
                   onClick={handleExecuteQrCheckIn}
                   style={{ backgroundColor: '#22c55e', color: '#000', border: 'none', fontWeight: '700' }}
                 >
-                  QR 체크인 및 +1,000P 적립
+                  QR 체크인 및 +5P 적립
                 </button>
               </div>
             </div>
